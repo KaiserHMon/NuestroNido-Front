@@ -1,28 +1,117 @@
 "use client"
 
-import { useState } from "react"
-import { Calendar, ShoppingCart, Users, StickyNote, Bird } from "lucide-react"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { Calendar, ShoppingCart, Users, StickyNote, Bird, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { MiembrosSection } from "@/components/miembros-section"
 import { CalendarioSection } from "@/components/calendario-section"
 import { ListaSection } from "@/components/lista-section"
 import { NotasSection } from "@/components/notas-section"
+import { FamiliaActions } from "@/components/familia/familia-actions"
+import { Familia, Usuario } from "@/lib/types"
 
 type Section = "miembros" | "calendario" | "lista" | "notas"
 
 export default function NuestroNidoApp() {
+  const router = useRouter()
   const [activeSection, setActiveSection] = useState<Section>("miembros")
+  const [familia, setFamilia] = useState<Familia | null>(null)
+  const [usuario, setUsuario] = useState<Usuario | null>(null)
+  const [esCreador, setEsCreador] = useState(false)
+
+  useEffect(() => {
+    // Cargar datos de localStorage
+    const familiaGuardada = localStorage.getItem("familia")
+    const usuarioGuardado = localStorage.getItem("usuario")
+
+    if (!familiaGuardada || !usuarioGuardado) {
+      router.push("/login")
+      return
+    }
+
+    const familiaData: Familia = JSON.parse(familiaGuardada)
+    const usuarioData: Usuario = JSON.parse(usuarioGuardado)
+
+    setFamilia(familiaData)
+    setUsuario(usuarioData)
+    setEsCreador(familiaData.creadorId === usuarioData.id)
+  }, [router])
+
+  const handleLogout = () => {
+    localStorage.removeItem("auth_token")
+    localStorage.removeItem("usuario")
+    router.push("/login")
+  }
+
+  const handleFamiliaActualizada = () => {
+    // Recargar familia del localStorage
+    const familiaGuardada = localStorage.getItem("familia")
+    if (familiaGuardada) {
+      setFamilia(JSON.parse(familiaGuardada))
+    }
+  }
+
+  if (!familia || !usuario) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mx-auto mb-4">
+            <Bird className="w-8 h-8 text-primary-foreground animate-bounce" />
+          </div>
+          <p className="text-foreground">Cargando...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-card bg-card/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-2 sm:gap-3 flex-1">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-full flex items-center justify-center">
                 <Bird className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
               </div>
-              <h1 className="text-lg sm:text-xl font-bold text-foreground">NuestroNido</h1>
+              <div className="flex flex-col gap-0.5">
+                <h1 className="text-base sm:text-lg font-bold text-foreground">NuestroNido</h1>
+                <p className="text-xs sm:text-sm text-muted-foreground">{familia.nombre}</p>
+              </div>
+
+              {/* Familia Actions - Desktop */}
+              {esCreador && (
+                <div className="ml-auto hidden sm:block">
+                  <FamiliaActions
+                    familia={familia}
+                    esCreador={esCreador}
+                    onFamiliaActualizada={handleFamiliaActualizada}
+                  />
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              {/* Familia Actions - Mobile */}
+              {esCreador && (
+                <div className="sm:hidden">
+                  <FamiliaActions
+                    familia={familia}
+                    esCreador={esCreador}
+                    onFamiliaActualizada={handleFamiliaActualizada}
+                  />
+                </div>
+              )}
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleLogout}
+                className="h-8 w-8 sm:h-10 sm:w-10 p-0 hover:bg-destructive/10 text-destructive"
+                title="Cerrar sesión"
+              >
+                <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
+              </Button>
             </div>
           </div>
         </div>

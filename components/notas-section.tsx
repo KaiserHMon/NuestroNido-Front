@@ -1,300 +1,169 @@
 "use client"
 
-import { useState, useEffect, useCallback, ChangeEvent } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { useEffect, useState } from "react"
+import { Familia, Nota } from "@/lib/types"
+import { NotaCard } from "@/components/nota-card"
+import { NotaFilter } from "@/components/nota-filter"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Plus, X, StickyNote } from "lucide-react"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import type { Miembro } from "./miembros-section"
-
-interface Nota {
-  id: string
-  titulo: string
-  contenido: string
-  miembroId: string
-  fecha: string
-}
+import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from "@/components/ui/empty"
+import { Plus } from "lucide-react"
 
 export function NotasSection() {
+  const [familia, setFamilia] = useState<Familia | null>(null)
   const [notas, setNotas] = useState<Nota[]>([])
-  const [miembros, setMiembros] = useState<Miembro[]>([])
-  const [dialogOpen, setDialogOpen] = useState(false)
-  const [miembroActivo, setMiembroActivo] = useState("todas")
-  const [lastActionMsg, setLastActionMsg] = useState("")
-
-  const [nuevaNota, setNuevaNota] = useState({
-    titulo: "",
-    contenido: "",
-    miembroId: "",
-  })
+  const [filtrosActivos, setFiltrosActivos] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const storedNotas = localStorage.getItem("nuestronido-notas")
-    const storedMiembros = localStorage.getItem("nuestronido-miembros")
+    // Cargar familia y notas desde localStorage
+    const familiaGuardada = localStorage.getItem("familia")
+    if (familiaGuardada) {
+      try {
+        const familiaData = JSON.parse(familiaGuardada)
+        setFamilia(familiaData)
 
-    if (storedNotas) {
-      setNotas(JSON.parse(storedNotas))
-    }
-    if (storedMiembros) {
-      setMiembros(JSON.parse(storedMiembros))
-    }
-  }, [])
-
-  useEffect(() => {
-    if (notas.length > 0) {
-      localStorage.setItem("nuestronido-notas", JSON.stringify(notas))
-    }
-  }, [notas])
-
-  const agregarNota = useCallback(() => {
-    const titulo = nuevaNota.titulo.replace(/\s{2,}/g, " ").trim().slice(0, 80)
-    const contenido = nuevaNota.contenido.trim().slice(0, 2000)
-    if (titulo && contenido && nuevaNota.miembroId) {
-      const nota: Nota = {
-        id: Date.now().toString(),
-        titulo,
-        contenido,
-        miembroId: nuevaNota.miembroId,
-        fecha: new Date().toISOString(),
+        // Por ahora, usamos datos mock de notas
+        const notasGuardadas = localStorage.getItem("notas")
+        if (notasGuardadas) {
+          try {
+            setNotas(JSON.parse(notasGuardadas))
+          } catch {
+            // Si hay error parseando, usar array vacío
+            setNotas([])
+          }
+        } else {
+          // Datos mock iniciales
+          const notasMock: Nota[] = [
+            {
+              id: "1",
+              contenido: "Preparar el almuerzo de mañana",
+              colorCreador: familiaData.miembros[0]?.color || {
+                nombre: "Azul",
+                bg: "#3B82F6",
+                text: "#FFFFFF",
+              },
+              fechaCreacion: new Date(Date.now() - 86400000).toISOString(),
+              prioridad: "alta",
+              completado: false,
+              miembrosAsignados: familiaData.miembros.slice(0, 1).map((m: any) => m.id),
+              familiaId: familiaData.id,
+            },
+            {
+              id: "2",
+              contenido: "Limpiar la sala",
+              colorCreador: familiaData.miembros[1]?.color || {
+                nombre: "Rosa",
+                bg: "#EC4899",
+                text: "#FFFFFF",
+              },
+              fechaCreacion: new Date(Date.now() - 172800000).toISOString(),
+              prioridad: "media",
+              completado: true,
+              miembrosAsignados: familiaData.miembros.slice(1, 2).map((m: any) => m.id),
+              familiaId: familiaData.id,
+            },
+            {
+              id: "3",
+              contenido: "Comprar verduras",
+              colorCreador: familiaData.miembros[0]?.color || {
+                nombre: "Azul",
+                bg: "#3B82F6",
+                text: "#FFFFFF",
+              },
+              fechaCreacion: new Date(Date.now() - 259200000).toISOString(),
+              prioridad: "baja",
+              completado: false,
+              miembrosAsignados: familiaData.miembros.map((m: any) => m.id),
+              familiaId: familiaData.id,
+            },
+          ]
+          setNotas(notasMock)
+          localStorage.setItem("notas", JSON.stringify(notasMock))
+        }
+      } catch (error) {
+        console.error("Error loading familia or notas:", error)
       }
-
-      setNotas((prev) => [nota, ...prev])
-      setNuevaNota({ titulo: "", contenido: "", miembroId: "" })
-      setDialogOpen(false)
-      setLastActionMsg("Nota creada")
-      setTimeout(() => setLastActionMsg(""), 1500)
     }
-  }, [nuevaNota])
-
-  const eliminarNota = useCallback((notaId: string) => {
-    setNotas((prev) => prev.filter((nota) => nota.id !== notaId))
-    setLastActionMsg("Nota eliminada")
-    setTimeout(() => setLastActionMsg(""), 1500)
+    setLoading(false)
   }, [])
 
-  const getMiembro = useCallback((miembroId: string) => {
-    return miembros.find((m) => m.id === miembroId)
-  }, [miembros])
+  const notasFiltradas = filtrosActivos.length === 0
+    ? notas
+    : notas.filter((nota) => 
+        filtrosActivos.some((filtroId) => 
+          nota.miembrosAsignados?.includes(filtroId) ||
+          familia?.miembros.find((m) => m.id === filtroId && m.color === nota.colorCreador)
+        )
+      )
 
-  const notasFiltradas = miembroActivo === "todas" ? notas : notas.filter((nota) => nota.miembroId === miembroActivo)
-
-  const contarNotasPorMiembro = (miembroId: string) => {
-    return notas.filter((nota) => nota.miembroId === miembroId).length
-  }
-
-  const formatearFecha = (fecha: string) => {
-    const date = new Date(fecha)
-    return date.toLocaleDateString("es-ES", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    })
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold text-foreground">Notas</h2>
+          <Button disabled>
+            <Plus className="w-4 h-4 mr-2" />
+            Nueva Nota
+          </Button>
+        </div>
+        <p className="text-muted-foreground">Cargando...</p>
+      </div>
+    )
   }
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Notas Familiares</h2>
-          <p className="text-sm sm:text-base text-muted-foreground mt-1">Comparte observaciones con la familia</p>
-        </div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="gap-2 text-xs sm:text-sm h-9 sm:h-10 self-start" disabled={miembros.length === 0}>
-              <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
-              Nueva Nota
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Crear Nueva Nota</DialogTitle>
-              <DialogDescription>Añade una observación o recordatorio</DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 pt-4">
-              <div className="space-y-2">
-                <Label htmlFor="miembro">Autor de la nota</Label>
-                <Select
-                  value={nuevaNota.miembroId}
-                  onValueChange={(value) => setNuevaNota({ ...nuevaNota, miembroId: value })}
-                >
-                  <SelectTrigger id="miembro">
-                    <SelectValue placeholder="Selecciona un miembro" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {miembros.map((miembro) => (
-                      <SelectItem key={miembro.id} value={miembro.id}>
-                        {miembro.nombre}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="titulo">Título</Label>
-                <Input
-                  id="titulo"
-                  placeholder="Ej: Recordatorio importante"
-                  value={nuevaNota.titulo}
-                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                    setNuevaNota((prev) => ({ ...prev, titulo: e.target.value.slice(0, 80) }))
-                  }
-                  aria-label="Título de la nota"
-                  maxLength={80}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="contenido">Contenido</Label>
-                <Textarea
-                  id="contenido"
-                  placeholder="Escribe tu nota aquí..."
-                  value={nuevaNota.contenido}
-                  onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
-                    setNuevaNota((prev) => ({ ...prev, contenido: e.target.value.slice(0, 2000) }))
-                  }
-                  rows={5}
-                  aria-label="Contenido de la nota"
-                  maxLength={2000}
-                />
-              </div>
-
-              <Button onClick={agregarNota} className="w-full">
-                Crear Nota
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-foreground">Notas</h2>
+        <Button className="bg-primary hover:bg-primary/90">
+          <Plus className="w-4 h-4 mr-2" />
+          Nueva Nota
+        </Button>
       </div>
 
-      {miembros.length === 0 ? (
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-sm sm:text-base text-muted-foreground py-4">
-              Primero agrega miembros en la sección de Miembros para poder crear notas
-            </p>
-          </CardContent>
-        </Card>
-      ) : (
-        <>
-          <Tabs value={miembroActivo} onValueChange={setMiembroActivo}>
-            <TabsList className="w-full justify-start overflow-x-auto flex-nowrap h-auto p-1 gap-1">
-              <TabsTrigger
-                value="todas"
-                className="gap-1.5 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2 whitespace-nowrap"
-              >
-                <StickyNote className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                Todas
-                {notas.length > 0 && (
-                  <span className="text-[10px] sm:text-xs bg-primary/10 px-1.5 sm:px-2 py-0.5 rounded-full">
-                    {notas.length}
-                  </span>
-                )}
-              </TabsTrigger>
-              {miembros.map((miembro) => {
-                const count = contarNotasPorMiembro(miembro.id)
-                return (
-                  <TabsTrigger
-                    key={miembro.id}
-                    value={miembro.id}
-                    className="gap-1.5 sm:gap-2 text-xs sm:text-sm px-3 sm:px-4 py-2 whitespace-nowrap"
-                  >
-                    <Avatar className={`w-4 h-4 sm:w-5 sm:h-5 ${miembro.color.bg}`}>
-                <AvatarFallback className="text-white text-[10px] sm:text-xs font-semibold" aria-hidden="true">
-                  {miembro.nombre.charAt(0).toUpperCase()}
-                </AvatarFallback>
-                    </Avatar>
-                    <span className="hidden sm:inline">{miembro.nombre}</span>
-                    {count > 0 && (
-                      <span className="text-[10px] sm:text-xs bg-primary/10 px-1.5 sm:px-2 py-0.5 rounded-full">
-                        {count}
-                      </span>
-                    )}
-                  </TabsTrigger>
-                )
-              })}
-            </TabsList>
-
-            <TabsContent value={miembroActivo} className="mt-4 sm:mt-6">
-              {notasFiltradas.length === 0 ? (
-                <Card>
-                  <CardContent className="pt-6">
-                    <p className="text-center text-sm sm:text-base text-muted-foreground py-4 sm:py-8">
-                      {miembroActivo === "todas"
-                        ? "No hay notas aún. Crea la primera!"
-                        : "Este miembro no tiene notas aún"}
-                    </p>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {notasFiltradas.map((nota) => {
-                    const miembro = getMiembro(nota.miembroId)
-                    return (
-                      <Card key={nota.id} className="relative">
-                        <CardHeader className="pb-3">
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex-1 min-w-0">
-                              <CardTitle className="text-base sm:text-lg line-clamp-2">{nota.titulo}</CardTitle>
-                              <CardDescription className="mt-1.5 sm:mt-2 text-xs sm:text-sm">
-                                {formatearFecha(nota.fecha)}
-                              </CardDescription>
-                            </div>
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              className="shrink-0 -mt-1 -mr-2 h-8 w-8"
-                              onClick={() => eliminarNota(nota.id)}
-                              aria-label="Eliminar nota"
-                              title="Eliminar nota"
-                            >
-                              <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
-                            </Button>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="pt-0">
-                          <p className="text-xs sm:text-sm text-muted-foreground whitespace-pre-wrap line-clamp-6">
-                            {nota.contenido}
-                          </p>
-                          {miembro && (
-                            <div className="flex items-center gap-2 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t">
-                              <Avatar className={`w-5 h-5 sm:w-6 sm:h-6 ${miembro.color.bg}`}>
-                  <AvatarFallback className="text-white text-[10px] sm:text-xs font-semibold" aria-hidden="true">
-                    {miembro.nombre.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                              </Avatar>
-                              <span className="text-xs sm:text-sm font-medium">{miembro.nombre}</span>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-                    )
-                  })}
-                </div>
-              )}
-            </TabsContent>
-          </Tabs>
-        </>
+      {familia && familia.miembros.length > 0 && (
+        <NotaFilter
+          miembros={familia.miembros}
+          filtrosActivos={filtrosActivos}
+          onFilterChange={setFiltrosActivos}
+        />
       )}
-      {/* Región accesible para anunciar acciones (creada/eliminada) */}
-      <span className="sr-only" aria-live="polite" aria-atomic="true">
-        {lastActionMsg}
-      </span>
+
+      {notasFiltradas.length === 0 ? (
+        <Empty>
+          <EmptyHeader>
+            <EmptyTitle>No hay notas</EmptyTitle>
+            <EmptyDescription>
+              {filtrosActivos.length > 0
+                ? "No hay notas que coincidan con los filtros seleccionados"
+                : "Aún no hay notas. ¡Crea una para comenzar!"}
+            </EmptyDescription>
+          </EmptyHeader>
+        </Empty>
+      ) : (
+        <div className="grid gap-4">
+          <div className="text-sm text-muted-foreground">
+            Mostrando {notasFiltradas.length} de {notas.length} nota{notas.length > 1 ? "s" : ""}
+          </div>
+          <div className="space-y-3">
+            {notasFiltradas.map((nota) => {
+              const creador = familia?.miembros.find((m) =>
+                m.color.bg === nota.colorCreador.bg
+              )
+              return (
+                <NotaCard
+                  key={nota.id}
+                  nota={nota}
+                  creador={creador}
+                  onDelete={() => {
+                    setNotas(notas.filter((n) => n.id !== nota.id))
+                  }}
+                />
+              )
+            })}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

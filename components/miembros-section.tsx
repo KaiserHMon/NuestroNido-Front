@@ -1,11 +1,11 @@
 "use client"
 
-import { useState, useEffect, useMemo, useCallback, useRef, ChangeEvent } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Plus, Bird, Copy, Check, Sparkles } from "lucide-react"
+import { Plus, Copy, Check, Trash2 } from "lucide-react"
 import {
   Dialog,
   DialogContent,
@@ -15,281 +15,306 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-
-export interface Miembro {
-  id: string
-  nombre: string
-  color: {
-    bg: string
-    text: string
-  }
-  puntos: number
-}
-
-const niveles = [
-  { nivel: 1, nombre: "Polluelo", minPuntos: 0, maxPuntos: 50, size: "w-8 h-8" },
-  { nivel: 2, nombre: "Pájaro Joven", minPuntos: 51, maxPuntos: 150, size: "w-10 h-10" },
-  { nivel: 3, nombre: "Pájaro Adulto", minPuntos: 151, maxPuntos: 300, size: "w-12 h-12" },
-  { nivel: 4, nombre: "Pájaro Majestuoso", minPuntos: 301, maxPuntos: 500, size: "w-14 h-14" },
-  { nivel: 5, nombre: "Pájaro Legendario", minPuntos: 501, maxPuntos: Number.POSITIVE_INFINITY, size: "w-16 h-16" },
-]
-
-const getNivelActual = (puntos: number) => {
-  return niveles.find((n) => puntos >= n.minPuntos && puntos <= n.maxPuntos) || niveles[0]
-}
-
-const getProgreso = (puntos: number) => {
-  const nivelActual = getNivelActual(puntos)
-  if (nivelActual.nivel === 5) return 100 
-
-  const puntosEnNivel = puntos - nivelActual.minPuntos
-  const puntosNecesarios = nivelActual.maxPuntos - nivelActual.minPuntos + 1
-  return (puntosEnNivel / puntosNecesarios) * 100
-}
+import { MiembroAvatar } from "@/components/ui/miembro-avatar"
+import { Leaderboard } from "@/components/leaderboard"
+import { Familia, Miembro, ColorMiembro } from "@/lib/types"
+import { COLORES_DISPONIBLES } from "@/lib/colors"
 
 export function MiembrosSection() {
-  const [miembros, setMiembros] = useState<Miembro[]>([])
-  const [nuevoNombre, setNuevoNombre] = useState("")
+  const [familia, setFamilia] = useState<Familia | null>(null)
+  const [usuario, setUsuario] = useState<any>(null)
+  const [nuevoNombreMiembro, setNuevoNombreMiembro] = useState("")
   const [dialogOpen, setDialogOpen] = useState(false)
   const [codigoCopiado, setCodigoCopiado] = useState(false)
-  const inputCodigoRef = useRef<HTMLInputElement | null>(null)
+  const [esCreador, setEsCreador] = useState(false)
 
-  const codigoInvitacion = useMemo(() => {
-    return "NIDO-" + Math.random().toString(36).substring(2, 8).toUpperCase()
+  useEffect(() => {
+    const familiaGuardada = localStorage.getItem("familia")
+    const usuarioGuardado = localStorage.getItem("usuario")
+
+    if (familiaGuardada) {
+      const familiaData: Familia = JSON.parse(familiaGuardada)
+      setFamilia(familiaData)
+    }
+
+    if (usuarioGuardado) {
+      const usuarioData = JSON.parse(usuarioGuardado)
+      setUsuario(usuarioData)
+      if (familiaGuardada) {
+        const familiaData: Familia = JSON.parse(familiaGuardada)
+        setEsCreador(familiaData.creadorId === usuarioData.id)
+      }
+    }
   }, [])
 
   const copiarCodigo = useCallback(async () => {
+    if (!familia) return
+
     try {
-      await navigator.clipboard.writeText(codigoInvitacion)
+      await navigator.clipboard.writeText(familia.codigoInvitacion)
       setCodigoCopiado(true)
       setTimeout(() => setCodigoCopiado(false), 2000)
     } catch (err) {
-      try {
-        if (inputCodigoRef.current) {
-          // @ts-ignore
-          inputCodigoRef.current.select()
-          document.execCommand("copy")
-          window.getSelection()?.removeAllRanges()
-          setCodigoCopiado(true)
-          setTimeout(() => setCodigoCopiado(false), 2000)
-        }
-      } catch (err2) {
-        console.error("No se pudo copiar el código de invitación:", err2)
-      }
+      console.error("Error copiando código:", err)
     }
-  }, [codigoInvitacion])
+  }, [familia?.codigoInvitacion])
 
-  useEffect(() => {
-    const stored = localStorage.getItem("nuestronido-miembros")
-    if (stored) {
-      setMiembros(JSON.parse(stored))
+  const handleAgregarMiembro = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!nuevoNombreMiembro.trim() || !familia) return
+
+    // Simulación - en realidad esto iría al backend
+    const colorAleatorio =
+      COLORES_DISPONIBLES[Math.floor(Math.random() * COLORES_DISPONIBLES.length)]
+
+    const nuevoMiembro: Miembro = {
+      id: "miembro-" + Date.now(),
+      nombre: nuevoNombreMiembro,
+      color: colorAleatorio,
+      puntos: 0,
+      rolId: "miembro",
+      familiaId: familia.id,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     }
-  }, [])
 
-  useEffect(() => {
-    if (miembros.length > 0) {
-      localStorage.setItem("nuestronido-miembros", JSON.stringify(miembros))
+    const familiaActualizada: Familia = {
+      ...familia,
+      miembros: [...familia.miembros, nuevoMiembro],
     }
-  }, [miembros])
 
-  const colores = [
-    { bg: "bg-primary", text: "text-primary" },
-    { bg: "bg-secondary", text: "text-secondary" },
-    { bg: "bg-accent", text: "text-accent" },
-    { bg: "bg-blue-500", text: "text-blue-500" },
-    { bg: "bg-green-500", text: "text-green-500" },
-    { bg: "bg-purple-500", text: "text-purple-500" },
-  ]
+    localStorage.setItem("familia", JSON.stringify(familiaActualizada))
+    setFamilia(familiaActualizada)
+    setNuevoNombreMiembro("")
+    setDialogOpen(false)
+  }
 
-  const agregarMiembro = useCallback(() => {
-    const nombreLimpio = nuevoNombre.replace(/\s{2,}/g, " ").trim().slice(0, 50)
-    if (nombreLimpio) {
-      const nuevoMiembro: Miembro = {
-        id: Date.now().toString(),
-        nombre: nombreLimpio,
-        color: colores[miembros.length % colores.length],
-        puntos: 0,
-      }
-      setMiembros((prev) => [...prev, nuevoMiembro])
-      setNuevoNombre("")
-      setDialogOpen(false)
+  const handleEliminarMiembro = async (miembroId: string) => {
+    if (!familia) return
+
+    // Simulación - en realidad esto iría al backend
+    const familiaActualizada: Familia = {
+      ...familia,
+      miembros: familia.miembros.filter((m) => m.id !== miembroId),
     }
-  }, [nuevoNombre, miembros.length, colores])
 
-  const handleNombreChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    if (value.length <= 50) {
-      setNuevoNombre(value)
-    } else {
-      setNuevoNombre(value.slice(0, 50))
-    }
-  }, [])
+    localStorage.setItem("familia", JSON.stringify(familiaActualizada))
+    setFamilia(familiaActualizada)
+  }
+
+  if (!familia || !usuario) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <p className="text-muted-foreground">Cargando...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Miembros de la Familia</h2>
-          <p className="text-sm sm:text-base text-muted-foreground mt-1">Completa tareas para hacer evolucionar tu pájaro</p>
-        </div>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="gap-2 w-full sm:w-auto">
-              <Plus className="w-4 h-4" aria-hidden="true" />
-              Invitar Miembro
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Invitar Nuevo Miembro</DialogTitle>
-              <DialogDescription>
-                Comparte el código de invitación para que otros se unan a tu familia
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 pt-4">
-              <div className="space-y-2">
-                <Label>Código de Invitación</Label>
-                <div className="flex gap-2">
-                  <Input
-                    ref={inputCodigoRef}
-                    value={codigoInvitacion}
-                    readOnly
-                    className="font-mono"
-                    aria-label="Código de invitación"
-                  />
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={copiarCodigo}
-                    aria-label="Copiar código de invitación"
-                    title="Copiar código de invitación"
-                  >
-                    {codigoCopiado ? <Check className="w-4 h-4" aria-hidden="true" /> : <Copy className="w-4 h-4" aria-hidden="true" />}
-                  </Button>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Los miembros invitados deberán registrarse e ingresar este código para unirse
-                </p>
-                <span className="sr-only" aria-live="polite" aria-atomic="true">
-                  {codigoCopiado ? "Código copiado al portapapeles" : ""}
-                </span>
-              </div>
+      {/* Invitación Section */}
+      <Card className="border border-border bg-card">
+        <CardHeader>
+          <CardTitle className="text-foreground">Invitar a Miembros</CardTitle>
+          <CardDescription className="text-muted-foreground">
+            Comparte este código para que otros se unan a tu familia
+          </CardDescription>
+        </CardHeader>
 
-              <div className="border-t pt-4">
-                <p className="text-sm text-muted-foreground mb-3">O agrega un miembro manualmente para pruebas:</p>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label className="text-foreground font-medium">Código de Invitación</Label>
+            <div className="flex gap-2">
+              <Input
+                readOnly
+                value={familia.codigoInvitacion}
+                className="bg-muted border-border text-foreground font-mono"
+              />
+              <Button
+                onClick={copiarCodigo}
+                className="bg-primary hover:bg-primary/90 text-primary-foreground flex-shrink-0"
+              >
+                {codigoCopiado ? (
+                  <>
+                    <Check className="w-4 h-4 mr-2" />
+                    Copiado
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4 mr-2" />
+                    Copiar
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+
+          {/* Agregar Miembro */}
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
+                <Plus className="w-4 h-4 mr-2" />
+                Agregar Miembro
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle className="text-foreground">Agregar Nuevo Miembro</DialogTitle>
+                <DialogDescription className="text-muted-foreground">
+                  Crea un nuevo miembro en tu familia
+                </DialogDescription>
+              </DialogHeader>
+
+              <form onSubmit={handleAgregarMiembro} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="nombre">Nombre</Label>
+                  <Label htmlFor="nombre" className="text-foreground">
+                    Nombre del Miembro
+                  </Label>
                   <Input
                     id="nombre"
-                    placeholder="Ej: María"
-                    value={nuevoNombre}
-                    onChange={(e) => handleNombreChange(e)}
-                    onKeyDown={(e) => e.key === "Enter" && agregarMiembro()}
-                    aria-label="Nombre del nuevo miembro"
-                    maxLength={50}
+                    type="text"
+                    placeholder="Ej: Juan García"
+                    value={nuevoNombreMiembro}
+                    onChange={(e) => setNuevoNombreMiembro(e.target.value)}
+                    className="bg-background border-input"
                   />
                 </div>
-                <Button onClick={agregarMiembro} className="w-full mt-3">
-                  Agregar
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </div>
 
-      {miembros.length > 0 && (
-        <Card className="bg-card border-border">
-          <CardContent className="pt-6">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-muted rounded-full flex items-center justify-center shadow-sm">
-                <Bird className={`w-7 h-7 ${miembros[0].color.text}`} aria-hidden="true" />
-              </div>
-              <div>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                  <p className="font-semibold text-foreground">{miembros[0].nombre}</p>
-                  <Badge variant="secondary" className="bg-secondary text-secondary-foreground w-fit">
-                    Creador del Nido
-                  </Badge>
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setDialogOpen(false)}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                    disabled={!nuevoNombreMiembro.trim()}
+                  >
+                    Agregar Miembro
+                  </Button>
                 </div>
-                <p className="text-sm text-muted-foreground">Administrador del grupo familiar</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+              </form>
+            </DialogContent>
+          </Dialog>
+        </CardContent>
+      </Card>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {miembros.length === 0 ? (
-          <Card className="col-span-full">
-            <CardContent className="py-12">
-              <p className="text-center text-muted-foreground">No hay miembros aún. Invita al primero!</p>
-            </CardContent>
-          </Card>
-        ) : (
-          miembros.map((miembro) => {
-            const nivel = getNivelActual(miembro.puntos)
-            const progreso = getProgreso(miembro.puntos)
-            const siguienteNivel = niveles.find((n) => n.nivel === nivel.nivel + 1)
+      {/* Miembros Grid */}
+      <div>
+        <h3 className="text-lg font-semibold text-foreground mb-4">Miembros ({familia.miembros.length})</h3>
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Card para agregar miembro */}
+          {esCreador && (
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogTrigger asChild>
+                <div className="w-full h-full cursor-pointer">
+                  <Card className="border-2 border-dashed border-primary/50 bg-card/50 hover:bg-primary/5 transition-all h-full">
+                    <CardContent className="p-4 flex items-center justify-center h-full min-h-[220px]">
+                      <div className="text-center space-y-2">
+                        <Plus className="w-12 h-12 text-primary mx-auto" />
+                        <p className="text-sm font-medium text-foreground">Agregar Miembro</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle className="text-foreground">Agregar Nuevo Miembro</DialogTitle>
+                  <DialogDescription className="text-muted-foreground">
+                    Crea un nuevo miembro en tu familia
+                  </DialogDescription>
+                </DialogHeader>
+
+                <form onSubmit={handleAgregarMiembro} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="nombre" className="text-foreground">
+                      Nombre del Miembro
+                    </Label>
+                    <Input
+                      id="nombre"
+                      type="text"
+                      placeholder="Ej: Juan García"
+                      value={nuevoNombreMiembro}
+                      onChange={(e) => setNuevoNombreMiembro(e.target.value)}
+                      className="bg-background border-input"
+                    />
+                  </div>
+
+                  <div className="flex justify-end gap-2 pt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setDialogOpen(false)}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      type="submit"
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                      disabled={!nuevoNombreMiembro.trim()}
+                    >
+                      Agregar Miembro
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
+          )}
+
+          {familia.miembros.map((miembro) => {
             return (
-              <Card
-                key={miembro.id}
-                className="bg-card border-border overflow-hidden"
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg text-foreground">{miembro.nombre}</CardTitle>
-                      <CardDescription className="flex items-center gap-1 mt-1">
-                        <Sparkles className="w-3 h-3" aria-hidden="true" />
-                        Nivel {nivel.nivel} - {nivel.nombre}
-                      </CardDescription>
-                    </div>
-                    <Badge variant="outline" className="bg-card/80 text-muted-foreground border-border">
-                      {miembro.puntos} pts
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex justify-center py-4">
-                    <div className="relative">
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full blur-xl"></div>
-                      <div
-                        className={`relative w-20 h-20 bg-card rounded-full flex items-center justify-center shadow-lg border-2 border-border`}
+              <Card key={miembro.id} className="border border-border bg-card overflow-hidden h-full">
+                <CardContent className="p-4 space-y-4 flex flex-col h-full">
+                  {/* Header del Card */}
+                  <div className="flex items-start justify-between gap-2">
+                    <MiembroAvatar
+                      nombre={miembro.nombre}
+                      color={miembro.color}
+                      size="md"
+                    />
+                    {esCreador && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEliminarMiembro(miembro.id)}
+                        className="h-8 w-8 p-0 hover:bg-destructive/10 text-destructive flex-shrink-0"
+                        title="Eliminar miembro"
                       >
-                        <Bird className={`${nivel.size} ${miembro.color.text}`} aria-hidden="true" />
-                      </div>
-                    </div>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    )}
                   </div>
 
-                  {nivel.nivel < 5 && siguienteNivel && (
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>Progreso</span>
-                        <span className="font-medium">
-                          {miembro.puntos} / {siguienteNivel.minPuntos} pts
-                        </span>
-                      </div>
-                      <Progress value={progreso} className="h-2 bg-muted" />
-                      <p className="text-xs text-center text-muted-foreground">
-                        {siguienteNivel.minPuntos - miembro.puntos} puntos para {siguienteNivel.nombre}
-                      </p>
-                    </div>
-                  )}
+                  {/* Nombre y rol */}
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-foreground">{miembro.nombre}</h4>
+                    {miembro.rolId === "creador" && (
+                      <Badge className="mt-1 bg-primary text-primary-foreground">Creador</Badge>
+                    )}
+                  </div>
 
-                  {nivel.nivel === 5 && (
-                    <div className="text-center">
-                      <Badge className="bg-gradient-to-r from-primary to-accent">¡Nivel Máximo Alcanzado!</Badge>
+                  {/* Tareas completadas */}
+                  <div className="pt-2 border-t border-border mt-auto">
+                    <div className="text-sm">
+                      <span className="text-muted-foreground">Tareas completadas: </span>
+                      <span className="font-semibold text-foreground">0</span>
                     </div>
-                  )}
+                  </div>
                 </CardContent>
               </Card>
             )
-          })
-        )}
+          })}
+        </div>
       </div>
+
+      {/* Leaderboard */}
+      <Leaderboard miembros={familia.miembros} />
     </div>
   )
 }
