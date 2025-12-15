@@ -1,0 +1,93 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { Bird } from "lucide-react"
+import { useAuth } from "@/hooks/use-auth"
+import { CrearFamiliaCard } from "@/components/familia/crear-familia-card"
+import { UnirseAFamiliaCard } from "@/components/familia/unirse-familia-card"
+
+export default function HomePage() {
+  const router = useRouter()
+  const { isAuthenticated, usuario, isLoading } = useAuth()
+  const [familia, setFamilia] = useState<any | null>(null)
+
+  useEffect(() => {
+    // Verificar si hay sesión
+    if (!isLoading && !isAuthenticated) {
+      router.push("/login")
+      return
+    }
+
+    // Verificar si ya tiene familia
+    if (!isLoading && isAuthenticated) {
+      const familiaGuardada = localStorage.getItem("familia")
+      if (familiaGuardada) {
+        setFamilia(JSON.parse(familiaGuardada))
+        router.push("/dashboard")
+      }
+    }
+  }, [isAuthenticated, isLoading, router])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mx-auto mb-4">
+            <Bird className="w-8 h-8 text-primary-foreground animate-bounce" />
+          </div>
+          <p className="text-foreground">Cargando...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated || !usuario) {
+    return null
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b border-card bg-card/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-full flex items-center justify-center">
+              <Bird className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
+            </div>
+            <h1 className="text-lg sm:text-xl font-bold text-foreground">NuestroNido</h1>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        {/* Welcome Section */}
+        <div className="text-center mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-2">
+            ¡Bienvenido, {usuario.nombre}!
+          </h2>
+          <p className="text-muted-foreground text-sm sm:text-base">
+            Selecciona cómo deseas comenzar con tu familia
+          </p>
+        </div>
+
+        {/* Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          <CrearFamiliaCard onSuccess={() => router.push("/dashboard")} />
+          <UnirseAFamiliaCard onSuccess={() => router.push("/dashboard")} />
+        </div>
+
+        {/* Help Section */}
+        <div className="mt-16 text-center">
+          <p className="text-muted-foreground text-sm">
+            ¿Necesitas ayuda?{" "}
+            <a href="#" className="text-primary hover:underline font-medium">
+              Contacta con soporte
+            </a>
+          </p>
+        </div>
+      </main>
+    </div>
+  )
+}
