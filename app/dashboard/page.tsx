@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { Calendar, ShoppingCart, Users, StickyNote, Bird, LogOut } from "lucide-react"
+import { Calendar, ShoppingCart, Users, StickyNote, Bird, LogOut, Settings, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { MiembrosSection } from "@/components/miembros-section"
 import { CalendarioSection } from "@/components/calendario-section"
 import { ListaSection } from "@/components/lista-section"
 import { NotasSection } from "@/components/notas-section"
 import { FamiliaActions } from "@/components/familia/familia-actions"
+import { InvitarMiembrosDialog } from "@/components/dialogs/invitar-miembros-dialog"
 import { Familia, Usuario } from "@/lib/types"
 
 type Section = "miembros" | "calendario" | "lista" | "notas"
@@ -19,6 +20,7 @@ export default function NuestroNidoApp() {
   const [familia, setFamilia] = useState<Familia | null>(null)
   const [usuario, setUsuario] = useState<Usuario | null>(null)
   const [esCreador, setEsCreador] = useState(false)
+  const [invitarDialogOpen, setInvitarDialogOpen] = useState(false)
 
   useEffect(() => {
     // Cargar datos de localStorage
@@ -50,6 +52,15 @@ export default function NuestroNidoApp() {
     if (familiaGuardada) {
       setFamilia(JSON.parse(familiaGuardada))
     }
+  }
+
+  const handleMiembroAgregado = () => {
+    // Recargar familia del localStorage
+    const familiaGuardada = localStorage.getItem("familia")
+    if (familiaGuardada) {
+      setFamilia(JSON.parse(familiaGuardada))
+    }
+    setInvitarDialogOpen(false)
   }
 
   if (!familia || !usuario) {
@@ -92,17 +103,18 @@ export default function NuestroNidoApp() {
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Familia Actions - Mobile */}
-              {esCreador && (
-                <div className="sm:hidden">
-                  <FamiliaActions
-                    familia={familia}
-                    esCreador={esCreador}
-                    onFamiliaActualizada={handleFamiliaActualizada}
-                  />
-                </div>
-              )}
+              {/* Settings Button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {}}
+                className="h-8 w-8 sm:h-10 sm:w-10 p-0 hover:bg-primary/10 text-primary"
+                title="Configuración"
+              >
+                <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
+              </Button>
 
+              {/* Logout Button */}
               <Button
                 variant="ghost"
                 size="sm"
@@ -119,7 +131,7 @@ export default function NuestroNidoApp() {
 
       <nav className="bg-primary backdrop-blur-sm border-b border-primary sticky top-[57px] sm:top-[65px] z-10">
         <div className="container mx-auto px-3 sm:px-4">
-          <div className="flex gap-1 sm:gap-2 overflow-x-auto py-2 sm:py-3 scrollbar-hide">
+          <div className="flex gap-1 sm:gap-2 overflow-x-auto py-2 sm:py-3 scrollbar-hide items-center">
             <Button
               variant="ghost"
               onClick={() => setActiveSection("miembros")}
@@ -160,6 +172,32 @@ export default function NuestroNidoApp() {
               <StickyNote className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span className="hidden xs:inline">Notas</span>
             </Button>
+
+            {/* Separador */}
+            <div className="w-px h-6 bg-primary-foreground/20 mx-1"></div>
+
+            {/* Invitar Miembros - Botón + */}
+            <Button
+              variant="ghost"
+              onClick={() => setInvitarDialogOpen(true)}
+              className="flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 text-primary-foreground hover:bg-primary-foreground/20"
+              title="Invitar miembros"
+            >
+              <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="hidden xs:inline">Invitar</span>
+            </Button>
+
+            {/* Familia Actions - Nav */}
+            {esCreador && (
+              <div className="hidden xs:block">
+                <FamiliaActions
+                  familia={familia}
+                  esCreador={esCreador}
+                  onFamiliaActualizada={handleFamiliaActualizada}
+                  variant="nav"
+                />
+              </div>
+            )}
           </div>
         </div>
       </nav>
@@ -170,6 +208,16 @@ export default function NuestroNidoApp() {
         {activeSection === "lista" && <ListaSection />}
         {activeSection === "notas" && <NotasSection />}
       </main>
+
+      {/* Dialog de Invitar Miembros */}
+      {familia && (
+        <InvitarMiembrosDialog
+          familia={familia}
+          open={invitarDialogOpen}
+          onOpenChange={setInvitarDialogOpen}
+          onMiembroAgregado={handleMiembroAgregado}
+        />
+      )}
     </div>
   )
 }

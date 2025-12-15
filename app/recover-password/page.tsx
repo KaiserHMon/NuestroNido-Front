@@ -2,9 +2,9 @@
 
 import { Suspense } from "react"
 import { Bird } from "lucide-react"
-import { AuthPageContent } from "@/components/auth/auth-page-content"
+import { RecoverPasswordContent } from "@/components/auth/recover-password-content"
 
-function AuthPageLoading() {
+function RecoverPasswordLoading() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="text-center">
@@ -17,10 +17,10 @@ function AuthPageLoading() {
   )
 }
 
-export default function AuthPage() {
+export default function RecoverPasswordPage() {
   return (
-    <Suspense fallback={<AuthPageLoading />}>
-      <AuthPageContent />
+    <Suspense fallback={<RecoverPasswordLoading />}>
+      <RecoverPasswordContent />
     </Suspense>
   )
 }

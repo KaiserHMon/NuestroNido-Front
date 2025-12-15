@@ -58,7 +58,7 @@ export function EliminarFamiliaDialog({ familia, trigger }: EliminarFamiliaDialo
       setOpen(false)
       reset()
 
-      // Limpiar datos y redirigir
+      // Limpiar datos de familia pero mantener la sesión del usuario
       localStorage.removeItem("familia")
       router.push("/home")
     } catch (error) {
@@ -100,9 +100,10 @@ export function EliminarFamiliaDialog({ familia, trigger }: EliminarFamiliaDialo
         <div className="bg-destructive/10 border border-destructive/20 rounded-md p-3 space-y-1 my-4">
           <p className="text-sm text-destructive font-medium">Se eliminarán:</p>
           <ul className="text-sm text-destructive/80 space-y-1">
-            <li>✓ Todos los miembros (excepto tú)</li>
+            <li>✓ Todos los miembros (incluido el creador)</li>
             <li>✓ Todas las notas</li>
             <li>✓ Todas las tareas</li>
+            <li>✓ Todas las listas</li>
             <li>✓ El historial de la familia</li>
           </ul>
         </div>

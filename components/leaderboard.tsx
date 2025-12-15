@@ -31,25 +31,16 @@ const getProgreso = (puntos: number) => {
   return (puntosEnNivel / puntosNecesarios) * 100
 }
 
-const getDistintivo = (posicion: number, nivel: number) => {
-  if (posicion === 1) {
-    return { emoji: "🥇", label: "Oro" }
-  } else if (posicion === 2) {
-    return { emoji: "🥈", label: "Plata" }
-  } else if (posicion === 3) {
-    return { emoji: "🥉", label: "Bronce" }
-  } else {
-    // Mostrar medallas según nivel
-    switch (nivel) {
-      case 5:
-        return { emoji: "⭐", label: "Legendario" }
-      case 4:
-        return { emoji: "✨", label: "Majestuoso" }
-      case 3:
-        return { emoji: "🌟", label: "Adulto" }
-      default:
-        return null
-    }
+const getDistintivo = (posicion: number) => {
+  switch (posicion) {
+    case 1:
+      return { emoji: "🥇", label: "Oro" }
+    case 2:
+      return { emoji: "🥈", label: "Plata" }
+    case 3:
+      return { emoji: "🥉", label: "Bronce" }
+    default:
+      return null
   }
 }
 
@@ -60,7 +51,7 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
   const entries: LeaderboardEntry[] = miembrosOrdenados.map((m, index) => {
     const nivel = getNivelActual(m.puntos)
     const progreso = getProgreso(m.puntos)
-    const distintivo = getDistintivo(index + 1, nivel.nivel)
+    const distintivo = getDistintivo(index + 1)
 
     return {
       puesto: index + 1,

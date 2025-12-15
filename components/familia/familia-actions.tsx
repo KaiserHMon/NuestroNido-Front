@@ -11,6 +11,7 @@ interface FamiliaActionsProps {
   esCreador: boolean
   onFamiliaActualizada?: () => void
   onFamiliaEliminada?: () => void
+  variant?: "header" | "nav"
 }
 
 export function FamiliaActions({
@@ -18,11 +19,21 @@ export function FamiliaActions({
   esCreador,
   onFamiliaActualizada,
   onFamiliaEliminada,
+  variant = "header",
 }: FamiliaActionsProps) {
   // Si no es creador, no mostrar nada
   if (!esCreador) {
     return null
   }
+
+  const buttonClass = variant === "nav" 
+    ? "h-8 sm:h-10 p-0 text-primary-foreground hover:bg-primary-foreground/20"
+    : "h-8 w-8 p-0 hover:bg-primary/10"
+
+  const editIconClass = variant === "nav" ? "w-3.5 h-3.5 sm:w-4 sm:h-4" : "w-4 h-4"
+  const deleteIconClass = variant === "nav" ? "w-3.5 h-3.5 sm:w-4 sm:h-4" : "w-4 h-4"
+  const editIconColor = variant === "nav" ? "" : "text-primary"
+  const deleteIconColor = variant === "nav" ? "" : "text-destructive"
 
   // Mostrar botones siempre, sin dropdown
   return (
@@ -34,10 +45,10 @@ export function FamiliaActions({
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 hover:bg-primary/10"
+            className={buttonClass}
             title="Editar nombre"
           >
-            <Edit2 className="w-4 h-4 text-primary" />
+            <Edit2 className={`${editIconClass} ${editIconColor}`} />
           </Button>
         }
       />
@@ -48,10 +59,10 @@ export function FamiliaActions({
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 w-8 p-0 hover:bg-destructive/10"
+            className={buttonClass}
             title="Eliminar familia"
           >
-            <Trash2 className="w-4 h-4 text-destructive" />
+            <Trash2 className={`${deleteIconClass} ${deleteIconColor}`} />
           </Button>
         }
       />

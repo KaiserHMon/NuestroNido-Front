@@ -6,7 +6,9 @@
 "use client"
 
 import { useState, useCallback, useEffect } from "react"
-import { Usuario, LoginRequest, RegisterRequest, ApiResponse } from "@/lib/types"
+import { Usuario } from "@/lib/types"
+import { AuthService } from "@/services/auth-service"
+import { TokenService } from "@/services/token-service"
 
 interface AuthState {
   usuario: Usuario | null
@@ -29,11 +31,10 @@ export const useAuth = () => {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const token = localStorage.getItem("auth_token")
-        const usuarioStr = localStorage.getItem("usuario")
+        const token = TokenService.getToken()
+        const usuario = TokenService.getUser()
 
-        if (token && usuarioStr) {
-          const usuario = JSON.parse(usuarioStr)
+        if (token && usuario) {
           setState({
             usuario,
             token,
@@ -57,29 +58,13 @@ export const useAuth = () => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }))
 
     try {
-      // Simulación hasta que el backend esté disponible
-      const mockResponse: ApiResponse<{
-        token: string
-        usuario: Usuario
-      }> = {
-        success: true,
-        data: {
-          token: "mock-token-" + Date.now(),
-          usuario: {
-            id: "user-" + Date.now(),
-            nombre: email.split("@")[0],
-            email,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-        },
-      }
+      const response = await AuthService.login(email, password)
 
-      if (mockResponse.success && mockResponse.data) {
-        const { token, usuario } = mockResponse.data
+      if (response.success && response.data) {
+        const { token, usuario } = response.data
 
-        localStorage.setItem("auth_token", token)
-        localStorage.setItem("usuario", JSON.stringify(usuario))
+        TokenService.setToken(token)
+        TokenService.setUser(usuario)
 
         setState({
           usuario,
@@ -106,29 +91,13 @@ export const useAuth = () => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }))
 
     try {
-      // Simulación hasta que el backend esté disponible
-      const mockResponse: ApiResponse<{
-        token: string
-        usuario: Usuario
-      }> = {
-        success: true,
-        data: {
-          token: "mock-token-" + Date.now(),
-          usuario: {
-            id: "user-" + Date.now(),
-            nombre,
-            email,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-        },
-      }
+      const response = await AuthService.register(nombre, email, password)
 
-      if (mockResponse.success && mockResponse.data) {
-        const { token, usuario } = mockResponse.data
+      if (response.success && response.data) {
+        const { token, usuario } = response.data
 
-        localStorage.setItem("auth_token", token)
-        localStorage.setItem("usuario", JSON.stringify(usuario))
+        TokenService.setToken(token)
+        TokenService.setUser(usuario)
 
         setState({
           usuario,
@@ -152,9 +121,7 @@ export const useAuth = () => {
   }, [])
 
   const logout = useCallback(() => {
-    localStorage.removeItem("auth_token")
-    localStorage.removeItem("usuario")
-    localStorage.removeItem("familia")
+    TokenService.clearSession()
 
     setState({
       usuario: null,
