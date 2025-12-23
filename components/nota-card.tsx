@@ -1,62 +1,55 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Nota, Miembro } from "@/lib/types"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Trash2, Edit2 } from "lucide-react"
-import { MiembroAvatar } from "@/components/ui/miembro-avatar"
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
+import { Nota, Miembro } from '@/lib/types';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Trash2, Edit2 } from 'lucide-react';
+import { MiembroAvatar } from '@/components/ui/miembro-avatar';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 interface NotaCardProps {
-  nota: Nota
-  creador?: Miembro
-  onEdit?: (nota: Nota) => void
-  onDelete?: (notaId: string) => void
-  onToggleComplete?: (notaId: string) => void
+  nota: Nota;
+  creador?: Miembro;
+  onEdit?: (nota: Nota) => void;
+  onDelete?: (notaId: string) => void;
+  onToggleComplete?: (notaId: string) => void;
 }
 
-const getPriorityColor = (priority: "baja" | "media" | "alta" | undefined) => {
+const getPriorityColor = (priority: 'baja' | 'media' | 'alta' | undefined) => {
   switch (priority) {
-    case "alta":
-      return "bg-destructive/10 text-destructive"
-    case "media":
-      return "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400"
-    case "baja":
-      return "bg-green-500/10 text-green-700 dark:text-green-400"
+    case 'alta':
+      return 'bg-destructive/10 text-destructive';
+    case 'media':
+      return 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400';
+    case 'baja':
+      return 'bg-green-500/10 text-green-700 dark:text-green-400';
     default:
-      return "bg-muted text-muted-foreground"
+      return 'bg-muted text-muted-foreground';
   }
-}
+};
 
-const getPriorityLabel = (priority: "baja" | "media" | "alta" | undefined) => {
+const getPriorityLabel = (priority: 'baja' | 'media' | 'alta' | undefined) => {
   switch (priority) {
-    case "alta":
-      return "Alta"
-    case "media":
-      return "Media"
-    case "baja":
-      return "Baja"
+    case 'alta':
+      return 'Alta';
+    case 'media':
+      return 'Media';
+    case 'baja':
+      return 'Baja';
     default:
-      return "-"
+      return '-';
   }
-}
+};
 
-export function NotaCard({
-  nota,
-  creador,
-  onEdit,
-  onDelete,
-  onToggleComplete,
-}: NotaCardProps) {
-  const fechaFormato = format(new Date(nota.fechaCreacion), "d 'de' MMMM", { locale: es })
+export function NotaCard({ nota, creador, onEdit, onDelete, onToggleComplete }: NotaCardProps) {
+  const fechaFormato = format(new Date(nota.fechaCreacion), "d 'de' MMMM", { locale: es });
 
   return (
     <Card
       className={`border-l-4 overflow-hidden transition-opacity ${
-        nota.completado ? "opacity-60" : ""
+        nota.completado ? 'opacity-60' : ''
       }`}
       style={{
         borderLeftColor: nota.colorCreador.bg,
@@ -68,7 +61,7 @@ export function NotaCard({
           <div className="flex-1 min-w-0">
             <h3
               className={`font-semibold text-foreground break-words text-left ${
-                nota.completado ? "line-through text-muted-foreground" : ""
+                nota.completado ? 'line-through text-muted-foreground' : ''
               }`}
             >
               {nota.contenido}
@@ -109,7 +102,7 @@ export function NotaCard({
           <div
             className="px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1"
             style={{
-              backgroundColor: nota.colorCreador.bg + "20",
+              backgroundColor: nota.colorCreador.bg + '20',
               color: nota.colorCreador.bg,
             }}
           >
@@ -125,7 +118,7 @@ export function NotaCard({
         {nota.contenido && (
           <p
             className={`text-sm text-muted-foreground line-clamp-3 ${
-              nota.completado ? "line-through" : ""
+              nota.completado ? 'line-through' : ''
             }`}
           >
             {nota.contenido}
@@ -164,5 +157,5 @@ export function NotaCard({
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

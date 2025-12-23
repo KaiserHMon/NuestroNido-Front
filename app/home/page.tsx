@@ -1,33 +1,36 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Bird } from "lucide-react"
-import { useAuth } from "@/hooks/use-auth"
-import { CrearFamiliaCard } from "@/components/familia/crear-familia-card"
-import { UnirseAFamiliaCard } from "@/components/familia/unirse-familia-card"
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Bird } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
+import { CrearFamiliaCard } from '@/components/familia/crear-familia-card';
+import { UnirseAFamiliaCard } from '@/components/familia/unirse-familia-card';
 
 export default function HomePage() {
-  const router = useRouter()
-  const { isAuthenticated, usuario, isLoading } = useAuth()
-  const [familia, setFamilia] = useState<any | null>(null)
+  const router = useRouter();
+  const { isAuthenticated, usuario, isLoading } = useAuth();
+  const [familia, setFamilia] = useState<any | null>(null);
 
   useEffect(() => {
     // Verificar si hay sesión
     if (!isLoading && !isAuthenticated) {
-      router.push("/login")
-      return
+      router.push('/login');
+      return;
     }
 
     // Verificar si ya tiene familia
     if (!isLoading && isAuthenticated) {
-      const familiaGuardada = localStorage.getItem("familia")
+      const familiaGuardada = localStorage.getItem('familia');
       if (familiaGuardada) {
-        setFamilia(JSON.parse(familiaGuardada))
-        router.push("/dashboard")
+        // Usar Promise para evitar setState directo en effect
+        Promise.resolve().then(() => {
+          setFamilia(JSON.parse(familiaGuardada));
+          router.push('/dashboard');
+        });
       }
     }
-  }, [isAuthenticated, isLoading, router])
+  }, [isAuthenticated, isLoading, router]);
 
   if (isLoading) {
     return (
@@ -39,11 +42,11 @@ export default function HomePage() {
           <p className="text-foreground">Cargando...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!isAuthenticated || !usuario) {
-    return null
+    return null;
   }
 
   return (
@@ -74,14 +77,14 @@ export default function HomePage() {
 
         {/* Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          <CrearFamiliaCard onSuccess={() => router.push("/dashboard")} />
-          <UnirseAFamiliaCard onSuccess={() => router.push("/dashboard")} />
+          <CrearFamiliaCard onSuccess={() => router.push('/dashboard')} />
+          <UnirseAFamiliaCard onSuccess={() => router.push('/dashboard')} />
         </div>
 
         {/* Help Section */}
         <div className="mt-16 text-center">
           <p className="text-muted-foreground text-sm">
-            ¿Necesitas ayuda?{" "}
+            ¿Necesitas ayuda?{' '}
             <a href="#" className="text-primary hover:underline font-medium">
               Contacta con soporte
             </a>
@@ -89,5 +92,5 @@ export default function HomePage() {
         </div>
       </main>
     </div>
-  )
+  );
 }

@@ -1,29 +1,29 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Mail, ArrowLeft } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { z } from "zod"
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Mail, ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { z } from 'zod';
 
 const ForgotPasswordSchema = z.object({
-  email: z.string().email("Por favor ingresa un email válido"),
-})
+  email: z.string().email('Por favor ingresa un email válido'),
+});
 
-type ForgotPasswordInputs = z.infer<typeof ForgotPasswordSchema>
+type ForgotPasswordInputs = z.infer<typeof ForgotPasswordSchema>;
 
 interface ForgotPasswordFormProps {
-  onBack?: () => void
+  onBack?: () => void;
 }
 
 export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const {
     register,
@@ -32,34 +32,34 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
     watch,
   } = useForm<ForgotPasswordInputs>({
     resolver: zodResolver(ForgotPasswordSchema),
-  })
+  });
 
-  const email = watch("email")
+  const email = watch('email');
 
   const onSubmit = async (data: ForgotPasswordInputs) => {
-    setIsSubmitting(true)
-    setError(null)
+    setIsSubmitting(true);
+    setError(null);
     try {
       // Aquí iría la llamada a tu API para enviar el email de recuperación
-      const response = await fetch("/api/auth/forgot-password", {
-        method: "POST",
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-      })
+      });
 
       if (!response.ok) {
-        throw new Error("Error al enviar el email de recuperación")
+        throw new Error('Error al enviar el email de recuperación');
       }
 
-      setSuccess(true)
+      setSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Ocurrió un error")
+      setError(err instanceof Error ? err.message : 'Ocurrió un error');
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   if (success) {
     return (
@@ -70,20 +70,15 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
           </AlertDescription>
         </Alert>
         <p className="text-sm text-muted-foreground text-center">
-          Hemos enviado un enlace de recuperación a <strong>{email}</strong>. 
-          Por favor revisa tu bandeja de entrada.
+          Hemos enviado un enlace de recuperación a <strong>{email}</strong>. Por favor revisa tu
+          bandeja de entrada.
         </p>
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full"
-          onClick={onBack}
-        >
+        <Button type="button" variant="outline" className="w-full" onClick={onBack}>
           <ArrowLeft className="w-4 h-4 mr-2" />
           Volver al Login
         </Button>
       </div>
-    )
+    );
   }
 
   return (
@@ -105,18 +100,16 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
             type="email"
             placeholder="tu@email.com"
             className="pl-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
-            {...register("email")}
+            {...register('email')}
             disabled={isSubmitting}
           />
         </div>
-        {errors.email && (
-          <p className="text-sm text-destructive">{errors.email.message}</p>
-        )}
+        {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
       </div>
 
       <p className="text-sm text-muted-foreground">
-        Ingresa el email asociado a tu cuenta y te enviaremos un enlace para 
-        recuperar tu contraseña.
+        Ingresa el email asociado a tu cuenta y te enviaremos un enlace para recuperar tu
+        contraseña.
       </p>
 
       <div className="flex gap-3 pt-2">
@@ -141,10 +134,10 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
               Enviando...
             </>
           ) : (
-            "Enviar Enlace"
+            'Enviar Enlace'
           )}
         </Button>
       </div>
     </form>
-  )
+  );
 }

@@ -1,39 +1,33 @@
-"use client"
+'use client';
 
-import { Miembro } from "@/lib/types"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { X } from "lucide-react"
+import { Miembro } from '@/lib/types';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { X } from 'lucide-react';
 
 interface NotaFilterProps {
-  miembros: Miembro[]
-  filtrosActivos: string[]
-  onFilterChange: (miembroIds: string[]) => void
+  miembros: Miembro[];
+  filtrosActivos: string[];
+  onFilterChange: (miembroIds: string[]) => void;
 }
 
-export function NotaFilter({
-  miembros,
-  filtrosActivos,
-  onFilterChange,
-}: NotaFilterProps) {
+export function NotaFilter({ miembros, filtrosActivos, onFilterChange }: NotaFilterProps) {
   const handleToggleFiltro = (miembroId: string) => {
     if (filtrosActivos.includes(miembroId)) {
-      onFilterChange(filtrosActivos.filter((id) => id !== miembroId))
+      onFilterChange(filtrosActivos.filter((id) => id !== miembroId));
     } else {
-      onFilterChange([...filtrosActivos, miembroId])
+      onFilterChange([...filtrosActivos, miembroId]);
     }
-  }
+  };
 
   const handleLimpiarFiltros = () => {
-    onFilterChange([])
-  }
+    onFilterChange([]);
+  };
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <label className="text-sm font-medium text-foreground">
-          Filtrar por miembro
-        </label>
+        <p className="text-sm font-medium text-foreground">Filtrar por miembro</p>
         {filtrosActivos.length > 0 && (
           <Button
             variant="ghost"
@@ -50,11 +44,11 @@ export function NotaFilter({
         {miembros.map((miembro) => (
           <Badge
             key={miembro.id}
-            variant={filtrosActivos.includes(miembro.id) ? "default" : "outline"}
+            variant={filtrosActivos.includes(miembro.id) ? 'default' : 'outline'}
             className={`cursor-pointer transition-all ${
               filtrosActivos.includes(miembro.id)
-                ? "bg-primary text-primary-foreground"
-                : "bg-white text-foreground border-2"
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-white text-foreground border-2'
             }`}
             onClick={() => handleToggleFiltro(miembro.id)}
             style={
@@ -79,9 +73,10 @@ export function NotaFilter({
 
       {filtrosActivos.length > 0 && (
         <p className="text-xs text-muted-foreground">
-          Mostrando {filtrosActivos.length} filtro{filtrosActivos.length > 1 ? "s" : ""} activo{filtrosActivos.length > 1 ? "s" : ""}
+          Mostrando {filtrosActivos.length} filtro{filtrosActivos.length > 1 ? 's' : ''} activo
+          {filtrosActivos.length > 1 ? 's' : ''}
         </p>
       )}
     </div>
-  )
+  );
 }

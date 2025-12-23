@@ -1,33 +1,28 @@
-"use client"
+'use client';
 
-import { ColorMiembro } from "@/lib/types"
-import { getColorInlineStyle } from "@/lib/colors"
+import { ColorMiembro } from '@/lib/types';
+import { getColorInlineStyle } from '@/lib/colors';
 
 interface MiembroAvatarProps {
-  nombre: string
-  color: ColorMiembro
-  size?: "sm" | "md" | "lg"
-  className?: string
+  nombre: string;
+  color: ColorMiembro;
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
 }
 
-export function MiembroAvatar({
-  nombre,
-  color,
-  size = "md",
-  className = "",
-}: MiembroAvatarProps) {
+export function MiembroAvatar({ nombre, color, size = 'md', className = '' }: MiembroAvatarProps) {
   const sizeClasses = {
-    sm: "w-8 h-8 text-xs",
-    md: "w-10 h-10 text-sm",
-    lg: "w-12 h-12 text-base",
-  }
+    sm: 'w-8 h-8 text-xs',
+    md: 'w-10 h-10 text-sm',
+    lg: 'w-12 h-12 text-base',
+  };
 
   const initials = nombre
-    .split(" ")
+    .split(' ')
     .map((n) => n[0])
-    .join("")
+    .join('')
     .toUpperCase()
-    .slice(0, 2)
+    .slice(0, 2);
 
   return (
     <div
@@ -39,5 +34,5 @@ export function MiembroAvatar({
     >
       {initials}
     </div>
-  )
+  );
 }

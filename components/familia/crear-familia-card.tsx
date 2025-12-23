@@ -1,24 +1,24 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Home, Loader2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { CrearFamiliaSchema, CrearFamiliaFormInputs } from "@/lib/validation"
-import { useFamilia } from "@/hooks/use-familia"
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Home, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { CrearFamiliaSchema, CrearFamiliaFormInputs } from '@/lib/validation';
+import { useFamilia } from '@/hooks/use-familia';
 
 interface CrearFamiliaCardProps {
-  onSuccess?: () => void
+  onSuccess?: () => void;
 }
 
 export function CrearFamiliaCard({ onSuccess }: CrearFamiliaCardProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const { crearFamilia, error } = useFamilia()
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { crearFamilia, error } = useFamilia();
 
   const {
     register,
@@ -26,19 +26,19 @@ export function CrearFamiliaCard({ onSuccess }: CrearFamiliaCardProps) {
     formState: { errors },
   } = useForm<CrearFamiliaFormInputs>({
     resolver: zodResolver(CrearFamiliaSchema),
-  })
+  });
 
   const onSubmit = async (data: CrearFamiliaFormInputs) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      await crearFamilia(data.nombre)
-      onSuccess?.()
+      await crearFamilia(data.nombre);
+      onSuccess?.();
     } catch (error) {
-      console.error("Error creando familia:", error)
+      console.error('Error creando familia:', error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <Card className="border border-border bg-card hover:border-primary/50 transition-colors">
@@ -73,12 +73,10 @@ export function CrearFamiliaCard({ onSuccess }: CrearFamiliaCardProps) {
               type="text"
               placeholder="Ej: Familia García"
               className="bg-background border-input text-foreground placeholder:text-muted-foreground"
-              {...register("nombre")}
+              {...register('nombre')}
               disabled={isSubmitting}
             />
-            {errors.nombre && (
-              <p className="text-sm text-destructive">{errors.nombre.message}</p>
-            )}
+            {errors.nombre && <p className="text-sm text-destructive">{errors.nombre.message}</p>}
           </div>
 
           <div className="text-xs text-muted-foreground space-y-1">
@@ -98,11 +96,11 @@ export function CrearFamiliaCard({ onSuccess }: CrearFamiliaCardProps) {
                 Creando familia...
               </>
             ) : (
-              "Crear Familia"
+              'Crear Familia'
             )}
           </Button>
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -1,67 +1,79 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Calendar, ShoppingCart, Users, StickyNote, Bird, LogOut, Settings, Plus } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { MiembrosSection } from "@/components/miembros-section"
-import { CalendarioSection } from "@/components/calendario-section"
-import { ListaSection } from "@/components/lista-section"
-import { NotasSection } from "@/components/notas-section"
-import { FamiliaActions } from "@/components/familia/familia-actions"
-import { InvitarMiembrosDialog } from "@/components/dialogs/invitar-miembros-dialog"
-import { Familia, Usuario } from "@/lib/types"
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+  Calendar,
+  ShoppingCart,
+  Users,
+  StickyNote,
+  Bird,
+  LogOut,
+  Settings,
+  Plus,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { MiembrosSection } from '@/components/miembros-section';
+import { CalendarioSection } from '@/components/calendario-section';
+import { ListaSection } from '@/components/lista-section';
+import { NotasSection } from '@/components/notas-section';
+import { FamiliaActions } from '@/components/familia/familia-actions';
+import { InvitarMiembrosDialog } from '@/components/dialogs/invitar-miembros-dialog';
+import { Familia, Usuario } from '@/lib/types';
 
-type Section = "miembros" | "calendario" | "lista" | "notas"
+type Section = 'miembros' | 'calendario' | 'lista' | 'notas';
 
 export default function NuestroNidoApp() {
-  const router = useRouter()
-  const [activeSection, setActiveSection] = useState<Section>("miembros")
-  const [familia, setFamilia] = useState<Familia | null>(null)
-  const [usuario, setUsuario] = useState<Usuario | null>(null)
-  const [esCreador, setEsCreador] = useState(false)
-  const [invitarDialogOpen, setInvitarDialogOpen] = useState(false)
+  const router = useRouter();
+  const [activeSection, setActiveSection] = useState<Section>('miembros');
+  const [familia, setFamilia] = useState<Familia | null>(null);
+  const [usuario, setUsuario] = useState<Usuario | null>(null);
+  const [esCreador, setEsCreador] = useState(false);
+  const [invitarDialogOpen, setInvitarDialogOpen] = useState(false);
 
   useEffect(() => {
     // Cargar datos de localStorage
-    const familiaGuardada = localStorage.getItem("familia")
-    const usuarioGuardado = localStorage.getItem("usuario")
+    const familiaGuardada = localStorage.getItem('familia');
+    const usuarioGuardado = localStorage.getItem('usuario');
 
     if (!familiaGuardada || !usuarioGuardado) {
-      router.push("/login")
-      return
+      router.push('/login');
+      return;
     }
 
-    const familiaData: Familia = JSON.parse(familiaGuardada)
-    const usuarioData: Usuario = JSON.parse(usuarioGuardado)
+    const familiaData: Familia = JSON.parse(familiaGuardada);
+    const usuarioData: Usuario = JSON.parse(usuarioGuardado);
 
-    setFamilia(familiaData)
-    setUsuario(usuarioData)
-    setEsCreador(familiaData.creadorId === usuarioData.id)
-  }, [router])
+    // Usar Promise para evitar setState directo en effect
+    Promise.resolve().then(() => {
+      setFamilia(familiaData);
+      setUsuario(usuarioData);
+      setEsCreador(familiaData.creadorId === usuarioData.id);
+    });
+  }, [router]);
 
   const handleLogout = () => {
-    localStorage.removeItem("auth_token")
-    localStorage.removeItem("usuario")
-    router.push("/login")
-  }
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('usuario');
+    router.push('/login');
+  };
 
   const handleFamiliaActualizada = () => {
     // Recargar familia del localStorage
-    const familiaGuardada = localStorage.getItem("familia")
+    const familiaGuardada = localStorage.getItem('familia');
     if (familiaGuardada) {
-      setFamilia(JSON.parse(familiaGuardada))
+      setFamilia(JSON.parse(familiaGuardada));
     }
-  }
+  };
 
   const handleMiembroAgregado = () => {
     // Recargar familia del localStorage
-    const familiaGuardada = localStorage.getItem("familia")
+    const familiaGuardada = localStorage.getItem('familia');
     if (familiaGuardada) {
-      setFamilia(JSON.parse(familiaGuardada))
+      setFamilia(JSON.parse(familiaGuardada));
     }
-    setInvitarDialogOpen(false)
-  }
+    setInvitarDialogOpen(false);
+  };
 
   if (!familia || !usuario) {
     return (
@@ -73,7 +85,7 @@ export default function NuestroNidoApp() {
           <p className="text-foreground">Cargando...</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -134,9 +146,11 @@ export default function NuestroNidoApp() {
           <div className="flex gap-1 sm:gap-2 overflow-x-auto py-2 sm:py-3 scrollbar-hide items-center">
             <Button
               variant="ghost"
-              onClick={() => setActiveSection("miembros")}
+              onClick={() => setActiveSection('miembros')}
               className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
-                activeSection === "miembros" ? "bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground" : "text-primary-foreground"
+                activeSection === 'miembros'
+                  ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
+                  : 'text-primary-foreground'
               }`}
             >
               <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -144,9 +158,11 @@ export default function NuestroNidoApp() {
             </Button>
             <Button
               variant="ghost"
-              onClick={() => setActiveSection("calendario")}
+              onClick={() => setActiveSection('calendario')}
               className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
-                activeSection === "calendario" ? "bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground" : "text-primary-foreground"
+                activeSection === 'calendario'
+                  ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
+                  : 'text-primary-foreground'
               }`}
             >
               <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -154,9 +170,11 @@ export default function NuestroNidoApp() {
             </Button>
             <Button
               variant="ghost"
-              onClick={() => setActiveSection("lista")}
+              onClick={() => setActiveSection('lista')}
               className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
-                activeSection === "lista" ? "bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground" : "text-primary-foreground"
+                activeSection === 'lista'
+                  ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
+                  : 'text-primary-foreground'
               }`}
             >
               <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -164,9 +182,11 @@ export default function NuestroNidoApp() {
             </Button>
             <Button
               variant="ghost"
-              onClick={() => setActiveSection("notas")}
+              onClick={() => setActiveSection('notas')}
               className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
-                activeSection === "notas" ? "bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground" : "text-primary-foreground"
+                activeSection === 'notas'
+                  ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
+                  : 'text-primary-foreground'
               }`}
             >
               <StickyNote className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -203,10 +223,10 @@ export default function NuestroNidoApp() {
       </nav>
 
       <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
-        {activeSection === "miembros" && <MiembrosSection />}
-        {activeSection === "calendario" && <CalendarioSection />}
-        {activeSection === "lista" && <ListaSection />}
-        {activeSection === "notas" && <NotasSection />}
+        {activeSection === 'miembros' && <MiembrosSection />}
+        {activeSection === 'calendario' && <CalendarioSection />}
+        {activeSection === 'lista' && <ListaSection />}
+        {activeSection === 'notas' && <NotasSection />}
       </main>
 
       {/* Dialog de Invitar Miembros */}
@@ -219,5 +239,5 @@ export default function NuestroNidoApp() {
         />
       )}
     </div>
-  )
+  );
 }

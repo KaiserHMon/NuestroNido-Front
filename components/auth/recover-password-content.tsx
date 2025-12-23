@@ -1,12 +1,12 @@
-"use client"
+'use client';
 
-import { useSearchParams } from "next/navigation"
-import { Bird } from "lucide-react"
-import { ResetPasswordForm } from "@/components/auth/reset-password-form"
+import { useSearchParams } from 'next/navigation';
+import { Bird } from 'lucide-react';
+import { ResetPasswordForm } from '@/components/auth/reset-password-form';
 
 export function RecoverPasswordContent() {
-  const searchParams = useSearchParams()
-  const token = searchParams.get("token")
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token');
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
@@ -19,9 +19,7 @@ export function RecoverPasswordContent() {
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground">NuestroNido</h1>
           </div>
-          <p className="text-muted-foreground text-sm sm:text-base">
-            Restablecer Contraseña
-          </p>
+          <p className="text-muted-foreground text-sm sm:text-base">Restablecer Contraseña</p>
         </div>
 
         {/* Form Container */}
@@ -35,5 +33,5 @@ export function RecoverPasswordContent() {
         </div>
       </div>
     </div>
-  )
+  );
 }

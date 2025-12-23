@@ -1,26 +1,26 @@
-"use client"
+'use client';
 
-import { useState } from "react"
-import { Familia, Miembro, ColorMiembro } from "@/lib/types"
-import { COLORES_DISPONIBLES } from "@/lib/colors"
+import { useState } from 'react';
+import { Familia, Miembro } from '@/lib/types';
+import { COLORES_DISPONIBLES } from '@/lib/colors';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Copy, Check } from "lucide-react"
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Copy, Check } from 'lucide-react';
 
 interface InvitarMiembrosDialogProps {
-  familia: Familia
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onMiembroAgregado?: () => void
+  familia: Familia;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onMiembroAgregado?: () => void;
 }
 
 export function InvitarMiembrosDialog({
@@ -29,55 +29,55 @@ export function InvitarMiembrosDialog({
   onOpenChange,
   onMiembroAgregado,
 }: InvitarMiembrosDialogProps) {
-  const [codigoCopiado, setCodigoCopiado] = useState(false)
-  const [nuevoNombreMiembro, setNuevoNombreMiembro] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [codigoCopiado, setCodigoCopiado] = useState(false);
+  const [nuevoNombreMiembro, setNuevoNombreMiembro] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const copiarCodigo = async () => {
     try {
-      await navigator.clipboard.writeText(familia.codigoInvitacion)
-      setCodigoCopiado(true)
-      setTimeout(() => setCodigoCopiado(false), 2000)
+      await navigator.clipboard.writeText(familia.codigoInvitacion);
+      setCodigoCopiado(true);
+      setTimeout(() => setCodigoCopiado(false), 2000);
     } catch (err) {
-      console.error("Error copiando código:", err)
+      console.error('Error copiando código:', err);
     }
-  }
+  };
 
   const handleAgregarMiembro = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
-    if (!nuevoNombreMiembro.trim()) return
+    if (!nuevoNombreMiembro.trim()) return;
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
       const colorAleatorio =
-        COLORES_DISPONIBLES[Math.floor(Math.random() * COLORES_DISPONIBLES.length)]
+        COLORES_DISPONIBLES[Math.floor(Math.random() * COLORES_DISPONIBLES.length)];
 
       const nuevoMiembro: Miembro = {
-        id: "miembro-" + Date.now(),
+        id: 'miembro-' + Date.now(),
         nombre: nuevoNombreMiembro,
         color: colorAleatorio,
         puntos: 0,
-        rolId: "miembro",
+        rolId: 'miembro',
         familiaId: familia.id,
         createdAt: new Date(),
         updatedAt: new Date(),
-      }
+      };
 
       const familiaActualizada: Familia = {
         ...familia,
         miembros: [...familia.miembros, nuevoMiembro],
-      }
+      };
 
-      localStorage.setItem("familia", JSON.stringify(familiaActualizada))
-      setNuevoNombreMiembro("")
-      onMiembroAgregado?.()
+      localStorage.setItem('familia', JSON.stringify(familiaActualizada));
+      setNuevoNombreMiembro('');
+      onMiembroAgregado?.();
     } catch (error) {
-      console.error("Error agregando miembro:", error)
+      console.error('Error agregando miembro:', error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -105,9 +105,7 @@ export function InvitarMiembrosDialog({
           {/* TAB: CÓDIGO DE INVITACIÓN */}
           <TabsContent value="codigo" className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-foreground">
-                Código de Invitación
-              </Label>
+              <Label className="text-sm font-medium text-foreground">Código de Invitación</Label>
               <div className="flex gap-2">
                 <Input
                   readOnly
@@ -118,11 +116,7 @@ export function InvitarMiembrosDialog({
                   onClick={copiarCodigo}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground flex-shrink-0 px-3"
                 >
-                  {codigoCopiado ? (
-                    <Check className="w-4 h-4" />
-                  ) : (
-                    <Copy className="w-4 h-4" />
-                  )}
+                  {codigoCopiado ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
@@ -134,29 +128,23 @@ export function InvitarMiembrosDialog({
           {/* TAB: LINK DE INVITACIÓN */}
           <TabsContent value="link" className="space-y-4">
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-foreground">
-                Link de Invitación
-              </Label>
+              <Label className="text-sm font-medium text-foreground">Link de Invitación</Label>
               <div className="flex gap-2">
                 <Input
                   readOnly
-                  value={`${typeof window !== "undefined" ? window.location.origin : ""}/join/${familia.codigoInvitacion}`}
+                  value={`${typeof window !== 'undefined' ? window.location.origin : ''}/join/${familia.codigoInvitacion}`}
                   className="bg-muted border-border text-foreground font-mono text-xs"
                 />
                 <Button
                   onClick={() => {
-                    const link = `${window.location.origin}/join/${familia.codigoInvitacion}`
-                    navigator.clipboard.writeText(link)
-                    setCodigoCopiado(true)
-                    setTimeout(() => setCodigoCopiado(false), 2000)
+                    const link = `${window.location.origin}/join/${familia.codigoInvitacion}`;
+                    navigator.clipboard.writeText(link);
+                    setCodigoCopiado(true);
+                    setTimeout(() => setCodigoCopiado(false), 2000);
                   }}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground flex-shrink-0 px-3"
                 >
-                  {codigoCopiado ? (
-                    <Check className="w-4 h-4" />
-                  ) : (
-                    <Copy className="w-4 h-4" />
-                  )}
+                  {codigoCopiado ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
@@ -188,8 +176,8 @@ export function InvitarMiembrosDialog({
                   type="button"
                   variant="outline"
                   onClick={() => {
-                    setNuevoNombreMiembro("")
-                    onOpenChange(false)
+                    setNuevoNombreMiembro('');
+                    onOpenChange(false);
                   }}
                   className="text-foreground border-border hover:bg-muted"
                 >
@@ -200,7 +188,7 @@ export function InvitarMiembrosDialog({
                   className="bg-primary hover:bg-primary/90 text-primary-foreground"
                   disabled={!nuevoNombreMiembro.trim() || isSubmitting}
                 >
-                  {isSubmitting ? "Agregando..." : "Agregar Miembro"}
+                  {isSubmitting ? 'Agregando...' : 'Agregar Miembro'}
                 </Button>
               </div>
             </form>
@@ -208,5 +196,5 @@ export function InvitarMiembrosDialog({
         </Tabs>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

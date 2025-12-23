@@ -1,30 +1,30 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
-import { Analytics } from "@vercel/analytics/next"
-import { ThemeProvider } from "@/components/theme-provider"
-import { Toaster } from "@/components/ui/sonner"
-import "@/styles/globals.css"
+import type React from 'react';
+import type { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
+import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from '@/components/ui/sonner';
+import '@/styles/globals.css';
 
 const _geist = Geist({
-  subsets: ["latin"],
-  variable: "--font-sans",
-})
+  subsets: ['latin'],
+  variable: '--font-sans',
+});
 const _geistMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
+  subsets: ['latin'],
+  variable: '--font-mono',
+});
 
 export const metadata: Metadata = {
-  title: "NuestroNido - Organización Familiar",
-  description: "Aplicación para gestionar tareas, listas y notas familiares",
-  generator: "v0.app",
-}
+  title: 'NuestroNido - Organización Familiar',
+  description: 'Aplicación para gestionar tareas, listas y notas familiares',
+  generator: 'v0.app',
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
@@ -36,5 +36,5 @@ export default function RootLayout({
         <Analytics />
       </body>
     </html>
-  )
+  );
 }

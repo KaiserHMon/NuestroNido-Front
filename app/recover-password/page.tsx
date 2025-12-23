@@ -1,8 +1,8 @@
-"use client"
+'use client';
 
-import { Suspense } from "react"
-import { Bird } from "lucide-react"
-import { RecoverPasswordContent } from "@/components/auth/recover-password-content"
+import { Suspense } from 'react';
+import { Bird } from 'lucide-react';
+import { RecoverPasswordContent } from '@/components/auth/recover-password-content';
 
 function RecoverPasswordLoading() {
   return (
@@ -14,7 +14,7 @@ function RecoverPasswordLoading() {
         <p className="text-foreground">Cargando...</p>
       </div>
     </div>
-  )
+  );
 }
 
 export default function RecoverPasswordPage() {
@@ -22,5 +22,5 @@ export default function RecoverPasswordPage() {
     <Suspense fallback={<RecoverPasswordLoading />}>
       <RecoverPasswordContent />
     </Suspense>
-  )
+  );
 }

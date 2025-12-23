@@ -1,29 +1,29 @@
-"use client"
+'use client';
 
-import { useState, useCallback } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { LinkIcon, Loader2, AlertCircle, CheckCircle2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { UnirseAFamiliaSchema, UnirseAFamiliaFormInputs } from "@/lib/validation"
-import { useFamilia } from "@/hooks/use-familia"
+import { useState, useCallback } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { LinkIcon, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { UnirseAFamiliaSchema, UnirseAFamiliaFormInputs } from '@/lib/validation';
+import { useFamilia } from '@/hooks/use-familia';
 
 interface UnirseAFamiliaCardProps {
-  onSuccess?: () => void
+  onSuccess?: () => void;
 }
 
 export function UnirseAFamiliaCard({ onSuccess }: UnirseAFamiliaCardProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [validacionCodigo, setValidacionCodigo] = useState<{
-    valido: boolean
-    nombreFamilia?: string
-    miembrosActuales?: number
-  } | null>(null)
-  const { unirseAFamilia, validarCodigo, error } = useFamilia()
+    valido: boolean;
+    nombreFamilia?: string;
+    miembrosActuales?: number;
+  } | null>(null);
+  const { unirseAFamilia, validarCodigo, error } = useFamilia();
 
   const {
     register,
@@ -32,35 +32,35 @@ export function UnirseAFamiliaCard({ onSuccess }: UnirseAFamiliaCardProps) {
     watch,
   } = useForm<UnirseAFamiliaFormInputs>({
     resolver: zodResolver(UnirseAFamiliaSchema),
-  })
+  });
 
-  const codigo = watch("codigoInvitacion")
+  const codigo = watch('codigoInvitacion');
 
   // Validar código en tiempo real
   const handleCodigoChange = useCallback(async () => {
     if (codigo && codigo.length >= 6) {
       try {
-        const resultado = await validarCodigo(codigo)
-        setValidacionCodigo(resultado)
+        const resultado = await validarCodigo(codigo);
+        setValidacionCodigo(resultado);
       } catch (error) {
-        console.error("Error validando código:", error)
+        console.error('Error validando código:', error);
       }
     } else {
-      setValidacionCodigo(null)
+      setValidacionCodigo(null);
     }
-  }, [codigo, validarCodigo])
+  }, [codigo, validarCodigo]);
 
   const onSubmit = async (data: UnirseAFamiliaFormInputs) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
-      await unirseAFamilia(data.codigoInvitacion)
-      onSuccess?.()
+      await unirseAFamilia(data.codigoInvitacion);
+      onSuccess?.();
     } catch (error) {
-      console.error("Error uniéndose a familia:", error)
+      console.error('Error uniéndose a familia:', error);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <Card className="border border-border bg-card hover:border-primary/50 transition-colors">
@@ -95,11 +95,11 @@ export function UnirseAFamiliaCard({ onSuccess }: UnirseAFamiliaCardProps) {
               type="text"
               placeholder="Ej: ABC123 o NIDO2024"
               className="bg-background border-input text-foreground placeholder:text-muted-foreground uppercase"
-              {...register("codigoInvitacion")}
+              {...register('codigoInvitacion')}
               disabled={isSubmitting}
               onChange={(e) => {
-                register("codigoInvitacion").onChange(e)
-                handleCodigoChange()
+                register('codigoInvitacion').onChange(e);
+                handleCodigoChange();
               }}
             />
             {errors.codigoInvitacion && (
@@ -112,8 +112,8 @@ export function UnirseAFamiliaCard({ onSuccess }: UnirseAFamiliaCardProps) {
             <div
               className={`p-3 rounded-md border ${
                 validacionCodigo.valido
-                  ? "bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800"
-                  : "bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800"
+                  ? 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800'
+                  : 'bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800'
               }`}
             >
               <div className="flex items-start gap-2">
@@ -157,11 +157,11 @@ export function UnirseAFamiliaCard({ onSuccess }: UnirseAFamiliaCardProps) {
                 Uniéndose...
               </>
             ) : (
-              "Unirme a la Familia"
+              'Unirme a la Familia'
             )}
           </Button>
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }
