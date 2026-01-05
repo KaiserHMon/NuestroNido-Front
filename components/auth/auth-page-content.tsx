@@ -2,18 +2,46 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import dynamic from 'next/dynamic';
 import { Bird } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LoginForm } from '@/components/auth/login-form';
-import { RegisterForm } from '@/components/auth/register-form';
-import { ForgotPasswordForm } from '@/components/auth/forgot-password-form';
 import { useAuth } from '@/hooks/use-auth';
+
+// Lazy load formularios - reducción de ~20KB en bundle inicial
+const LoginForm = dynamic(
+  () => import('@/components/auth/login-form').then((mod) => ({ default: mod.LoginForm })),
+  {
+    loading: () => <FormSkeleton />,
+    ssr: false,
+  }
+);
+
+const ForgotPasswordForm = dynamic(
+  () =>
+    import('@/components/auth/forgot-password-form').then((mod) => ({
+      default: mod.ForgotPasswordForm,
+    })),
+  {
+    loading: () => <FormSkeleton />,
+    ssr: false,
+  }
+);
+
+// Skeleton de carga para mejor UX
+function FormSkeleton() {
+  return (
+    <div className="space-y-4">
+      <div className="h-10 bg-muted rounded animate-pulse" />
+      <div className="h-10 bg-muted rounded animate-pulse" />
+      <div className="h-10 bg-muted rounded animate-pulse" />
+    </div>
+  );
+}
 
 export function AuthPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isAuthenticated, isLoading } = useAuth();
-  const [activeTab, setActiveTab] = useState<'login' | 'register' | 'forgot-password'>('login');
+  const [activeTab, setActiveTab] = useState<'login' | 'forgot-password'>('login');
 
   // Redirigir si ya está autenticado
   useEffect(() => {
@@ -68,71 +96,32 @@ export function AuthPageContent() {
           </p>
         </div>
 
-        {/* Tabs */}
-        <div className="bg-card rounded-lg shadow-md border border-border">
-          <Tabs
-            defaultValue="login"
-            value={activeTab}
-            onValueChange={(value) =>
-              setActiveTab(value as 'login' | 'register' | 'forgot-password')
-            }
-            className="w-full"
-          >
-            <TabsList className="grid w-full grid-cols-2 rounded-t-lg border-b border-border bg-muted h-9 p-0">
-              <TabsTrigger
-                value="login"
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-none rounded-tl-lg text-xs sm:text-sm hover:bg-muted-foreground/10 transition-colors h-full"
-              >
-                Iniciar Sesión
-              </TabsTrigger>
-              <TabsTrigger
-                value="register"
-                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-none rounded-tr-lg text-xs sm:text-sm hover:bg-muted-foreground/10 transition-colors h-full"
-              >
-                Crear Cuenta
-              </TabsTrigger>
-            </TabsList>
-
-            <div className="p-4 sm:p-5">
-              <TabsContent value="login" className="mt-0">
-                <LoginForm
-                  onSuccess={() => router.push('/home')}
-                  onForgotPassword={() => setActiveTab('forgot-password')}
-                />
-              </TabsContent>
-
-              <TabsContent value="register" className="mt-0">
-                <RegisterForm onSuccess={() => router.push('/home')} />
-              </TabsContent>
-
-              <TabsContent value="forgot-password" className="mt-0">
-                <ForgotPasswordForm onBack={() => setActiveTab('login')} />
-              </TabsContent>
-            </div>
-          </Tabs>
+        {/* Forms Container */}
+        <div className="bg-card rounded-lg shadow-md border border-border p-4 sm:p-5">
+          {activeTab === 'login' ? (
+            <LoginForm
+              onSuccess={() => router.push('/home')}
+              onForgotPassword={() => setActiveTab('forgot-password')}
+            />
+          ) : (
+            <ForgotPasswordForm onBack={() => setActiveTab('login')} />
+          )}
         </div>
 
-        {/* Forgot Password Section - Hidden by default */}
-        {activeTab === 'forgot-password' && (
-          <div className="text-center mt-3 text-xs text-muted-foreground">
-            <p>
-              ¿Recordaste tu contraseña?{' '}
-              <button
-                onClick={() => setActiveTab('login')}
-                className="text-primary hover:underline"
-              >
-                Vuelve al login
-              </button>
-            </p>
-          </div>
-        )}
+        {/* Register Link */}
+        <div className="text-center mt-4 text-xs text-muted-foreground">
+          <p>
+            ¿No tienes cuenta?{' '}
+            <button
+              onClick={() => router.push('/register')}
+              className="text-primary hover:underline font-medium"
+            >
+              Crea una aquí
+            </button>
+          </p>
+        </div>
 
-        {/* Footer */}
-        {activeTab === 'register' && (
-          <div className="text-center mt-3 text-xs text-muted-foreground">
-            <p>Al continuar, aceptas nuestros términos de servicio</p>
-          </div>
-        )}
+
       </div>
     </main>
   );

@@ -20,7 +20,8 @@ export default function NotFound() {
               Algo falta.
             </p>
             <p className="mb-6 text-lg font-light text-muted-foreground">
-              Lo sentimos, no podemos encontrar esa página. Encontrarás muchas cosas para explorar en la página de inicio.
+              Lo sentimos, no podemos encontrar esa página. Encontrarás muchas cosas para explorar
+              en la página de inicio.
             </p>
             <Link href="/">
               <Button className="bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground font-medium px-6 py-2.5 shadow-md shadow-primary/30 transition-all duration-300">

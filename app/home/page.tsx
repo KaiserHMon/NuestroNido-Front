@@ -10,7 +10,7 @@ import { UnirseAFamiliaCard } from '@/components/familia/unirse-familia-card';
 export default function HomePage() {
   const router = useRouter();
   const { isAuthenticated, usuario, isLoading } = useAuth();
-  const [familia, setFamilia] = useState<any | null>(null);
+  const [_familia, _setFamilia] = useState<any | null>(null);
 
   useEffect(() => {
     // Verificar si hay sesión
@@ -25,7 +25,7 @@ export default function HomePage() {
       if (familiaGuardada) {
         // Usar Promise para evitar setState directo en effect
         Promise.resolve().then(() => {
-          setFamilia(JSON.parse(familiaGuardada));
+          _setFamilia(JSON.parse(familiaGuardada));
           router.push('/dashboard');
         });
       }

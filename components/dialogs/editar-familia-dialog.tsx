@@ -61,7 +61,13 @@ export function EditarFamiliaDialog({ familia, onSuccess, trigger }: EditarFamil
       onOpenChange={handleOpenChange}
       title="Editar Nombre de la Familia"
       description="Cambia el nombre de tu familia. Este cambio será visible para todos los miembros."
-      trigger={trigger || <Button variant="ghost" size="sm" className="h-8 w-8 p-0">✏️</Button>}
+      trigger={
+        trigger || (
+          <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+            ✏️
+          </Button>
+        )
+      }
       isSubmitting={isSubmitting}
       error={error}
       onSubmit={handleSubmit(onSubmit)}

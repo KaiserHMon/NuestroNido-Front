@@ -59,7 +59,9 @@ export interface Familia {
   codigoInvitacion: string;
   creadorId: string;
   miembros: Miembro[];
+  plan: 'free' | 'pro';
   maxMiembros?: number;
+  maxNotas?: number;
   activa: boolean;
   createdAt: Date;
   updatedAt: Date;

@@ -96,16 +96,19 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
         {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
       </div>
 
-      {/* Remember Me */}
+      {/* Remember Me & Forgot Password */}
       <div className="flex items-center justify-between text-xs mt-2">
-        <label className="flex items-center gap-2 cursor-pointer" htmlFor="remember-me">
+        <label
+          className="flex items-center gap-2 cursor-pointer bg-muted/50 hover:bg-muted px-2.5 py-1.5 rounded-md border border-border/50 transition-all active:scale-95"
+          htmlFor="remember-me"
+        >
           <Checkbox id="remember-me" disabled={isSubmitting} />
-          <span className="text-muted-foreground">Recuérdame</span>
+          <span className="text-muted-foreground font-medium">Recuérdame</span>
         </label>
         <button
           type="button"
           onClick={onForgotPassword}
-          className="text-primary hover:underline disabled:text-muted-foreground disabled:cursor-not-allowed"
+          className="text-primary hover:underline font-medium disabled:text-muted-foreground disabled:cursor-not-allowed px-1"
           disabled={isSubmitting}
         >
           ¿Olvidaste tu contraseña?

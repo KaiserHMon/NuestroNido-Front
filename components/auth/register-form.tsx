@@ -148,7 +148,11 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           </button>
         </div>
         {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
-        {!password && <p className="text-xs text-muted-foreground">Mínimo 8 caracteres, mayúsculas, números y símbolos</p>}
+        {!password && (
+          <p className="text-xs text-muted-foreground">
+            Mínimo 8 caracteres, mayúsculas, números y símbolos
+          </p>
+        )}
 
         {/* Password Strength Indicator */}
         {password && (

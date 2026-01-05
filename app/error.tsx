@@ -1,15 +1,13 @@
 'use client';
 
-import Link from 'next/link';
 import { Bird } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 
 interface ErrorProps {
-  error?: Error;
-  reset?: () => void;
+  _error?: Error;
+  _reset?: () => void;
 }
 
-export default function Error({ error, reset }: ErrorProps) {
+export default function Error({ _error, _reset }: ErrorProps) {
   return (
     <main className="min-h-screen bg-background flex items-center justify-center">
       <section className="w-full">

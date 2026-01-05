@@ -9,10 +9,12 @@ import '@/styles/globals.css';
 const _geist = Geist({
   subsets: ['latin'],
   variable: '--font-sans',
+  display: 'swap',
 });
 const _geistMono = Geist_Mono({
   subsets: ['latin'],
   variable: '--font-mono',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {

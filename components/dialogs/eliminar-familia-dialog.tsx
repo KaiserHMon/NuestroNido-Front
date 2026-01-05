@@ -14,20 +14,25 @@ import { BaseDialog } from './base-dialog';
 interface EliminarFamiliaDialogProps {
   familia: Familia;
   trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function EliminarFamiliaDialog({ familia, trigger }: EliminarFamiliaDialogProps) {
+export function EliminarFamiliaDialog({
+  familia,
+  trigger,
+  open: externalOpen,
+  onOpenChange: externalOnOpenChange,
+}: EliminarFamiliaDialogProps) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { eliminarFamilia, error } = useFamilia();
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    watch,
-  } = useForm<{ confirmacionTexto: string }>({
+  const open = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setOpen = externalOnOpenChange !== undefined ? externalOnOpenChange : setInternalOpen;
+
+  const { register, handleSubmit, reset, watch } = useForm<{ confirmacionTexto: string }>({
     defaultValues: {
       confirmacionTexto: '',
     },
@@ -69,15 +74,17 @@ export function EliminarFamiliaDialog({ familia, trigger }: EliminarFamiliaDialo
       onOpenChange={handleOpenChange}
       title="¿Eliminar Familia?"
       description="Esta acción es irreversible."
-      trigger={trigger || (
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-8 w-8 p-0 text-destructive hover:bg-destructive/10"
-        >
-          🗑️
-        </Button>
-      )}
+      trigger={
+        trigger || (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 w-8 p-0 text-destructive hover:bg-destructive/10"
+          >
+            🗑️
+          </Button>
+        )
+      }
       isSubmitting={isSubmitting}
       error={error}
       onSubmit={handleSubmit(onSubmit)}

@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Trash2, Edit2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Leaderboard } from '@/components/leaderboard';
 import { MiembroAvatar } from '@/components/ui/miembro-avatar';
 import { EliminarMiembroDialog } from '@/components/dialogs/eliminar-miembro-dialog';
+import { EliminarFamiliaDialog } from '@/components/dialogs/eliminar-familia-dialog';
 import { EditarPerfilDialog } from '@/components/dialogs/editar-perfil-dialog';
 import { Familia, Miembro } from '@/lib/types';
 
@@ -17,6 +18,7 @@ export function MiembrosSection() {
   const [esCreador, setEsCreador] = useState(false);
   const [miembroAEliminar, setMiembroAEliminar] = useState<Miembro | null>(null);
   const [dialogEliminarOpen, setDialogEliminarOpen] = useState(false);
+  const [dialogEliminarFamiliaOpen, setDialogEliminarFamiliaOpen] = useState(false);
   const [miembroAEditar, setMiembroAEditar] = useState<Miembro | null>(null);
   const [dialogEditarOpen, setDialogEditarOpen] = useState(false);
 
@@ -46,8 +48,12 @@ export function MiembrosSection() {
   }, []);
 
   const handleEliminarMiembro = (miembro: Miembro) => {
-    setMiembroAEliminar(miembro);
-    setDialogEliminarOpen(true);
+    if (miembro.rolId === 'creador' && familia?.miembros.length === 1) {
+      setDialogEliminarFamiliaOpen(true);
+    } else {
+      setMiembroAEliminar(miembro);
+      setDialogEliminarOpen(true);
+    }
   };
 
   const handleEditarPerfil = (miembro: Miembro) => {
@@ -200,6 +206,15 @@ export function MiembrosSection() {
         onConfirm={handleConfirmarEliminacion}
         esUsuarioActual={miembroAEliminar?.id === usuario?.id}
       />
+
+      {/* Dialog de Eliminar Familia (cuando el creador es el último) */}
+      {familia && (
+        <EliminarFamiliaDialog
+          familia={familia}
+          open={dialogEliminarFamiliaOpen}
+          onOpenChange={setDialogEliminarFamiliaOpen}
+        />
+      )}
 
       {/* Dialog de Editar Perfil */}
       <EditarPerfilDialog

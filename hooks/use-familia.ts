@@ -40,7 +40,7 @@ export const useFamilia = () => {
 
     try {
       const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-      const token = localStorage.getItem('auth_token');
+      const _token = localStorage.getItem('auth_token');
 
       // Simulación hasta que el backend esté disponible
       const mockResponse: ApiResponse<Familia> = {
@@ -70,6 +70,8 @@ export const useFamilia = () => {
             },
           ],
           maxMiembros: 10,
+          plan: 'free',
+          maxNotas: 3,
           activa: true,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -150,6 +152,8 @@ export const useFamilia = () => {
             },
           ],
           maxMiembros: 10,
+          plan: 'free',
+          maxNotas: 3,
           activa: true,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -231,7 +235,7 @@ export const useFamilia = () => {
     }
   }, []);
 
-  const eliminarFamilia = useCallback(async (familiaId: string) => {
+  const eliminarFamilia = useCallback(async (_familiaId: string) => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
     try {

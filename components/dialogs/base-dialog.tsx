@@ -71,7 +71,11 @@ export function BaseDialog({
             >
               {cancelButtonLabel}
             </Button>
-            <Button type="submit" variant={submitButtonVariant} disabled={isSubmitting || isSubmitDisabled}>
+            <Button
+              type="submit"
+              variant={submitButtonVariant}
+              disabled={isSubmitting || isSubmitDisabled}
+            >
               {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               {submitButtonLabel}
             </Button>
