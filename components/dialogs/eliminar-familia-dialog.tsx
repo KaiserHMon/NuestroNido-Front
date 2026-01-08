@@ -75,7 +75,7 @@ export function EliminarFamiliaDialog({
       title="¿Eliminar Familia?"
       description="Esta acción es irreversible."
       trigger={
-        trigger || (
+        trigger === undefined ? (
           <Button
             variant="ghost"
             size="sm"
@@ -83,6 +83,8 @@ export function EliminarFamiliaDialog({
           >
             🗑️
           </Button>
+        ) : (
+          trigger
         )
       }
       isSubmitting={isSubmitting}

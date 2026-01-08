@@ -10,7 +10,6 @@ import {
   Bird,
   LogOut,
   Home,
-  Plus,
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -70,7 +69,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
 
   const handleLogout = () => {
     logout();
-    router.push('/login');
+    router.push('/');
   };
 
   const handleFamiliaActualizada = () => {
@@ -135,7 +134,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-8 w-8 sm:h-10 sm:w-10 p-0 hover:bg-primary/10 text-primary"
+                  className="h-8 w-8 sm:h-10 sm:w-10 p-0 hover:bg-primary/10 text-muted-foreground hover:text-primary"
                   title="Ir al inicio"
                 >
                   <Home className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -147,7 +146,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
                 variant="ghost"
                 size="sm"
                 onClick={handleLogout}
-                className="h-8 w-8 sm:h-10 sm:w-10 p-0 hover:bg-destructive/10 text-destructive"
+                className="h-8 w-8 sm:h-10 sm:w-10 p-0 hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
                 title="Cerrar sesión"
               >
                 <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -166,7 +165,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
                 className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
                   activeSection === 'overview'
                     ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
-                    : 'text-primary-foreground'
+                    : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
                 }`}
               >
                 <Bird className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -180,7 +179,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
                 className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
                   activeSection === 'miembros'
                     ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
-                    : 'text-primary-foreground'
+                    : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
                 }`}
               >
                 <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -194,7 +193,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
                 className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
                   activeSection === 'calendario'
                     ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
-                    : 'text-primary-foreground'
+                    : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
                 }`}
               >
                 <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -208,7 +207,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
                 className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
                   activeSection === 'lista'
                     ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
-                    : 'text-primary-foreground'
+                    : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
                 }`}
               >
                 <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -222,7 +221,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
                 className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
                   activeSection === 'notas'
                     ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
-                    : 'text-primary-foreground'
+                    : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
                 }`}
               >
                 <StickyNote className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -233,20 +232,9 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
             {/* Separador */}
             <div className="w-px h-6 bg-primary-foreground/20 mx-1"></div>
 
-            {/* Invitar Miembros - Botón + */}
-            <Button
-              variant="ghost"
-              onClick={() => setInvitarDialogOpen(true)}
-              className="flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 text-primary-foreground hover:bg-primary-foreground/20"
-              title="Invitar miembros"
-            >
-              <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span className="hidden xs:inline">Invitar</span>
-            </Button>
-
             {/* Familia Actions - Nav */}
             {esCreador && (
-              <div className="hidden xs:block">
+              <div>
                 <FamiliaActions
                   familia={familia}
                   esCreador={esCreador}

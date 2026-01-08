@@ -3,24 +3,26 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trash2, Edit2 } from 'lucide-react';
+import { Trash2, Edit2, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Leaderboard } from '@/components/leaderboard';
 import { MiembroAvatar } from '@/components/ui/miembro-avatar';
 import { EliminarMiembroDialog } from '@/components/dialogs/eliminar-miembro-dialog';
 import { EliminarFamiliaDialog } from '@/components/dialogs/eliminar-familia-dialog';
 import { EditarPerfilDialog } from '@/components/dialogs/editar-perfil-dialog';
-import { Familia, Miembro } from '@/lib/types';
+import { InvitarMiembrosDialog } from '@/components/dialogs/invitar-miembros-dialog';
+import { Familia, Miembro, Usuario } from '@/lib/types';
 
 export function MiembrosSection() {
   const [familia, setFamilia] = useState<Familia | null>(null);
-  const [usuario, setUsuario] = useState<any>(null);
+  const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [esCreador, setEsCreador] = useState(false);
   const [miembroAEliminar, setMiembroAEliminar] = useState<Miembro | null>(null);
   const [dialogEliminarOpen, setDialogEliminarOpen] = useState(false);
   const [dialogEliminarFamiliaOpen, setDialogEliminarFamiliaOpen] = useState(false);
   const [miembroAEditar, setMiembroAEditar] = useState<Miembro | null>(null);
   const [dialogEditarOpen, setDialogEditarOpen] = useState(false);
+  const [invitarDialogOpen, setInvitarDialogOpen] = useState(false);
 
   useEffect(() => {
     const familiaGuardada = localStorage.getItem('familia');
@@ -101,6 +103,14 @@ export function MiembrosSection() {
     setMiembroAEditar(null);
   };
 
+  const handleMiembroAgregado = () => {
+    const familiaGuardada = localStorage.getItem('familia');
+    if (familiaGuardada) {
+      setFamilia(JSON.parse(familiaGuardada));
+    }
+    setInvitarDialogOpen(false);
+  };
+
   if (!familia || !usuario) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -113,9 +123,16 @@ export function MiembrosSection() {
     <div className="space-y-6">
       {/* Miembros Grid */}
       <div>
-        <h3 className="text-lg font-semibold text-foreground mb-4">
-          Miembros ({familia.miembros.length})
-        </h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-foreground">
+            Miembros ({familia.miembros.length})
+          </h3>
+          <Button onClick={() => setInvitarDialogOpen(true)} className="gap-2">
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline">Invitar a Familiar</span>
+            <span className="sm:hidden">Invitar</span>
+          </Button>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {familia.miembros.map((miembro) => {
@@ -125,7 +142,7 @@ export function MiembrosSection() {
                 key={miembro.id}
                 className="border border-border bg-card overflow-hidden h-full"
               >
-                <CardContent className="p-4 space-y-4 flex flex-col h-full">
+                <CardContent className="p-3 space-y-3 flex flex-col h-full">
                   {/* Header del Card */}
                   <div className="flex items-start justify-between gap-2">
                     <MiembroAvatar nombre={miembro.nombre} color={miembro.color} size="md" />
@@ -180,14 +197,6 @@ export function MiembrosSection() {
                       <Badge className="mt-1 bg-primary text-primary-foreground">Creador</Badge>
                     )}
                   </div>
-
-                  {/* Tareas completadas */}
-                  <div className="pt-2 border-t border-border mt-auto">
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">Tareas completadas: </span>
-                      <span className="font-semibold text-foreground">0</span>
-                    </div>
-                  </div>
                 </CardContent>
               </Card>
             );
@@ -211,6 +220,7 @@ export function MiembrosSection() {
       {familia && (
         <EliminarFamiliaDialog
           familia={familia}
+          trigger={null}
           open={dialogEliminarFamiliaOpen}
           onOpenChange={setDialogEliminarFamiliaOpen}
         />
@@ -223,6 +233,16 @@ export function MiembrosSection() {
         onOpenChange={setDialogEditarOpen}
         onConfirm={handleConfirmarEdicion}
       />
+
+      {/* Dialog de Invitar Miembros */}
+      {familia && (
+        <InvitarMiembrosDialog
+          familia={familia}
+          open={invitarDialogOpen}
+          onOpenChange={setInvitarDialogOpen}
+          onMiembroAgregado={handleMiembroAgregado}
+        />
+      )}
     </div>
   );
 }

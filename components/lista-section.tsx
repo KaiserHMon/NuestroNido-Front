@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, Check, X, ShoppingBasket, Pill, Home, Wrench } from 'lucide-react';
+import { Plus, Check, X, ShoppingBasket, Pill, Home, Wrench, Sparkles } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -35,8 +35,9 @@ interface ItemLista {
 const CATEGORIAS = [
   { value: 'alimentos', label: 'Alimentos', icon: ShoppingBasket, color: 'bg-green-500' },
   { value: 'farmacia', label: 'Farmacia', icon: Pill, color: 'bg-blue-500' },
-  { value: 'hogar', label: 'Hogar', icon: Home, color: 'bg-purple-500' },
   { value: 'ferreteria', label: 'Ferretería', icon: Wrench, color: 'bg-orange-500' },
+  { value: 'limpieza', label: 'Limpieza', icon: Sparkles, color: 'bg-cyan-500' },
+  { value: 'hogar', label: 'Varios', icon: Home, color: 'bg-purple-500' },
 ];
 
 export function ListaSection() {
@@ -218,7 +219,7 @@ export function ListaSection() {
       </div>
 
       <Tabs value={categoriaActiva} onValueChange={setCategoriaActiva}>
-        <TabsList className="grid w-full grid-cols-5 gap-1 h-auto p-1">
+        <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 gap-1 h-auto p-1">
           <TabsTrigger value="todas" className="text-xs sm:text-sm px-2 sm:px-3 py-2">
             <span className="hidden sm:inline">Todas</span>
             <span className="sm:hidden">Todo</span>

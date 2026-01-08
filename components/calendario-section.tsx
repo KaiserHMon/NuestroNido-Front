@@ -120,7 +120,7 @@ export function CalendarioSection() {
     Promise.resolve().then(() => {
       setLoading(false);
     });
-  }, []);
+  }, [familia?.id, familia?.miembros]);
 
   // Obtener los días del mes actual
   const primerDiaMes = startOfMonth(mesActual);
@@ -236,7 +236,7 @@ export function CalendarioSection() {
                 {Array.from({
                   length: primerDiaMes.getDay(),
                 }).map((_, i) => (
-                  <div key={`empty-${i}`} className="aspect-square rounded-sm p-1 bg-muted/20" />
+                  <div key={`empty-${i}`} className="h-12 sm:h-14 rounded-sm p-1 bg-muted/20" />
                 ))}
 
                 {/* Días del mes actual */}
@@ -249,7 +249,7 @@ export function CalendarioSection() {
                     <button
                       key={dia.toISOString()}
                       onClick={() => setFechaSeleccionada(dia)}
-                      className={`aspect-square rounded-sm border transition-all relative flex flex-col items-start justify-start p-1.5
+                      className={`h-24 sm:h-32 rounded-sm border transition-all relative flex flex-col items-start justify-start p-1.5
                         ${
                           esSeleccionada
                             ? 'border-primary bg-primary/10 scale-105'

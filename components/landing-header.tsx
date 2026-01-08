@@ -75,7 +75,7 @@ export function LandingHeader() {
                   </Button>
                 </Link>
                 <Link href="/register">
-                  <Button className="bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-sm sm:text-base px-3 sm:px-4 shadow-md shadow-primary/30 transition-all duration-300">
+                  <Button className="bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-sm sm:text-base px-3 sm:px-4 shadow-md shadow-primary/30 transition-all duration-300 active:scale-95">
                     <span className="hidden sm:inline">Comenzar Gratis</span>
                     <span className="sm:hidden">Comenzar</span>
                   </Button>

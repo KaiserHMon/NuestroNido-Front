@@ -4,36 +4,38 @@ import { DashboardLayout } from '@/components/dashboard-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, Calendar, ShoppingCart, StickyNote, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function DashboardPage() {
+  const { usuario } = useAuth();
   const shortcuts = [
     {
       title: 'Miembros',
-      description: 'Gestiona los miembros de tu familia',
+      description: 'Observa a los miembros de tu familia y su ranking en el hogar.',
       icon: Users,
       href: '/dashboard/miembros',
-      color: 'bg-blue-500/10 text-blue-600',
+      color: 'bg-primary text-primary-foreground',
     },
     {
       title: 'Calendario',
-      description: 'Eventos y fechas importantes',
+      description: 'Planifica tareas, turnos y eventos familiares en un solo calendario.',
       icon: Calendar,
       href: '/dashboard/calendario',
-      color: 'bg-green-500/10 text-green-600',
+      color: 'bg-primary text-primary-foreground',
     },
     {
-      title: 'Lista',
-      description: 'Tareas y compras pendientes',
+      title: 'Lista de Compras',
+      description: 'Organiza lo pendiente y mantén la casa siempre al día.',
       icon: ShoppingCart,
       href: '/dashboard/lista',
-      color: 'bg-orange-500/10 text-orange-600',
+      color: 'bg-primary text-primary-foreground',
     },
     {
       title: 'Notas',
-      description: 'Notas y apuntes familiares',
+      description: 'Comparte recordatorios, mensajes y acuerdos familiares.',
       icon: StickyNote,
       href: '/dashboard/notas',
-      color: 'bg-purple-500/10 text-purple-600',
+      color: 'bg-primary text-primary-foreground',
     },
   ];
 
@@ -42,7 +44,7 @@ export default function DashboardPage() {
       <div className="space-y-8">
         {/* Header */}
         <div className="space-y-2">
-          <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Bienvenido</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Bienvenido, {usuario?.nombre}</h2>
           <p className="text-muted-foreground">Selecciona una sección para empezar</p>
         </div>
 
@@ -52,7 +54,7 @@ export default function DashboardPage() {
             const Icon = shortcut.icon;
             return (
               <Link key={shortcut.href} href={shortcut.href}>
-                <Card className="cursor-pointer hover:shadow-lg transition-shadow h-full">
+                <Card className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02] h-full">
                   <CardHeader className="pb-3">
                     <div
                       className={`w-10 h-10 rounded-lg ${shortcut.color} flex items-center justify-center mb-2`}

@@ -32,33 +32,24 @@ export default function LandingPage() {
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-4 sm:mb-6 border border-primary">
               <Bird className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span className="text-xs sm:text-sm font-medium">Organiza tu hogar en familia</span>
+              <span className="text-xs sm:text-sm font-medium">Organizando familias, un nido a la vez</span>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-4 sm:mb-6 text-balance px-2">
-              Tu familia, organizada y conectada en un solo lugar
+              Un hogar más organizado, conectado y en armonía - todo en un solo lugar -
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-foreground mb-6 sm:mb-8 text-pretty max-w-2xl mx-auto px-2">
-              NuestroNido es la plataforma que ayuda a las familias a coordinar tareas, compartir
-              listas de compras y mantenerse organizados con un sistema de gamificación que motiva a
-              todos.
+              NuestroNido ayuda a tu familia a coordinar tareas, compartir listas, organizar el hogar y mantener todo bajo control, con un sistema de gamificación que motiva a todos a participar.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
-              <Link href="/dashboard" className="w-full sm:w-auto">
+              <Link href="/register" className="w-full sm:w-auto">
                 <Button
                   size="lg"
-                  className="w-full sm:w-auto bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-6 sm:px-8 shadow-md shadow-primary/30 transition-all duration-300"
+                  className="w-full sm:w-auto bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-6 sm:px-8 shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
                 >
                   Crear mi Nido
                   <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
                 </Button>
               </Link>
-              <Button
-                size="lg"
-                variant="outline"
-                className="w-full sm:w-auto border-primary text-primary hover:bg-primary hover:text-primary-foreground text-base sm:text-lg px-6 sm:px-8 bg-transparent shadow-md shadow-primary/20 transition-all duration-300 hover:shadow-lg hover:shadow-primary/40"
-              >
-                Ver Demo
-              </Button>
             </div>
           </div>
         </section>
@@ -85,8 +76,7 @@ export default function LandingPage() {
                     Calendario Familiar
                   </CardTitle>
                   <CardDescription className="text-sm sm:text-base text-foreground">
-                    Organiza tareas únicas o recurrentes, asigna responsables y visualiza todo en un
-                    calendario intuitivo
+                    Organiza las tareas del hogar y visualízalas en un calendario intuitivo.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -100,21 +90,7 @@ export default function LandingPage() {
                     Listas Compartidas
                   </CardTitle>
                   <CardDescription className="text-sm sm:text-base text-foreground">
-                    Crea listas de compras por categorías que toda la familia puede ver y actualizar
-                    en tiempo real
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-
-              <Card className="border-card bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 hover:border-primary/50 hover:-translate-y-1 cursor-pointer">
-                <CardHeader className="p-4 sm:p-6">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-lg flex items-center justify-center mb-3 sm:mb-4">
-                    <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
-                  </div>
-                  <CardTitle className="text-lg sm:text-xl text-primary">Gamificación</CardTitle>
-                  <CardDescription className="text-sm sm:text-base text-foreground">
-                    Sistema de puntos y tabla de posiciones que motiva a todos a participar en las
-                    tareas del hogar
+                    Crea listas de compras por categorías para mantener la casa abastecida.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -128,7 +104,19 @@ export default function LandingPage() {
                     Notas Familiares
                   </CardTitle>
                   <CardDescription className="text-sm sm:text-base text-foreground">
-                    Comparte observaciones, recordatorios y mensajes importantes con toda la familia
+                    Comparte recordatorios y mensajes importantes para que todos estén alineados.
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+
+              <Card className="border-card bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 hover:border-primary/50 hover:-translate-y-1 cursor-pointer">
+                <CardHeader className="p-4 sm:p-6">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-lg flex items-center justify-center mb-3 sm:mb-4">
+                    <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
+                  </div>
+                  <CardTitle className="text-lg sm:text-xl text-primary">Gamificación</CardTitle>
+                  <CardDescription className="text-sm sm:text-base text-foreground">
+                    Motiva la colaboración en las tareas del hogar con puntos y rankings.
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -144,7 +132,7 @@ export default function LandingPage() {
                 Cómo funciona
               </h2>
               <p className="text-base sm:text-lg md:text-xl text-foreground">
-                Comienza en minutos y organiza a tu familia hoy mismo
+                En pocos minutos, tu hogar empieza a funcionar de manera más organizada.
               </p>
             </div>
 
@@ -214,8 +202,8 @@ export default function LandingPage() {
                     <span className="text-3xl sm:text-4xl font-bold text-foreground">$0</span>
                     <span className="text-foreground text-sm sm:text-base">/mes</span>
                   </div>
-                  <CardDescription className="text-foreground mt-2 text-sm sm:text-base">
-                    Perfecto para familias pequeñas
+                  <CardDescription className="text-foreground mt-2 text-sm sm:text-base min-h-[3rem]">
+                    Perfecto para hogares pequeños
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6 flex flex-col flex-grow">
@@ -237,8 +225,8 @@ export default function LandingPage() {
                       </span>
                     </li>
                   </ul>
-                  <Link href="/dashboard" className="block mt-auto">
-                    <Button className="w-full bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-sm sm:text-base shadow-md shadow-primary/30 transition-all duration-300">
+                  <Link href="/register" className="block mt-auto">
+                    <Button className="w-full bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-sm sm:text-base shadow-md shadow-primary/30 transition-all duration-300 active:scale-95">
                       Comenzar Gratis
                     </Button>
                   </Link>
@@ -256,8 +244,8 @@ export default function LandingPage() {
                     <span className="text-3xl sm:text-4xl font-bold text-foreground">$4.99</span>
                     <span className="text-foreground text-sm sm:text-base">/mes</span>
                   </div>
-                  <CardDescription className="text-foreground mt-2 text-sm sm:text-base">
-                    Ideal para la mayoría de familias
+                  <CardDescription className="text-foreground mt-2 text-sm sm:text-base min-h-[3rem]">
+                    Ideal para familias que buscan orden y coordinación diaria
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6 flex flex-col flex-grow">
@@ -283,8 +271,8 @@ export default function LandingPage() {
                       </span>
                     </li>
                   </ul>
-                  <Link href="/dashboard" className="block mt-auto">
-                    <Button className="w-full bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-sm sm:text-base shadow-md shadow-primary/30 transition-all duration-300">
+                  <Link href="/register" className="block mt-auto">
+                    <Button className="w-full bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-sm sm:text-base shadow-md shadow-primary/30 transition-all duration-300 active:scale-95">
                       Comenzar Ahora
                     </Button>
                   </Link>
@@ -303,10 +291,10 @@ export default function LandingPage() {
             <p className="text-base sm:text-lg md:text-xl text-foreground/80 mb-6 sm:mb-8">
               Únete a miles de familias que ya están disfrutando de un hogar más organizado
             </p>
-            <Link href="/dashboard">
+            <Link href="/register">
               <Button
                 size="lg"
-                className="bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-6 sm:px-8 w-full sm:w-auto shadow-md shadow-primary/30 transition-all duration-300"
+                className="bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-6 sm:px-8 w-full sm:w-auto shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
               >
                 Crear mi Nido Gratis
                 <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />

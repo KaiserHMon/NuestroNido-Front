@@ -49,7 +49,7 @@ export function RegisterPageContent() {
           </div>
           <h2 className="text-lg font-semibold text-foreground mb-1">Crear Cuenta</h2>
           <p className="text-muted-foreground text-xs sm:text-sm">
-            Gestiona tu familia de manera fácil y divertida
+            Gestiona tu hogar de manera fácil y divertida
           </p>
         </div>
 
@@ -59,8 +59,7 @@ export function RegisterPageContent() {
         </div>
 
         {/* Footer Links */}
-        <div className="text-center mt-4 text-xs text-muted-foreground space-y-2">
-          <p>Al continuar, aceptas nuestros términos de servicio</p>
+        <div className="text-center mt-4 text-sm sm:text-base text-muted-foreground space-y-2">
           <p>
             ¿Ya tienes cuenta?{' '}
             <button

@@ -83,22 +83,16 @@ export function InvitarMiembrosDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-foreground">Invitar a Miembros</DialogTitle>
-          <DialogDescription className="text-muted-foreground">
-            Comparte tu familia o agrega un miembro manualmente
-          </DialogDescription>
+          <DialogTitle className="text-foreground">Invitar a Familiar</DialogTitle>
         </DialogHeader>
 
         <Tabs defaultValue="codigo" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 bg-muted">
+          <TabsList className="grid w-full grid-cols-2 bg-muted">
             <TabsTrigger value="codigo" className="text-xs sm:text-sm">
               Código
             </TabsTrigger>
             <TabsTrigger value="link" className="text-xs sm:text-sm">
               Link
-            </TabsTrigger>
-            <TabsTrigger value="manual" className="text-xs sm:text-sm">
-              Manual
             </TabsTrigger>
           </TabsList>
 
@@ -151,47 +145,6 @@ export function InvitarMiembrosDialog({
                 Comparte este link directo para que se unan automáticamente
               </p>
             </div>
-          </TabsContent>
-
-          {/* TAB: AGREGAR MANUALMENTE */}
-          <TabsContent value="manual" className="space-y-4">
-            <form onSubmit={handleAgregarMiembro} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="nombre" className="text-sm font-medium text-foreground">
-                  Nombre del Miembro
-                </Label>
-                <Input
-                  id="nombre"
-                  type="text"
-                  placeholder="Ej: Juan García"
-                  value={nuevoNombreMiembro}
-                  onChange={(e) => setNuevoNombreMiembro(e.target.value)}
-                  className="bg-background border-input text-foreground placeholder:text-muted-foreground"
-                  disabled={isSubmitting}
-                />
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => {
-                    setNuevoNombreMiembro('');
-                    onOpenChange(false);
-                  }}
-                  className="text-foreground border-border hover:bg-muted"
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  type="submit"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                  disabled={!nuevoNombreMiembro.trim() || isSubmitting}
-                >
-                  {isSubmitting ? 'Agregando...' : 'Agregar Miembro'}
-                </Button>
-              </div>
-            </form>
           </TabsContent>
         </Tabs>
       </DialogContent>

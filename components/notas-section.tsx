@@ -43,6 +43,7 @@ export function NotasSection() {
           const notasMock: Nota[] = [
             {
               id: '1',
+              titulo: 'Almuerzo Mañana',
               contenido: 'Preparar el almuerzo de mañana',
               colorCreador: familiaData.miembros[0]?.color || {
                 nombre: 'Azul',
@@ -57,6 +58,7 @@ export function NotasSection() {
             },
             {
               id: '2',
+              titulo: 'Limpieza Sala',
               contenido: 'Limpiar la sala',
               colorCreador: familiaData.miembros[1]?.color || {
                 nombre: 'Rosa',
@@ -71,6 +73,7 @@ export function NotasSection() {
             },
             {
               id: '3',
+              titulo: 'Compras',
               contenido: 'Comprar verduras',
               colorCreador: familiaData.miembros[0]?.color || {
                 nombre: 'Azul',

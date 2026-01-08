@@ -92,7 +92,7 @@ export function AuthPageContent() {
             <h1 className="text-2xl font-bold text-foreground">NuestroNido</h1>
           </div>
           <p className="text-muted-foreground text-xs sm:text-sm">
-            Gestiona tu familia de manera fácil y divertida
+            Gestiona tu hogar de manera fácil y divertida
           </p>
         </div>
 
@@ -109,7 +109,7 @@ export function AuthPageContent() {
         </div>
 
         {/* Register Link */}
-        <div className="text-center mt-4 text-xs text-muted-foreground">
+        <div className="text-center mt-4 text-sm sm:text-base text-muted-foreground">
           <p>
             ¿No tienes cuenta?{' '}
             <button

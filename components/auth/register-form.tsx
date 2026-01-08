@@ -63,8 +63,6 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
     }
   };
 
-  const aceptaTerminos = watch('aceptaTerminos');
-
   const onSubmit = async (data: RegisterFormInputs) => {
     setIsSubmitting(true);
     try {
@@ -153,28 +151,6 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             Mínimo 8 caracteres, mayúsculas, números y símbolos
           </p>
         )}
-
-        {/* Password Strength Indicator */}
-        {password && (
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                <div
-                  className={`h-full transition-all ${
-                    passwordStrength === 'strong'
-                      ? 'bg-green-500 w-full'
-                      : passwordStrength === 'medium'
-                        ? 'bg-yellow-500 w-2/3'
-                        : 'bg-destructive w-1/3'
-                  }`}
-                />
-              </div>
-              <span className={`text-xs font-medium ${getPasswordStrengthColor(passwordStrength)}`}>
-                {getPasswordStrengthLabel(passwordStrength)}
-              </span>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Confirm Password Field */}
@@ -206,28 +182,11 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         )}
       </div>
 
-      {/* Terms Checkbox */}
-      <label className="flex items-center gap-2 cursor-pointer mt-2">
-        <input
-          type="checkbox"
-          className="w-4 h-4 rounded border border-input cursor-pointer accent-primary"
-          {...register('aceptaTerminos')}
-          disabled={isSubmitting}
-          required
-        />
-        <span className="text-sm text-muted-foreground">
-          Acepto los{' '}
-          <a href="#" className="text-primary hover:underline">
-            términos y condiciones
-          </a>
-        </span>
-      </label>
-
       {/* Submit Button */}
       <Button
         type="submit"
         className="w-full bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground font-medium h-10 shadow-md shadow-primary/30 transition-all duration-300 mt-2"
-        disabled={isSubmitting || passwordStrength !== 'strong' || !aceptaTerminos}
+        disabled={isSubmitting}
       >
         {isSubmitting ? (
           <>

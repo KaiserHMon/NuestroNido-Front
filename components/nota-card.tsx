@@ -63,7 +63,7 @@ export function NotaCard({ nota, creador, onEdit, onDelete, _onToggleComplete }:
                 nota.completado ? 'line-through text-muted-foreground' : ''
               }`}
             >
-              {nota.contenido}
+              {nota.titulo || nota.contenido}
             </h3>
             <p className="text-xs text-muted-foreground mt-1">{fechaFormato}</p>
           </div>
@@ -123,37 +123,6 @@ export function NotaCard({ nota, creador, onEdit, onDelete, _onToggleComplete }:
             {nota.contenido}
           </p>
         )}
-
-        {/* Footer */}
-        <div className="flex items-center justify-between flex-wrap gap-2 pt-2">
-          {nota.prioridad && (
-            <Badge variant="outline" className={getPriorityColor(nota.prioridad)}>
-              {getPriorityLabel(nota.prioridad)}
-            </Badge>
-          )}
-
-          {nota.miembrosAsignados && nota.miembrosAsignados.length > 0 && (
-            <div className="flex items-center gap-1">
-              <span className="text-xs text-muted-foreground">Asignada:</span>
-              <div className="flex -space-x-2">
-                {nota.miembrosAsignados.slice(0, 3).map((miembroId: string) => (
-                  <div
-                    key={miembroId}
-                    className="w-6 h-6 rounded-full border-2 border-background flex items-center justify-center bg-muted text-xs font-bold"
-                    title={`Miembro ${miembroId}`}
-                  >
-                    {miembroId.charAt(0).toUpperCase()}
-                  </div>
-                ))}
-                {nota.miembrosAsignados.length > 3 && (
-                  <div className="w-6 h-6 rounded-full border-2 border-background flex items-center justify-center bg-muted text-xs font-bold">
-                    +{nota.miembrosAsignados.length - 3}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
       </CardContent>
     </Card>
   );

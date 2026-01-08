@@ -29,9 +29,6 @@ export const RegisterSchema = z
       .regex(/[0-9]/, 'Debe contener al menos un número')
       .min(1, 'La contraseña es requerida'),
     passwordConfirm: z.string().min(1, 'Confirmar contraseña es requerido'),
-    aceptaTerminos: z.boolean().refine((val) => val === true, {
-      message: 'Debes aceptar los términos y condiciones',
-    }),
   })
   .refine((data) => data.password === data.passwordConfirm, {
     message: 'Las contraseñas no coinciden',

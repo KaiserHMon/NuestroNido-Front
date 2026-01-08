@@ -142,8 +142,6 @@ export function UnirseAFamiliaCard({ onSuccess }: UnirseAFamiliaCardProps) {
 
           <div className="text-xs text-muted-foreground space-y-1">
             <p>✓ Acceso a todas las funciones</p>
-            <p>✓ Colabora con otros miembros</p>
-            <p>✓ Comparte tareas y notas</p>
           </div>
 
           <Button

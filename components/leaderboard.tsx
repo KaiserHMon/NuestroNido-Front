@@ -2,7 +2,6 @@
 
 import { Miembro, LeaderboardEntry } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { MiembroAvatar } from '@/components/ui/miembro-avatar';
 import { Medal } from 'lucide-react';
 
@@ -20,15 +19,6 @@ const NIVELES = [
 
 const getNivelActual = (puntos: number) => {
   return NIVELES.find((n) => puntos >= n.minPuntos && puntos <= n.maxPuntos) || NIVELES[0];
-};
-
-const getProgreso = (puntos: number) => {
-  const nivelActual = getNivelActual(puntos);
-  if (nivelActual.nivel === 5) return 100;
-
-  const puntosEnNivel = puntos - nivelActual.minPuntos;
-  const puntosNecesarios = nivelActual.maxPuntos - nivelActual.minPuntos + 1;
-  return (puntosEnNivel / puntosNecesarios) * 100;
 };
 
 const getDistintivo = (posicion: number) => {
@@ -50,7 +40,6 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
 
   const entries: LeaderboardEntry[] = miembrosOrdenados.map((m, index) => {
     const nivel = getNivelActual(m.puntos);
-    const progreso = getProgreso(m.puntos);
     const distintivo = getDistintivo(index + 1);
 
     return {
@@ -64,7 +53,6 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
       nivel: {
         numero: nivel.nivel,
         nombre: nivel.nombre,
-        progresoActual: progreso,
         puntosParaSiguiente: nivel.nivel === 5 ? 0 : nivel.maxPuntos - m.puntos + 1,
       },
       distintivo: distintivo ? (distintivo.label as 'oro' | 'plata' | 'bronce') : undefined,
@@ -76,7 +64,7 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
       <CardHeader>
         <CardTitle className="text-foreground flex items-center gap-2">
           <Medal className="w-5 h-5 text-primary" />
-          Ranking de Miembros
+          Ranking Familiar
         </CardTitle>
         <CardDescription className="text-muted-foreground">
           Posiciones basadas en puntos acumulados
@@ -94,9 +82,6 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
                   <th className="text-left py-2 px-2 text-muted-foreground font-medium">Miembro</th>
                   <th className="text-left py-2 px-2 text-muted-foreground font-medium">Puntos</th>
                   <th className="text-left py-2 px-2 text-muted-foreground font-medium">Nivel</th>
-                  <th className="text-left py-2 px-2 text-muted-foreground font-medium">
-                    Progreso
-                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -133,14 +118,6 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
                     </td>
                     <td className="py-3 px-2 text-foreground font-medium">{entry.puntos}</td>
                     <td className="py-3 px-2 text-muted-foreground">{entry.nivel.nombre}</td>
-                    <td className="py-3 px-2">
-                      <div className="flex items-center gap-2 w-48">
-                        <Progress value={entry.nivel.progresoActual} className="h-1.5 flex-1" />
-                        <span className="text-xs text-muted-foreground whitespace-nowrap">
-                          {Math.round(entry.nivel.progresoActual)}%
-                        </span>
-                      </div>
-                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -182,17 +159,10 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
                     <p className="text-xs text-muted-foreground">puntos</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Progress value={entry.nivel.progresoActual} className="h-1.5 flex-1" />
-                  <span className="text-xs text-muted-foreground whitespace-nowrap">
-                    {Math.round(entry.nivel.progresoActual)}%
-                  </span>
-                </div>
               </div>
             ))}
           </div>
         </div>
       </CardContent>
-    </Card>
-  );
+    </Card>  );
 }

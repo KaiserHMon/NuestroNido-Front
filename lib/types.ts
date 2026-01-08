@@ -152,6 +152,7 @@ export interface EliminarMiembroResponse {
 // ============ NOTAS ============
 export interface Nota {
   id: string;
+  titulo?: string;
   contenido: string;
   colorCreador: ColorMiembro;
   fechaCreacion: string; // ISO string
@@ -216,7 +217,6 @@ export interface LeaderboardEntry {
   nivel: {
     numero: number;
     nombre: string;
-    progresoActual: number;
     puntosParaSiguiente: number;
   };
   distintivo?: 'oro' | 'plata' | 'bronce';
