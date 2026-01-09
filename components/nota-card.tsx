@@ -2,7 +2,6 @@
 
 import { Nota, Miembro } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Trash2, Edit2 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -15,32 +14,6 @@ interface NotaCardProps {
   onDelete?: (notaId: string) => void;
   _onToggleComplete?: (notaId: string) => void;
 }
-
-const getPriorityColor = (priority: 'baja' | 'media' | 'alta' | undefined) => {
-  switch (priority) {
-    case 'alta':
-      return 'bg-destructive/10 text-destructive';
-    case 'media':
-      return 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400';
-    case 'baja':
-      return 'bg-green-500/10 text-green-700 dark:text-green-400';
-    default:
-      return 'bg-muted text-muted-foreground';
-  }
-};
-
-const getPriorityLabel = (priority: 'baja' | 'media' | 'alta' | undefined) => {
-  switch (priority) {
-    case 'alta':
-      return 'Alta';
-    case 'media':
-      return 'Media';
-    case 'baja':
-      return 'Baja';
-    default:
-      return '-';
-  }
-};
 
 export function NotaCard({ nota, creador, onEdit, onDelete, _onToggleComplete }: NotaCardProps) {
   const fechaFormato = format(new Date(nota.fechaCreacion), "d 'de' MMMM", { locale: es });

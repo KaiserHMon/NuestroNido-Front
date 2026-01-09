@@ -164,5 +164,6 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
           </div>
         </div>
       </CardContent>
-    </Card>  );
+    </Card>
+  );
 }

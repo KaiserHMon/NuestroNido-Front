@@ -21,42 +21,8 @@ export function FechaExpandidaModal({
 }: FechaExpandidaModalProps) {
   if (!fecha) return null;
 
-  // Filtrar tareas para el día seleccionado
-  const tareasDelDia = tareas.filter((tarea) => {
-    const fechaTarea = new Date(tarea.fecha);
-    const fechaSeleccionada = new Date(fecha);
-    return (
-      fechaTarea.getFullYear() === fechaSeleccionada.getFullYear() &&
-      fechaTarea.getMonth() === fechaSeleccionada.getMonth() &&
-      fechaTarea.getDate() === fechaSeleccionada.getDate()
-    );
-  });
-
-  const getPriorityColor = (prioridad?: 'baja' | 'media' | 'alta') => {
-    switch (prioridad) {
-      case 'alta':
-        return 'bg-destructive/10 text-destructive';
-      case 'media':
-        return 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400';
-      case 'baja':
-        return 'bg-green-500/10 text-green-700 dark:text-green-400';
-      default:
-        return 'bg-muted text-muted-foreground';
-    }
-  };
-
-  const getPriorityLabel = (prioridad?: 'baja' | 'media' | 'alta') => {
-    switch (prioridad) {
-      case 'alta':
-        return 'Alta';
-      case 'media':
-        return 'Media';
-      case 'baja':
-        return 'Baja';
-      default:
-        return '-';
-    }
-  };
+  // Las tareas ya vienen filtradas desde el padre
+  const tareasDelDia = tareas;
 
   const getNombreMiembro = (creadorId: string) => {
     const miembro = miembros.find((m) => m.id === creadorId);
@@ -121,15 +87,19 @@ export function FechaExpandidaModal({
 
                   {/* Detalles */}
                   <div className="flex items-center gap-2 flex-wrap text-xs px-5">
-                    {tarea.hora && <span className="text-muted-foreground">{tarea.hora}</span>}
-                    {tarea.prioridad && (
-                      <Badge variant="outline" className={getPriorityColor(tarea.prioridad)}>
-                        {getPriorityLabel(tarea.prioridad)}
-                      </Badge>
+                    {tarea.frecuencia && tarea.frecuencia !== 'unica' && (
+                        <Badge variant="secondary" className="capitalize">
+                            {tarea.frecuencia}
+                        </Badge>
+                    )}
+                    {tarea.diasSemana && tarea.diasSemana.length > 0 && (
+                        <span className="text-muted-foreground">
+                            {tarea.diasSemana.map(d => ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][parseInt(d)]).join(', ')}
+                        </span>
                     )}
                   </div>
 
-                  {/* Descripción */}
+                  {/* Descripción (si existe) */}
                   {tarea.descripcion && (
                     <p className="text-xs text-muted-foreground px-5 break-words">
                       {tarea.descripcion}

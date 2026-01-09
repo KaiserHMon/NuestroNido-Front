@@ -103,14 +103,6 @@ export function MiembrosSection() {
     setMiembroAEditar(null);
   };
 
-  const handleMiembroAgregado = () => {
-    const familiaGuardada = localStorage.getItem('familia');
-    if (familiaGuardada) {
-      setFamilia(JSON.parse(familiaGuardada));
-    }
-    setInvitarDialogOpen(false);
-  };
-
   if (!familia || !usuario) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -240,7 +232,6 @@ export function MiembrosSection() {
           familia={familia}
           open={invitarDialogOpen}
           onOpenChange={setInvitarDialogOpen}
-          onMiembroAgregado={handleMiembroAgregado}
         />
       )}
     </div>

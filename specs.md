@@ -1,16 +1,9 @@
-## Quiero que hagas los siguientes cambios segun la ruta
+# Cambios pendientes
 
-# / (landing page)
-- Cambia nuevamente de lugar las cards de 'Gamificacion' y 'Notas familiares'
+## Que en la ruta /home haya un boton en el header para volver a / (landing page). 
 
-# /dashboard
-- Color de fondo de los iconos en el header que sea igual que los que se encuentran en el /
+## Que el texto en /home de '¿Necesitas ayuda? Contacta con soporte' se agregue tambien al pie de la ruta / . Ademas que este genere un form para que el usuario complete con lo que sucedio y se pueda enviar o cancelar (este form luego sera enviado a mi mail).
 
-# /dashboard/miembros
-- Corregir el leaderboard ya que no se ve, solo hay un icono de basura para eliminar a la familia el cual ya existe
+## Quiero que cuando se use el boton de 'Comenzar Ahora' en el pricing de 'Nido Familiar' en la ruta / , se compruebe si el usuario tiene familia sino llevarlo a /home para crear/unirse a una familia.
 
-# /dashboard/calendario
-- Volver al tamanio original el calendario
-
-# /dashboard/listas
-- Cambiar de lugar 'Varios' con 'Limpieza'
+## Debe existir un pop-up que salte si el usuario usa el boton de 'Comenzar Ahora' en el pricing de 'Nido Familiar', si su familia ya tiene el plan 'Nido Familiar' implementado, con un boton que lo regrese al /dashboard

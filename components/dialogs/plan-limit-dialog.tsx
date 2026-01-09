@@ -28,7 +28,6 @@ export function PlanLimitDialog({
   limit,
   upgradeUrl = 'https://nuestronido.app/pricing', // URL externa de ejemplo
 }: PlanLimitDialogProps) {
-  
   const getFeatureText = (feature: PlanFeature) => {
     switch (feature) {
       case 'notas':
@@ -57,8 +56,9 @@ export function PlanLimitDialog({
             ¡Has alcanzado el límite de tu plan!
           </DialogTitle>
           <DialogDescription className="text-center pt-2 text-foreground/80">
-            Tu plan actual <strong className="text-primary">Básico</strong> solo permite hasta {limit} {featureText}. 
-            Para seguir creando más, actualiza a <strong className="text-primary">Nido Familiar</strong>.
+            Tu plan actual <strong className="text-primary">Básico</strong> solo permite hasta{' '}
+            {limit} {featureText}. Para seguir creando más, actualiza a{' '}
+            <strong className="text-primary">Nido Familiar</strong>.
           </DialogDescription>
         </DialogHeader>
 

@@ -5,14 +5,19 @@ import { Tarea } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Pencil, Trash2 } from 'lucide-react';
+import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, eachDayOfInterval, isSameDay } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 interface TareasTabProps {
   tareas: Tarea[];
   usuarioId?: string;
-  filtroInicial?: 'dia' | 'semana' | 'mes';
-  onFiltroChange?: (filtro: 'dia' | 'semana' | 'mes') => void;
+  filtroInicial?: 'dia' | 'semana' | 'mes' | 'anio';
+  onFiltroChange?: (filtro: 'dia' | 'semana' | 'mes' | 'anio') => void;
+  onEditar?: (tarea: Tarea) => void;
+  onEliminar?: (tareaId: string) => void;
+  onToggleCompletada?: (tareaId: string, completada: boolean) => void;
 }
 
 export function TareasTab({
@@ -20,16 +25,17 @@ export function TareasTab({
   usuarioId,
   filtroInicial = 'semana',
   onFiltroChange,
+  onEditar,
+  onEliminar,
+  onToggleCompletada,
 }: TareasTabProps) {
-  // Estado local para filtro si no se pasa callback
-  const [filtro, setFiltro] = useState<'dia' | 'semana' | 'mes'>(filtroInicial);
+  const [filtro, setFiltro] = useState<'dia' | 'semana' | 'mes' | 'anio'>(filtroInicial);
 
-  const handleFiltro = (nuevoFiltro: 'dia' | 'semana' | 'mes') => {
+  const handleFiltro = (nuevoFiltro: 'dia' | 'semana' | 'mes' | 'anio') => {
     setFiltro(nuevoFiltro);
     onFiltroChange?.(nuevoFiltro);
   };
 
-  // Calcular rango de fechas según filtro
   const rangoFechas = useMemo(() => {
     const hoy = new Date();
 
@@ -46,36 +52,93 @@ export function TareasTab({
           inicio: startOfMonth(hoy),
           fin: endOfMonth(hoy),
         };
+      case 'anio':
+        return {
+          inicio: startOfYear(hoy),
+          fin: endOfYear(hoy),
+        };
     }
   }, [filtro]);
 
-  // Filtrar tareas por usuario y rango
+  const isTareaInRange = (tarea: Tarea, start: Date, end: Date) => {
+      // Avoid mutating original dates
+      const startDate = new Date(start);
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(end);
+      endDate.setHours(23, 59, 59, 999);
+
+      // Logic to check if a task occurs within the date range
+      // If simple date match (unica)
+      if (tarea.tipoFecha === 'fecha' && tarea.fecha) {
+           if (tarea.frecuencia === 'unica') {
+               // Parse explicit components to avoid timezone ambiguity
+               const [year, month, day] = tarea.fecha.split('-').map(Number);
+               const fechaTarea = new Date(year, month - 1, day);
+               
+               // Compare with range
+               return fechaTarea >= startDate && fechaTarea <= endDate;
+           }
+           
+           if (tarea.frecuencia === 'mensual') {
+               const dayOfMonth = parseInt(tarea.fecha.split('-')[2]);
+               // Check if any month in range has this day
+               // Simplified: Iterate days in range?
+               // Or better: Check if range covers the day.
+               // For 'mes' view it's easy. For 'semana' view, check if dayOfMonth is in the week.
+               // We can use eachDayOfInterval for short ranges.
+               if (endDate.getTime() - startDate.getTime() < 1000 * 60 * 60 * 24 * 40) { // Up to ~month
+                   const days = eachDayOfInterval({ start: startDate, end: endDate });
+                   return days.some(d => d.getDate() === dayOfMonth);
+               } else {
+                   // Annual range always includes all days of month (except 31st etc)
+                   return true; 
+               }
+           }
+
+           if (tarea.frecuencia === 'anual') {
+               const [_, month, day] = tarea.fecha.split('-').map(Number);
+               // Check if start year -> end year contains this month/day
+               const startYear = startDate.getFullYear();
+               const endYear = endDate.getFullYear();
+               for (let y = startYear; y <= endYear; y++) {
+                   const tDate = new Date(y, month - 1, day);
+                   if (tDate >= startDate && tDate <= endDate) return true;
+               }
+               return false;
+           }
+      }
+
+      if (tarea.tipoFecha === 'dias' && tarea.diasSemana) {
+          // Check if range contains any of the weekdays
+          // For short ranges iterate days
+           if (endDate.getTime() - startDate.getTime() < 1000 * 60 * 60 * 24 * 60) {
+               const days = eachDayOfInterval({ start: startDate, end: endDate });
+               return days.some(d => tarea.diasSemana?.includes(d.getDay().toString()));
+           }
+           // For long ranges (year), it definitely contains all weekdays
+           return true;
+      }
+
+      return false;
+  };
+
   const tareasFiltradas = useMemo(() => {
     return tareas
       .filter((tarea) => {
-        // Si se especifica usuarioId, filtrar por creador
         if (usuarioId && tarea.creadorId !== usuarioId) {
           return false;
         }
-
-        // Filtrar por rango de fechas
-        const fechaTarea = new Date(tarea.fecha);
-        return fechaTarea >= rangoFechas.inicio && fechaTarea <= rangoFechas.fin;
+        return isTareaInRange(tarea, rangoFechas.inicio, rangoFechas.fin);
       })
       .sort((a, b) => {
-        // Ordenar por fecha
-        const diff = new Date(a.fecha).getTime() - new Date(b.fecha).getTime();
-        if (diff !== 0) return diff;
-
-        // Si misma fecha, ordenar por hora
-        if (a.hora && b.hora) {
-          return a.hora.localeCompare(b.hora);
-        }
-        return 0;
+        // Sort logic is tricky for recurring tasks. 
+        // We might want to sort by title or just creation if no specific date instance.
+        // Or "next occurrence".
+        // For simplicity, sort by creation or title.
+        return (a.titulo || '').localeCompare(b.titulo || '');
       });
-  }, [tareas, usuarioId, rangoFechas, filtro]);
+  }, [tareas, usuarioId, rangoFechas]);
 
-  // Contar tareas
   const contadores = useMemo(() => {
     return {
       pendientes: tareasFiltradas.filter((t) => !t.completada).length,
@@ -83,60 +146,21 @@ export function TareasTab({
     };
   }, [tareasFiltradas]);
 
-  const getPriorityColor = (prioridad?: 'baja' | 'media' | 'alta') => {
-    switch (prioridad) {
-      case 'alta':
-        return 'bg-destructive/10 text-destructive';
-      case 'media':
-        return 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400';
-      case 'baja':
-        return 'bg-green-500/10 text-green-700 dark:text-green-400';
-      default:
-        return 'bg-muted text-muted-foreground';
-    }
-  };
-
-  const getPriorityLabel = (prioridad?: 'baja' | 'media' | 'alta') => {
-    switch (prioridad) {
-      case 'alta':
-        return 'Alta';
-      case 'media':
-        return 'Media';
-      case 'baja':
-        return 'Baja';
-      default:
-        return '-';
-    }
-  };
-
   return (
     <div className="space-y-4">
       {/* Filtros */}
-      <div className="flex gap-2">
-        <Button
-          size="sm"
-          variant={filtro === 'dia' ? 'default' : 'outline'}
-          onClick={() => handleFiltro('dia')}
-          className={filtro === 'dia' ? 'bg-primary hover:bg-primary/90' : ''}
-        >
-          Día
-        </Button>
-        <Button
-          size="sm"
-          variant={filtro === 'semana' ? 'default' : 'outline'}
-          onClick={() => handleFiltro('semana')}
-          className={filtro === 'semana' ? 'bg-primary hover:bg-primary/90' : ''}
-        >
-          Semana
-        </Button>
-        <Button
-          size="sm"
-          variant={filtro === 'mes' ? 'default' : 'outline'}
-          onClick={() => handleFiltro('mes')}
-          className={filtro === 'mes' ? 'bg-primary hover:bg-primary/90' : ''}
-        >
-          Mes
-        </Button>
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        {(['dia', 'semana', 'mes', 'anio'] as const).map((f) => (
+            <Button
+                key={f}
+                size="sm"
+                variant={filtro === f ? 'default' : 'outline'}
+                onClick={() => handleFiltro(f)}
+                className={filtro === f ? 'bg-primary hover:bg-primary/90' : ''}
+            >
+                {f.charAt(0).toUpperCase() + f.slice(1)}
+            </Button>
+        ))}
       </div>
 
       {/* Contador */}
@@ -161,7 +185,7 @@ export function TareasTab({
         <div className="flex flex-col items-center justify-center py-8 text-center">
           <p className="font-medium text-foreground">Sin tareas</p>
           <p className="text-sm text-muted-foreground">
-            {usuarioId ? `No tienes tareas en este ${filtro}` : `No hay tareas en este ${filtro}`}
+            {usuarioId ? `No tienes tareas en este periodo` : `No hay tareas en este periodo`}
           </p>
         </div>
       ) : (
@@ -169,53 +193,68 @@ export function TareasTab({
           {tareasFiltradas.map((tarea) => (
             <Card
               key={tarea.id}
-              className={`border border-border bg-card ${tarea.completada ? 'opacity-60' : ''}`}
+              className={`border border-border bg-card transition-colors ${tarea.completada ? 'opacity-60 bg-muted/20' : ''}`}
             >
-              <CardContent className="p-3 space-y-2">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-start gap-2 flex-1">
-                    {/* Dot de color */}
+              <CardContent className="p-3">
+                <div className="flex items-center justify-between gap-3">
+                  {/* Left side: Dot + Info */}
+                  <div className="flex items-start gap-3 flex-1 min-w-0">
                     <div
-                      className="w-3 h-3 rounded-full flex-shrink-0 mt-1"
+                      className="w-3 h-3 rounded-full flex-shrink-0 mt-1.5"
                       style={{ backgroundColor: tarea.colorCreador.bg }}
                       title={tarea.colorCreador.nombre}
                     />
-                    {/* Contenido */}
-                    <div className="flex-1 min-w-0">
+                    
+                    <div className="flex-1 min-w-0 space-y-1">
                       <h4
-                        className={`font-semibold text-foreground text-sm break-words ${
-                          tarea.completada ? 'line-through text-muted-foreground' : ''
+                        className={`font-medium text-sm truncate ${
+                          tarea.completada ? 'line-through text-muted-foreground' : 'text-foreground'
                         }`}
                       >
                         {tarea.titulo}
                       </h4>
-                      <p className="text-xs text-muted-foreground">
-                        {format(new Date(tarea.fecha), "d 'de' MMMM", {
-                          locale: es,
-                        })}
-                        {tarea.hora && `, ${tarea.hora}`}
-                      </p>
+                      
+                      <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                          {tarea.tipoFecha === 'fecha' && tarea.fecha ? (
+                              <span>
+                                {format(new Date(tarea.fecha + 'T12:00:00'), "d MMM", { locale: es })}
+                                {tarea.frecuencia !== 'unica' && ` (${tarea.frecuencia})`}
+                              </span>
+                          ) : (
+                              <span>
+                                  {tarea.diasSemana?.map(d => ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][parseInt(d)]).join(', ')}
+                              </span>
+                          )}
+                      </div>
                     </div>
                   </div>
 
-                  {/* Estado */}
-                  {tarea.completada && (
-                    <Badge className="bg-green-500/10 text-green-700 dark:text-green-400 text-xs flex-shrink-0">
-                      ✓
-                    </Badge>
-                  )}
-                </div>
-
-                {/* Prioridad y descripción */}
-                <div className="flex items-center gap-2 flex-wrap text-xs">
-                  {tarea.prioridad && (
-                    <Badge variant="outline" className={getPriorityColor(tarea.prioridad)}>
-                      {getPriorityLabel(tarea.prioridad)}
-                    </Badge>
-                  )}
-                  {tarea.descripcion && (
-                    <p className="text-muted-foreground line-clamp-1">{tarea.descripcion}</p>
-                  )}
+                  {/* Right side: Actions */}
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <Checkbox 
+                        checked={tarea.completada}
+                        onCheckedChange={(checked) => onToggleCompletada?.(tarea.id, checked as boolean)}
+                        className="h-6 w-6 border-2 border-primary/50 data-[state=checked]:border-primary"
+                    />
+                    
+                    <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                        onClick={() => onEditar?.(tarea)}
+                    >
+                        <Pencil className="h-4 w-4" />
+                    </Button>
+                    
+                    <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        onClick={() => onEliminar?.(tarea.id)}
+                    >
+                        <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

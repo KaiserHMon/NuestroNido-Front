@@ -36,7 +36,10 @@ export function LandingHeader() {
     <header className="border-b border-card bg-card/80 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity">
+          <Link
+            href="/"
+            className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity"
+          >
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-full flex items-center justify-center">
               <Bird className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
             </div>
@@ -70,7 +73,10 @@ export function LandingHeader() {
             ) : (
               <>
                 <Link href="/login">
-                  <Button variant="ghost" className="text-foreground text-sm sm:text-base px-2 sm:px-4 hover:bg-primary/10">
+                  <Button
+                    variant="ghost"
+                    className="text-foreground text-sm sm:text-base px-2 sm:px-4 hover:bg-primary/10"
+                  >
                     Iniciar Sesión
                   </Button>
                 </Link>

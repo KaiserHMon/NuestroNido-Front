@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, User, Mail, Lock } from 'lucide-react';
@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox as _Checkbox } from '@/components/ui/checkbox';
-import { RegisterSchema, RegisterFormInputs, validarFortalezaContraseña } from '@/lib/validation';
+import { RegisterSchema, RegisterFormInputs } from '@/lib/validation';
 import { useAuth } from '@/hooks/use-auth';
 
 interface RegisterFormProps {
@@ -32,36 +32,6 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
   });
 
   const password = watch('password');
-  const passwordStrength = useMemo(
-    () => (password ? validarFortalezaContraseña(password) : null),
-    [password]
-  );
-
-  const getPasswordStrengthColor = (strength: string | null) => {
-    switch (strength) {
-      case 'weak':
-        return 'text-destructive';
-      case 'medium':
-        return 'text-yellow-500';
-      case 'strong':
-        return 'text-green-500';
-      default:
-        return 'text-muted-foreground';
-    }
-  };
-
-  const getPasswordStrengthLabel = (strength: string | null) => {
-    switch (strength) {
-      case 'weak':
-        return 'Débil';
-      case 'medium':
-        return 'Media';
-      case 'strong':
-        return 'Fuerte';
-      default:
-        return '';
-    }
-  };
 
   const onSubmit = async (data: RegisterFormInputs) => {
     setIsSubmitting(true);

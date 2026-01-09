@@ -1,15 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Familia, Miembro } from '@/lib/types';
-import { COLORES_DISPONIBLES } from '@/lib/colors';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Familia } from '@/lib/types';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,18 +13,10 @@ interface InvitarMiembrosDialogProps {
   familia: Familia;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onMiembroAgregado?: () => void;
 }
 
-export function InvitarMiembrosDialog({
-  familia,
-  open,
-  onOpenChange,
-  onMiembroAgregado,
-}: InvitarMiembrosDialogProps) {
+export function InvitarMiembrosDialog({ familia, open, onOpenChange }: InvitarMiembrosDialogProps) {
   const [codigoCopiado, setCodigoCopiado] = useState(false);
-  const [nuevoNombreMiembro, setNuevoNombreMiembro] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const copiarCodigo = async () => {
     try {
@@ -40,42 +25,6 @@ export function InvitarMiembrosDialog({
       setTimeout(() => setCodigoCopiado(false), 2000);
     } catch (err) {
       console.error('Error copiando código:', err);
-    }
-  };
-
-  const handleAgregarMiembro = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!nuevoNombreMiembro.trim()) return;
-
-    setIsSubmitting(true);
-    try {
-      const colorAleatorio =
-        COLORES_DISPONIBLES[Math.floor(Math.random() * COLORES_DISPONIBLES.length)];
-
-      const nuevoMiembro: Miembro = {
-        id: 'miembro-' + Date.now(),
-        nombre: nuevoNombreMiembro,
-        color: colorAleatorio,
-        puntos: 0,
-        rolId: 'miembro',
-        familiaId: familia.id,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-
-      const familiaActualizada: Familia = {
-        ...familia,
-        miembros: [...familia.miembros, nuevoMiembro],
-      };
-
-      localStorage.setItem('familia', JSON.stringify(familiaActualizada));
-      setNuevoNombreMiembro('');
-      onMiembroAgregado?.();
-    } catch (error) {
-      console.error('Error agregando miembro:', error);
-    } finally {
-      setIsSubmitting(false);
     }
   };
 

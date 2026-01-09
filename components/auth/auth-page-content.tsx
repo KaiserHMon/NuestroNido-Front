@@ -120,8 +120,6 @@ export function AuthPageContent() {
             </button>
           </p>
         </div>
-
-
       </div>
     </main>
   );

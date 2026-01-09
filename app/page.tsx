@@ -1,11 +1,65 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Calendar, ShoppingCart, StickyNote, Trophy, Check, ArrowRight, Bird } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { birdLayout } from '@/config/birdConfig';
 import { LandingHeader } from '@/components/landing-header';
+import { SupportDialog } from '@/components/dialogs/support-dialog';
+import { useAuth } from '@/hooks/use-auth';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function LandingPage() {
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [showPlanExistente, setShowPlanExistente] = useState(false);
+
+  const handlePlanFamiliarClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    if (!isAuthenticated) {
+        router.push('/register');
+        return;
+    }
+
+    const familiaGuardada = localStorage.getItem('familia');
+    if (!familiaGuardada) {
+        // No family -> Redirect to /home to create/join
+        router.push('/home');
+        return;
+    }
+
+    try {
+        const familia = JSON.parse(familiaGuardada);
+        // Check if already has the plan (assuming 'pro' is 'Nido Familiar')
+        if (familia.plan === 'pro') {
+            setShowPlanExistente(true);
+        } else {
+            // Proceed to upgrade (mock)
+            // For now, maybe just redirect to dashboard or show a "Upgrade" dialog?
+            // Specs don't specify what to do if they DON'T have the plan but HAVE family.
+            // I'll assume we redirect to a payment page or similar. 
+            // Since we don't have that, I'll redirect to dashboard for now.
+             router.push('/dashboard');
+        }
+    } catch (error) {
+        console.error("Error parsing familia", error);
+        router.push('/home');
+    }
+  };
+
   return (
     <div className="min-h-screen relative overflow-hidden">
       <div className="absolute inset-0">
@@ -32,13 +86,17 @@ export default function LandingPage() {
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-4 sm:mb-6 border border-primary">
               <Bird className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span className="text-xs sm:text-sm font-medium">Organizando familias, un nido a la vez</span>
+              <span className="text-xs sm:text-sm font-medium">
+                Conectando familias, un nido a la vez
+              </span>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary mb-4 sm:mb-6 text-balance px-2">
               Un hogar más organizado, conectado y en armonía - todo en un solo lugar -
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-foreground mb-6 sm:mb-8 text-pretty max-w-2xl mx-auto px-2">
-              NuestroNido ayuda a tu familia a coordinar tareas, compartir listas, organizar el hogar y mantener todo bajo control, con un sistema de gamificación que motiva a todos a participar.
+              NuestroNido ayuda a tu familia a coordinar tareas, compartir listas, organizar el
+              hogar y mantener todo bajo control, con un sistema de gamificación que motiva a todos
+              a participar.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
               <Link href="/register" className="w-full sm:w-auto">
@@ -271,11 +329,12 @@ export default function LandingPage() {
                       </span>
                     </li>
                   </ul>
-                  <Link href="/register" className="block mt-auto">
-                    <Button className="w-full bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-sm sm:text-base shadow-md shadow-primary/30 transition-all duration-300 active:scale-95">
-                      Comenzar Ahora
-                    </Button>
-                  </Link>
+                  <Button 
+                    onClick={handlePlanFamiliarClick}
+                    className="w-full bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-sm sm:text-base shadow-md shadow-primary/30 transition-all duration-300 active:scale-95 block mt-auto"
+                  >
+                    Comenzar Ahora
+                  </Button>
                 </CardContent>
               </Card>
             </div>
@@ -314,8 +373,17 @@ export default function LandingPage() {
                 <span className="font-bold text-foreground text-lg">NuestroNido</span>
               </div>
               <p className="text-foreground/80 text-sm sm:text-base max-w-md">
-                Organizando familias, un nido a la vez.
+                Conectando familias, un nido a la vez.
               </p>
+              
+              {/* Support Link */}
+              <button 
+                onClick={() => setIsSupportOpen(true)}
+                className="text-primary hover:underline text-sm font-medium"
+              >
+                ¿Necesitas ayuda? Contacta con soporte
+              </button>
+
               <div className="border-t border-card w-full max-w-md mt-4 pt-4">
                 <p className="text-xs sm:text-sm text-foreground/80">
                   © 2025 NuestroNido. Todos los derechos reservados.
@@ -325,6 +393,26 @@ export default function LandingPage() {
           </div>
         </footer>
       </main>
+
+      {/* Support Dialog */}
+      <SupportDialog open={isSupportOpen} onOpenChange={setIsSupportOpen} />
+
+      {/* Plan Existing Dialog */}
+      <AlertDialog open={showPlanExistente} onOpenChange={setShowPlanExistente}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¡Ya tienes este plan!</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tu familia ya está disfrutando del plan Nido Familiar. No necesitas realizar ninguna acción adicional.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction onClick={() => router.push('/dashboard')}>
+              Ir al Dashboard
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

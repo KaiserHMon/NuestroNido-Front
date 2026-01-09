@@ -2,15 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Calendar,
-  ShoppingCart,
-  Users,
-  StickyNote,
-  Bird,
-  LogOut,
-  Home,
-} from 'lucide-react';
+import { Calendar, ShoppingCart, Users, StickyNote, Bird, LogOut, Home } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { FamiliaActions } from '@/components/familia/familia-actions';
@@ -80,15 +72,6 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
     }
   };
 
-  const handleMiembroAgregado = () => {
-    // Recargar familia del localStorage
-    const familiaGuardada = localStorage.getItem('familia');
-    if (familiaGuardada) {
-      setFamilia(JSON.parse(familiaGuardada));
-    }
-    setInvitarDialogOpen(false);
-  };
-
   if (!familia || !usuario) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -115,17 +98,6 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
                 <h1 className="text-base sm:text-lg font-bold text-foreground">NuestroNido</h1>
                 <p className="text-xs sm:text-sm text-muted-foreground">{familia.nombre}</p>
               </div>
-
-              {/* Familia Actions - Desktop */}
-              {esCreador && (
-                <div className="ml-auto hidden sm:block">
-                  <FamiliaActions
-                    familia={familia}
-                    esCreador={esCreador}
-                    onFamiliaActualizada={handleFamiliaActualizada}
-                  />
-                </div>
-              )}
             </div>
 
             <div className="flex items-center gap-2">
@@ -234,7 +206,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
 
             {/* Familia Actions - Nav */}
             {esCreador && (
-              <div>
+              <div className="ml-auto">
                 <FamiliaActions
                   familia={familia}
                   esCreador={esCreador}
@@ -255,7 +227,6 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
           familia={familia}
           open={invitarDialogOpen}
           onOpenChange={setInvitarDialogOpen}
-          onMiembroAgregado={handleMiembroAgregado}
         />
       )}
     </div>

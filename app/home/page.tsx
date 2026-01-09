@@ -2,15 +2,20 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bird } from 'lucide-react';
+import { Bird, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
+import { Button } from '@/components/ui/button';
 import { CrearFamiliaCard } from '@/components/familia/crear-familia-card';
 import { UnirseAFamiliaCard } from '@/components/familia/unirse-familia-card';
+import { SupportDialog } from '@/components/dialogs/support-dialog';
+import { Familia } from '@/lib/types';
 
 export default function HomePage() {
   const router = useRouter();
   const { isAuthenticated, usuario, isLoading } = useAuth();
-  const [_familia, _setFamilia] = useState<any | null>(null);
+  const [_familia, _setFamilia] = useState<Familia | null>(null);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   useEffect(() => {
     // Verificar si hay sesión
@@ -54,11 +59,20 @@ export default function HomePage() {
       {/* Header */}
       <header className="border-b border-card bg-card/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-full flex items-center justify-center">
-              <Bird className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-full flex items-center justify-center">
+                <Bird className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
+              </div>
+              <h1 className="text-lg sm:text-xl font-bold text-foreground">NuestroNido</h1>
             </div>
-            <h1 className="text-lg sm:text-xl font-bold text-foreground">NuestroNido</h1>
+            
+            <Link href="/">
+              <Button variant="ghost" size="sm" className="gap-2">
+                <ArrowLeft className="w-4 h-4" />
+                <span className="hidden sm:inline">Volver al inicio</span>
+              </Button>
+            </Link>
           </div>
         </div>
       </header>
@@ -85,12 +99,17 @@ export default function HomePage() {
         <div className="mt-16 text-center">
           <p className="text-muted-foreground text-sm">
             ¿Necesitas ayuda?{' '}
-            <a href="#" className="text-primary hover:underline font-medium">
+            <button
+              onClick={() => setIsSupportOpen(true)}
+              className="text-primary hover:underline font-medium"
+            >
               Contacta con soporte
-            </a>
+            </button>
           </p>
         </div>
       </main>
+
+      <SupportDialog open={isSupportOpen} onOpenChange={setIsSupportOpen} />
     </div>
   );
 }

@@ -1,25 +1,40 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Familia, Nota } from '@/lib/types';
+import { Familia, Nota, Miembro, Usuario } from '@/lib/types';
 import { NotaCard } from '@/components/nota-card';
 import { NotaFilter } from '@/components/nota-filter';
+import { CrearNotaDialog } from '@/components/dialogs/crear-nota-dialog';
 import { Button } from '@/components/ui/button';
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from '@/components/ui/empty';
 import { Plus } from 'lucide-react';
 
 export function NotasSection() {
   const [familia, setFamilia] = useState<Familia | null>(null);
+  const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [notas, setNotas] = useState<Nota[]>([]);
   const [filtrosActivos, setFiltrosActivos] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isNuevaNotaOpen, setIsNuevaNotaOpen] = useState(false);
 
   useEffect(() => {
     // Cargar familia y notas desde localStorage
     const familiaGuardada = localStorage.getItem('familia');
+    const usuarioGuardado = localStorage.getItem('usuario');
+    
+    if (usuarioGuardado) {
+      try {
+        Promise.resolve().then(() => {
+          setUsuario(JSON.parse(usuarioGuardado));
+        });
+      } catch (error) {
+        console.error('Error loading usuario:', error);
+      }
+    }
+
     if (familiaGuardada) {
       try {
-        const familiaData = JSON.parse(familiaGuardada);
+        const familiaData = JSON.parse(familiaGuardada) as Familia;
         // Usar Promise para evitar setState directo en effect
         Promise.resolve().then(() => {
           setFamilia(familiaData);
@@ -46,14 +61,17 @@ export function NotasSection() {
               titulo: 'Almuerzo Mañana',
               contenido: 'Preparar el almuerzo de mañana',
               colorCreador: familiaData.miembros[0]?.color || {
+                id: '1',
                 nombre: 'Azul',
                 bg: '#3B82F6',
                 text: '#FFFFFF',
+                accent: '#2563EB',
+                wcagContrast: 4.5,
               },
               fechaCreacion: new Date(Date.now() - 86400000).toISOString(),
               prioridad: 'alta',
               completado: false,
-              miembrosAsignados: familiaData.miembros.slice(0, 1).map((m: any) => m.id),
+              miembrosAsignados: familiaData.miembros.slice(0, 1).map((m: Miembro) => m.id),
               familiaId: familiaData.id,
             },
             {
@@ -61,14 +79,17 @@ export function NotasSection() {
               titulo: 'Limpieza Sala',
               contenido: 'Limpiar la sala',
               colorCreador: familiaData.miembros[1]?.color || {
+                id: '2',
                 nombre: 'Rosa',
                 bg: '#EC4899',
                 text: '#FFFFFF',
+                accent: '#DB2777',
+                wcagContrast: 4.5,
               },
               fechaCreacion: new Date(Date.now() - 172800000).toISOString(),
               prioridad: 'media',
               completado: true,
-              miembrosAsignados: familiaData.miembros.slice(1, 2).map((m: any) => m.id),
+              miembrosAsignados: familiaData.miembros.slice(1, 2).map((m: Miembro) => m.id),
               familiaId: familiaData.id,
             },
             {
@@ -76,14 +97,17 @@ export function NotasSection() {
               titulo: 'Compras',
               contenido: 'Comprar verduras',
               colorCreador: familiaData.miembros[0]?.color || {
+                id: '1',
                 nombre: 'Azul',
                 bg: '#3B82F6',
                 text: '#FFFFFF',
+                accent: '#2563EB',
+                wcagContrast: 4.5,
               },
               fechaCreacion: new Date(Date.now() - 259200000).toISOString(),
               prioridad: 'baja',
               completado: false,
-              miembrosAsignados: familiaData.miembros.map((m: any) => m.id),
+              miembrosAsignados: familiaData.miembros.map((m: Miembro) => m.id),
               familiaId: familiaData.id,
             },
           ];
@@ -103,16 +127,50 @@ export function NotasSection() {
     });
   }, []);
 
+  // Update localStorage when notes change
+  useEffect(() => {
+    if (!loading && notas.length > 0) {
+      localStorage.setItem('notas', JSON.stringify(notas));
+    }
+  }, [notas, loading]);
+
+  const handleCrearNota = (data: any) => {
+    if (!familia || !usuario) return;
+
+    const nuevaNota: Nota = {
+      id: `nota-${Date.now()}`,
+      titulo: data.titulo,
+      contenido: data.contenido,
+      colorCreador: familia.miembros.find((m) => m.id === usuario.id)?.color || {
+        id: 'temp',
+        nombre: 'Gris',
+        bg: '#9CA3AF',
+        text: '#FFFFFF',
+        accent: '#9CA3AF',
+        wcagContrast: 4.5
+      },
+      fechaCreacion: new Date().toISOString(),
+      prioridad: 'media',
+      completado: false,
+      miembrosAsignados: [], // No assignees initially
+      familiaId: familia.id,
+    };
+
+    // Insertar al principio de la lista (prepend)
+    setNotas([nuevaNota, ...notas]);
+    setIsNuevaNotaOpen(false);
+  };
+
   const notasFiltradas =
-    filtrosActivos.length === 0
+    (filtrosActivos.length === 0
       ? notas
       : notas.filter((nota) =>
           filtrosActivos.some(
             (filtroId) =>
               nota.miembrosAsignados?.includes(filtroId) ||
-              familia?.miembros.find((m) => m.id === filtroId && m.color === nota.colorCreador)
+              familia?.miembros.find((m) => m.id === filtroId && m.color.bg === nota.colorCreador.bg)
           )
-        );
+        )).sort((a, b) => new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime());
 
   if (loading) {
     return (
@@ -133,7 +191,7 @@ export function NotasSection() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-foreground">Notas</h2>
-        <Button className="bg-primary hover:bg-primary/90">
+        <Button className="bg-primary hover:bg-primary/90" onClick={() => setIsNuevaNotaOpen(true)}>
           <Plus className="w-4 h-4 mr-2" />
           Nueva Nota
         </Button>
@@ -180,6 +238,12 @@ export function NotasSection() {
           </div>
         </div>
       )}
+
+      <CrearNotaDialog 
+        open={isNuevaNotaOpen} 
+        onOpenChange={setIsNuevaNotaOpen}
+        onSubmit={handleCrearNota}
+      />
     </div>
   );
 }

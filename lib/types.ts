@@ -166,11 +166,14 @@ export interface Tarea {
   id: string;
   titulo: string;
   descripcion?: string;
-  fecha: string; // ISO date: "2025-12-10"
+  tipoFecha?: 'fecha' | 'dias'; // Nuevo campo
+  fecha?: string; // ISO date: "2025-12-10" (Opcional si es por días)
+  diasSemana?: string[]; // Nuevo campo para días de la semana (["1", "3"] para Lunes y Miércoles)
   hora?: string; // Opcional: "14:30"
   creadorId: string; // ID del miembro que creó
   colorCreador: ColorMiembro; // Color del creador
   prioridad?: 'baja' | 'media' | 'alta';
+  frecuencia?: 'unica' | 'diaria' | 'semanal' | 'mensual' | 'anual';
   completada: boolean;
   miembrosAsignados?: string[];
   familiaId: string;
@@ -235,7 +238,7 @@ export interface AppError {
   code: string;
   message: string;
   field?: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
 }
 
 // ============ API GENÉRICA ============
