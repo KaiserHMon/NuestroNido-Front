@@ -1,5 +1,5 @@
 import type React from 'react';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -17,10 +17,57 @@ const _geistMono = Geist_Mono({
   display: 'swap',
 });
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f76e6e' },
+    { media: '(prefers-color-scheme: dark)', color: '#000000' },
+  ],
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export const metadata: Metadata = {
-  title: 'NuestroNido - Organización Familiar',
-  description: 'Aplicación para gestionar tareas, listas y notas familiares',
-  generator: 'v0.app',
+  title: {
+    default: 'NuestroNido - Organización Familiar y Armonía',
+    template: '%s | NuestroNido',
+  },
+  description:
+    'Un hogar más organizado, conectado y en armonía. Gestiona tareas, listas de compras y notas familiares en un solo lugar con gamificación divertida.',
+  keywords: [
+    'organización familiar',
+    'calendario compartido',
+    'listas de compras',
+    'tareas del hogar',
+    'app familiar',
+    'gamificación',
+    'gestión del hogar',
+    'nuestro nido',
+  ],
+  authors: [{ name: 'NuestroNido Team' }],
+  creator: 'NuestroNido',
+  metadataBase: new URL('https://nuestronido.vercel.app'), // Placeholder, ajusta según dominio real
+  openGraph: {
+    title: 'NuestroNido - Organización Familiar',
+    description:
+      'Coordina tareas, listas y notas con tu familia. ¡Haz del orden un juego divertido y mantén tu hogar en armonía!',
+    url: 'https://nuestronido.vercel.app',
+    siteName: 'NuestroNido',
+    locale: 'es_ES',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'NuestroNido - Tu hogar organizado',
+    description:
+      'Coordina tareas, listas y notas con tu familia de forma divertida. ¡Únete a NuestroNido!',
+    creator: '@nuestronido',
+  },
+  icons: {
+    icon: '/favicon.ico', // Asegúrate de tener estos archivos o ajusta las rutas
+    apple: '/apple-touch-icon.png',
+  },
+  manifest: '/site.webmanifest',
 };
 
 export default function RootLayout({
