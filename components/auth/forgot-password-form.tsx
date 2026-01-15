@@ -40,7 +40,6 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
     setIsSubmitting(true);
     setError(null);
     try {
-      // Aquí iría la llamada a tu API para enviar el email de recuperación
       const response = await fetch('/api/auth/forgot-password', {
         method: 'POST',
         headers: {

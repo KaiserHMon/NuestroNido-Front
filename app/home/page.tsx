@@ -18,17 +18,14 @@ export default function HomePage() {
   const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   useEffect(() => {
-    // Verificar si hay sesión
     if (!isLoading && !isAuthenticated) {
       router.push('/login');
       return;
     }
 
-    // Verificar si ya tiene familia
     if (!isLoading && isAuthenticated) {
       const familiaGuardada = localStorage.getItem('familia');
       if (familiaGuardada) {
-        // Usar Promise para evitar setState directo en effect
         Promise.resolve().then(() => {
           _setFamilia(JSON.parse(familiaGuardada));
           router.push('/dashboard');
@@ -56,7 +53,6 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="border-b border-card bg-card/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
@@ -77,9 +73,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
-        {/* Welcome Section */}
         <div className="text-center mb-12">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-2">
             ¡Bienvenido, {usuario.nombre}!
@@ -89,13 +83,11 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/* Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto items-start">
           <CrearFamiliaCard onSuccess={() => router.push('/dashboard')} />
           <UnirseAFamiliaCard onSuccess={() => router.push('/dashboard')} />
         </div>
 
-        {/* Help Section */}
         <div className="mt-16 text-center">
           <p className="text-muted-foreground text-sm">
             ¿Necesitas ayuda?{' '}

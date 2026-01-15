@@ -22,7 +22,6 @@ export const useFamilia = () => {
     error: null,
   });
 
-  // Cargar familia del localStorage al inicializar
   const cargarFamiliaGuardada = useCallback(() => {
     try {
       const familiaStr = localStorage.getItem('familia');
@@ -31,7 +30,7 @@ export const useFamilia = () => {
         setState((prev) => ({ ...prev, familia }));
       }
     } catch (error) {
-      console.error('Error cargando familia guardada:', error);
+      // Ignored
     }
   }, []);
 
@@ -42,7 +41,6 @@ export const useFamilia = () => {
       const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
       const _token = localStorage.getItem('auth_token');
 
-      // Simulación hasta que el backend esté disponible
       const mockResponse: ApiResponse<Familia> = {
         success: true,
         data: {
@@ -69,9 +67,6 @@ export const useFamilia = () => {
               updatedAt: new Date(),
             },
           ],
-          maxMiembros: 10,
-          plan: 'free',
-          maxNotas: 3,
           activa: true,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -107,7 +102,6 @@ export const useFamilia = () => {
     try {
       const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
 
-      // Simulación hasta que el backend esté disponible
       const mockResponse: ApiResponse<Familia> = {
         success: true,
         data: {
@@ -151,9 +145,6 @@ export const useFamilia = () => {
               updatedAt: new Date(),
             },
           ],
-          maxMiembros: 10,
-          plan: 'free',
-          maxNotas: 3,
           activa: true,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -185,7 +176,6 @@ export const useFamilia = () => {
 
   const validarCodigo = useCallback(async (codigo: string) => {
     try {
-      // Simulación hasta que el backend esté disponible
       if (codigo.length < 6) {
         return { valido: false, error: 'Código inválido' };
       }
@@ -206,7 +196,6 @@ export const useFamilia = () => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      // Simulación hasta que el backend esté disponible
       const familiaGuardada = JSON.parse(localStorage.getItem('familia') || '{}');
 
       const familiaActualizada: Familia = {
@@ -239,7 +228,6 @@ export const useFamilia = () => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      // Simulación hasta que el backend esté disponible
       localStorage.removeItem('familia');
 
       setState({

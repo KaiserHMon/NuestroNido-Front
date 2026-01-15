@@ -34,7 +34,7 @@ export function CrearFamiliaCard({ onSuccess }: CrearFamiliaCardProps) {
       await crearFamilia(data.nombre);
       onSuccess?.();
     } catch (error) {
-      console.error('Error creando familia:', error);
+      // Error handled by state
     } finally {
       setIsSubmitting(false);
     }

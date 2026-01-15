@@ -176,6 +176,22 @@ export function CalendarioSection() {
         fechaStr = format(data.fecha, 'yyyy-MM-dd');
     }
 
+    // Determine assignee (creator or selected member)
+    const asignadoId = data.asignadoA || usuario.id;
+    const miembroAsignado = familia.miembros.find(m => m.id === asignadoId);
+    
+    // Fallback to current user if member not found (shouldn't happen if logic is correct)
+    const finalCreadorId = miembroAsignado ? miembroAsignado.id : usuario.id;
+    const finalColor = miembroAsignado ? miembroAsignado.color : (familia.miembros.find((m) => m.id === usuario.id)?.color || {
+        id: 'temp',
+        nombre: 'Gris',
+        bg: '#9CA3AF',
+        text: '#FFFFFF',
+        accent: '#9CA3AF',
+        wcagContrast: 4.5
+      });
+
+
     const nuevaTarea: Tarea = {
       id: `tarea-${Date.now()}`,
       titulo: data.titulo,
@@ -183,15 +199,8 @@ export function CalendarioSection() {
       tipoFecha: data.tipoFecha,
       fecha: fechaStr,
       diasSemana: data.diasSemana,
-      creadorId: usuario.id,
-      colorCreador: familia.miembros.find((m) => m.id === usuario.id)?.color || {
-        id: 'temp',
-        nombre: 'Gris',
-        bg: '#9CA3AF',
-        text: '#FFFFFF',
-        accent: '#9CA3AF',
-        wcagContrast: 4.5
-      },
+      creadorId: finalCreadorId,
+      colorCreador: finalColor,
       frecuencia: data.recurrencia, 
       completada: false,
       familiaId: familia.id,
@@ -203,12 +212,20 @@ export function CalendarioSection() {
   };
 
   const handleGuardarEdicion = (data: any) => {
-      if (!tareaAEditar) return;
+      if (!tareaAEditar || !familia) return;
 
       let fechaStr = undefined;
       if (data.fecha) {
         fechaStr = format(data.fecha, 'yyyy-MM-dd');
       }
+
+      // Determine assignee (creator or selected member)
+      const asignadoId = data.asignadoA || tareaAEditar.creadorId;
+      const miembroAsignado = familia.miembros.find(m => m.id === asignadoId);
+
+      // Fallback to existing if not found
+      const finalCreadorId = miembroAsignado ? miembroAsignado.id : tareaAEditar.creadorId;
+      const finalColor = miembroAsignado ? miembroAsignado.color : tareaAEditar.colorCreador;
 
       const tareasActualizadas = tareas.map(t => {
           if (t.id === tareaAEditar.id) {
@@ -220,6 +237,8 @@ export function CalendarioSection() {
                   fecha: fechaStr,
                   diasSemana: data.diasSemana,
                   frecuencia: data.recurrencia,
+                  creadorId: finalCreadorId,
+                  colorCreador: finalColor,
               };
           }
           return t;
@@ -432,8 +451,11 @@ export function CalendarioSection() {
             tipoFecha: tareaAEditar.tipoFecha || 'fecha',
             fecha: tareaAEditar.fecha ? new Date(tareaAEditar.fecha + 'T12:00:00') : undefined,
             diasSemana: tareaAEditar.diasSemana,
-            recurrencia: tareaAEditar.frecuencia as any
+            recurrencia: tareaAEditar.frecuencia as any,
+            asignadoA: tareaAEditar.creadorId,
         } : undefined}
+        miembros={familia?.miembros || []}
+        usuarioActualId={usuario?.id}
       />
 
       {/* Dialog Confirmar Eliminación */}

@@ -29,7 +29,6 @@ export function SupportDialog({ open, onOpenChange }: SupportDialogProps) {
     // Mock sending email
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    console.log('Sending support message:', message);
     toast.success('Mensaje enviado a soporte');
     
     setIsSubmitting(false);

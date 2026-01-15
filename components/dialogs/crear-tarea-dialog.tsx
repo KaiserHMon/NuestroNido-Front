@@ -33,6 +33,7 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Miembro } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { es } from 'date-fns/locale';
 
@@ -43,6 +44,7 @@ const crearTareaSchema = z.object({
   fecha: z.date().optional(),
   diasSemana: z.array(z.string()).optional(),
   recurrencia: z.enum(['unica', 'mensual', 'anual']).default('unica'),
+  asignadoA: z.string().optional(),
 }).refine((data) => {
   if (data.tipoFecha === 'fecha' && !data.fecha) return false;
   if (data.tipoFecha === 'dias' && (!data.diasSemana || data.diasSemana.length === 0)) return false;
@@ -59,6 +61,8 @@ interface CrearTareaDialogProps {
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: CrearTareaFormValues) => void;
   tareaAEditar?: CrearTareaFormValues & { id?: string };
+  miembros: Miembro[];
+  usuarioActualId?: string;
 }
 
 const DIAS_SEMANA = [
@@ -71,7 +75,7 @@ const DIAS_SEMANA = [
   { id: '0', label: 'D' }, // Domingo
 ];
 
-export function CrearTareaDialog({ open, onOpenChange, onSubmit, tareaAEditar }: CrearTareaDialogProps) {
+export function CrearTareaDialog({ open, onOpenChange, onSubmit, tareaAEditar, miembros, usuarioActualId }: CrearTareaDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<CrearTareaFormValues>({
@@ -82,6 +86,7 @@ export function CrearTareaDialog({ open, onOpenChange, onSubmit, tareaAEditar }:
       fecha: new Date(),
       diasSemana: [],
       recurrencia: 'unica',
+      asignadoA: usuarioActualId || '',
     },
   });
 
@@ -94,6 +99,7 @@ export function CrearTareaDialog({ open, onOpenChange, onSubmit, tareaAEditar }:
             fecha: tareaAEditar.fecha ? new Date(tareaAEditar.fecha) : undefined,
             diasSemana: tareaAEditar.diasSemana || [],
             recurrencia: tareaAEditar.recurrencia || 'unica',
+            asignadoA: tareaAEditar.asignadoA || usuarioActualId,
         });
       } else {
         form.reset({
@@ -102,10 +108,11 @@ export function CrearTareaDialog({ open, onOpenChange, onSubmit, tareaAEditar }:
           fecha: new Date(),
           diasSemana: [],
           recurrencia: 'unica',
+          asignadoA: usuarioActualId || '',
         });
       }
     }
-  }, [open, tareaAEditar, form]);
+  }, [open, tareaAEditar, form, usuarioActualId]);
 
   const handleSubmit = async (data: CrearTareaFormValues) => {
     setIsSubmitting(true);
@@ -142,6 +149,38 @@ export function CrearTareaDialog({ open, onOpenChange, onSubmit, tareaAEditar }:
                   <FormControl>
                     <Input placeholder="Ej: Comprar regalos" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+             {/* Asignar a */}
+             <FormField
+              control={form.control}
+              name="asignadoA"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Asignar a</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona un familiar" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {miembros.map((miembro) => (
+                        <SelectItem key={miembro.id} value={miembro.id}>
+                           <div className="flex items-center gap-2">
+                            <div 
+                                className="w-3 h-3 rounded-full" 
+                                style={{ backgroundColor: miembro.color.bg }}
+                            />
+                            {miembro.nombre}
+                           </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

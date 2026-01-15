@@ -27,7 +27,6 @@ export const useAuth = () => {
     error: null,
   });
 
-  // Verificar si hay sesión al cargar
   useEffect(() => {
     const checkSession = async () => {
       try {
@@ -46,7 +45,6 @@ export const useAuth = () => {
           setState((prev) => ({ ...prev, isLoading: false }));
         }
       } catch (error) {
-        console.error('Error verificando sesión:', error);
         setState((prev) => ({ ...prev, isLoading: false }));
       }
     };

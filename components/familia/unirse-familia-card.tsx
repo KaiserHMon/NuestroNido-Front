@@ -43,7 +43,7 @@ export function UnirseAFamiliaCard({ onSuccess }: UnirseAFamiliaCardProps) {
         const resultado = await validarCodigo(codigo);
         setValidacionCodigo(resultado);
       } catch (error) {
-        console.error('Error validando código:', error);
+        // Ignored
       }
     } else {
       setValidacionCodigo(null);
@@ -56,7 +56,7 @@ export function UnirseAFamiliaCard({ onSuccess }: UnirseAFamiliaCardProps) {
       await unirseAFamilia(data.codigoInvitacion);
       onSuccess?.();
     } catch (error) {
-      console.error('Error uniéndose a familia:', error);
+      // Ignored
     } finally {
       setIsSubmitting(false);
     }
@@ -107,7 +107,6 @@ export function UnirseAFamiliaCard({ onSuccess }: UnirseAFamiliaCardProps) {
             )}
           </div>
 
-          {/* Validación de Código */}
           {codigo && codigo.length >= 6 && validacionCodigo && (
             <div
               className={`p-3 rounded-md border ${

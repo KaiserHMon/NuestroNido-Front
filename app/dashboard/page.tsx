@@ -42,7 +42,6 @@ export default function DashboardPage() {
   return (
     <DashboardLayout activeSection="overview">
       <div className="space-y-8">
-        {/* Header */}
         <div className="space-y-2">
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
             Bienvenido, {usuario?.nombre}
@@ -50,7 +49,6 @@ export default function DashboardPage() {
           <p className="text-muted-foreground">Selecciona una sección para empezar</p>
         </div>
 
-        {/* Grid de Secciones */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {shortcuts.map((shortcut) => {
             const Icon = shortcut.icon;

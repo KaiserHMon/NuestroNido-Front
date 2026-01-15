@@ -11,7 +11,6 @@ export function RecoverPasswordContent() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
-        {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
@@ -22,12 +21,10 @@ export function RecoverPasswordContent() {
           <p className="text-muted-foreground text-sm sm:text-base">Restablecer Contraseña</p>
         </div>
 
-        {/* Form Container */}
         <div className="bg-card rounded-lg shadow-md border border-border p-6 sm:p-8">
           <ResetPasswordForm token={token || undefined} />
         </div>
 
-        {/* Footer */}
         <div className="text-center mt-6 text-xs sm:text-sm text-muted-foreground">
           <p>Tu contraseña será restablecida de forma segura</p>
         </div>

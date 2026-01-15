@@ -5,7 +5,6 @@
 
 import { Usuario, ApiResponse } from '@/lib/types';
 
-// Simular retraso de red
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export const AuthService = {
@@ -13,10 +12,8 @@ export const AuthService = {
     email: string,
     _password: string
   ): Promise<ApiResponse<{ token: string; usuario: Usuario }>> {
-    // TODO: Reemplazar con llamada real a API
-    await delay(800); // Simular latencia
+    await delay(800);
 
-    // Simulación de éxito
     return {
       success: true,
       data: {
@@ -37,7 +34,6 @@ export const AuthService = {
     email: string,
     _password: string
   ): Promise<ApiResponse<{ token: string; usuario: Usuario }>> {
-    // TODO: Reemplazar con llamada real a API
     await delay(800);
 
     return {

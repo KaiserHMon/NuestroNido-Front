@@ -13,8 +13,8 @@ import { es } from 'date-fns/locale';
 interface TareasTabProps {
   tareas: Tarea[];
   usuarioId?: string;
-  filtroInicial?: 'dia' | 'semana' | 'mes' | 'anio';
-  onFiltroChange?: (filtro: 'dia' | 'semana' | 'mes' | 'anio') => void;
+  filtroInicial?: 'dia' | 'semana' | 'mes' | 'año';
+  onFiltroChange?: (filtro: 'dia' | 'semana' | 'mes' | 'año') => void;
   onEditar?: (tarea: Tarea) => void;
   onEliminar?: (tareaId: string) => void;
   onToggleCompletada?: (tareaId: string, completada: boolean) => void;
@@ -29,9 +29,9 @@ export function TareasTab({
   onEliminar,
   onToggleCompletada,
 }: TareasTabProps) {
-  const [filtro, setFiltro] = useState<'dia' | 'semana' | 'mes' | 'anio'>(filtroInicial);
+  const [filtro, setFiltro] = useState<'dia' | 'semana' | 'mes' | 'año'>(filtroInicial);
 
-  const handleFiltro = (nuevoFiltro: 'dia' | 'semana' | 'mes' | 'anio') => {
+  const handleFiltro = (nuevoFiltro: 'dia' | 'semana' | 'mes' | 'año') => {
     setFiltro(nuevoFiltro);
     onFiltroChange?.(nuevoFiltro);
   };
@@ -52,7 +52,7 @@ export function TareasTab({
           inicio: startOfMonth(hoy),
           fin: endOfMonth(hoy),
         };
-      case 'anio':
+      case 'año':
         return {
           inicio: startOfYear(hoy),
           fin: endOfYear(hoy),
@@ -150,7 +150,7 @@ export function TareasTab({
     <div className="space-y-4">
       {/* Filtros */}
       <div className="flex gap-2 overflow-x-auto pb-1">
-        {(['dia', 'semana', 'mes', 'anio'] as const).map((f) => (
+        {(['dia', 'semana', 'mes', 'año'] as const).map((f) => (
             <Button
                 key={f}
                 size="sm"

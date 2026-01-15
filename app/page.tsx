@@ -3,62 +3,18 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Calendar, ShoppingCart, StickyNote, Trophy, Check, ArrowRight, Bird } from 'lucide-react';
+import { Calendar, ShoppingCart, StickyNote, Trophy, ArrowRight, Bird } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { birdLayout } from '@/config/birdConfig';
 import { LandingHeader } from '@/components/landing-header';
 import { SupportDialog } from '@/components/dialogs/support-dialog';
 import { useAuth } from '@/hooks/use-auth';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 
 export default function LandingPage() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const [isSupportOpen, setIsSupportOpen] = useState(false);
-  const [showPlanExistente, setShowPlanExistente] = useState(false);
-
-  const handlePlanFamiliarClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    
-    if (!isAuthenticated) {
-        router.push('/register');
-        return;
-    }
-
-    const familiaGuardada = localStorage.getItem('familia');
-    if (!familiaGuardada) {
-        // No family -> Redirect to /home to create/join
-        router.push('/home');
-        return;
-    }
-
-    try {
-        const familia = JSON.parse(familiaGuardada);
-        // Check if already has the plan (assuming 'pro' is 'Nido Familiar')
-        if (familia.plan === 'pro') {
-            setShowPlanExistente(true);
-        } else {
-            // Proceed to upgrade (mock)
-            // For now, maybe just redirect to dashboard or show a "Upgrade" dialog?
-            // Specs don't specify what to do if they DON'T have the plan but HAVE family.
-            // I'll assume we redirect to a payment page or similar. 
-            // Since we don't have that, I'll redirect to dashboard for now.
-             router.push('/dashboard');
-        }
-    } catch (error) {
-        console.error("Error parsing familia", error);
-        router.push('/home');
-    }
-  };
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -239,108 +195,6 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Pricing Section */}
-        <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-20 bg-card/50 backdrop-blur-sm">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-10 sm:mb-16 px-2">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary mb-3 sm:mb-4">
-                Planes para cada familia
-              </h2>
-              <p className="text-base sm:text-lg md:text-xl text-foreground">
-                Elige el plan que mejor se adapte a las necesidades de tu hogar
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
-              {/* Free Plan */}
-              <Card className="border-card bg-card flex flex-col">
-                <CardHeader className="p-4 sm:p-6">
-                  <CardTitle className="text-xl sm:text-2xl text-primary">Nido Básico</CardTitle>
-                  <div className="mt-3 sm:mt-4">
-                    <span className="text-3xl sm:text-4xl font-bold text-foreground">$0</span>
-                    <span className="text-foreground text-sm sm:text-base">/mes</span>
-                  </div>
-                  <CardDescription className="text-foreground mt-2 text-sm sm:text-base min-h-[3rem]">
-                    Perfecto para hogares pequeños
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6 flex flex-col flex-grow">
-                  <ul className="space-y-2 sm:space-y-3 mb-4">
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5" />
-                      <span className="text-foreground text-sm sm:text-base">Hasta 2 miembros</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5" />
-                      <span className="text-foreground text-sm sm:text-base">
-                        Hasta 5 tareas semanales
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5" />
-                      <span className="text-foreground text-sm sm:text-base">
-                        Hasta 3 notas permanentes
-                      </span>
-                    </li>
-                  </ul>
-                  <Link href="/register" className="block mt-auto">
-                    <Button className="w-full bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-sm sm:text-base shadow-md shadow-primary/30 transition-all duration-300 active:scale-95">
-                      Comenzar Gratis
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-
-              {/* Premium Plan */}
-              <Card className="border-primary bg-gradient-to-br from-card via-card to-card/80 shadow-xl shadow-primary/40 relative flex flex-col ring-2 ring-primary/50 transition-all duration-300 hover:shadow-2xl hover:shadow-primary/60 hover:ring-primary/70">
-                <div className="absolute -top-3 sm:-top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-primary via-primary to-primary/80 text-primary-foreground px-3 sm:px-4 py-1 rounded-full text-xs sm:text-sm font-medium shadow-lg shadow-primary/50">
-                  Más Popular
-                </div>
-                <CardHeader className="p-4 sm:p-6">
-                  <CardTitle className="text-xl sm:text-2xl text-primary">Nido Familiar</CardTitle>
-                  <div className="mt-3 sm:mt-4">
-                    <span className="text-3xl sm:text-4xl font-bold text-foreground">$4.99</span>
-                    <span className="text-foreground text-sm sm:text-base">/mes</span>
-                  </div>
-                  <CardDescription className="text-foreground mt-2 text-sm sm:text-base min-h-[3rem]">
-                    Ideal para familias que buscan orden y coordinación diaria
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6 flex flex-col flex-grow">
-                  <ul className="space-y-2 sm:space-y-3 mb-4">
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5" />
-                      <span className="text-foreground text-sm sm:text-base">Hasta 5 miembros</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5" />
-                      <span className="text-foreground text-sm sm:text-base">
-                        Tareas ilimitadas
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5" />
-                      <span className="text-foreground text-sm sm:text-base">Notas ilimitadas</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <Check className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5" />
-                      <span className="text-foreground text-sm sm:text-base">
-                        Acceso anticipado a nuevas funcionalidades
-                      </span>
-                    </li>
-                  </ul>
-                  <Button 
-                    onClick={handlePlanFamiliarClick}
-                    className="w-full bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-sm sm:text-base shadow-md shadow-primary/30 transition-all duration-300 active:scale-95 block mt-auto"
-                  >
-                    Comenzar Ahora
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
         {/* CTA Section */}
         <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-20">
           <div className="max-w-4xl mx-auto text-center bg-gradient-to-br from-card via-card to-primary/10 rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-2xl">
@@ -355,7 +209,7 @@ export default function LandingPage() {
                 size="lg"
                 className="bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-6 sm:px-8 w-full sm:w-auto shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
               >
-                Crear mi Nido Gratis
+                Crear mi Nido
                 <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
               </Button>
             </Link>
@@ -396,23 +250,6 @@ export default function LandingPage() {
 
       {/* Support Dialog */}
       <SupportDialog open={isSupportOpen} onOpenChange={setIsSupportOpen} />
-
-      {/* Plan Existing Dialog */}
-      <AlertDialog open={showPlanExistente} onOpenChange={setShowPlanExistente}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¡Ya tienes este plan!</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tu familia ya está disfrutando del plan Nido Familiar. No necesitas realizar ninguna acción adicional.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogAction onClick={() => router.push('/dashboard')}>
-              Ir al Dashboard
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }

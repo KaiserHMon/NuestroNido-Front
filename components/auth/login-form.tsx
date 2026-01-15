@@ -35,7 +35,7 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
       await login(data.email, data.password);
       onSuccess?.();
     } catch (error) {
-      console.error('Error en login:', error);
+      // Error is handled by state
     } finally {
       setIsSubmitting(false);
     }
@@ -49,7 +49,6 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
         </Alert>
       )}
 
-      {/* Email Field */}
       <div className="space-y-1.5">
         <Label htmlFor="email" className="text-foreground font-medium">
           Email
@@ -68,7 +67,6 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
         {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
       </div>
 
-      {/* Password Field */}
       <div className="space-y-1.5">
         <Label htmlFor="password" className="text-foreground font-medium">
           Contraseña
@@ -95,7 +93,6 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
         {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
       </div>
 
-      {/* Forgot Password */}
       <div className="flex items-center justify-end text-xs mt-2">
         <button
           type="button"
@@ -107,7 +104,6 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
         </button>
       </div>
 
-      {/* Submit Button */}
       <Button
         type="submit"
         className="w-full bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground font-medium h-10 shadow-md shadow-primary/30 transition-all duration-300"
@@ -123,7 +119,6 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
         )}
       </Button>
 
-      {/* Divider */}
       <div className="relative py-2">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-border"></div>
@@ -133,7 +128,6 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
         </div>
       </div>
 
-      {/* Google Auth Button */}
       <Button
         type="button"
         variant="outline"

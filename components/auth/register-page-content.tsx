@@ -10,10 +10,8 @@ export function RegisterPageContent() {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuth();
 
-  // Redirigir si ya está autenticado
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
-      // Verificar si tiene familia
       const familia = localStorage.getItem('familia');
       if (familia) {
         router.push('/dashboard');
@@ -39,7 +37,6 @@ export function RegisterPageContent() {
   return (
     <main className="min-h-screen bg-background flex items-center justify-center px-4 py-4">
       <div className="w-full max-w-md">
-        {/* Header */}
         <div className="text-center mb-6">
           <div className="flex items-center justify-center gap-2 mb-2">
             <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
@@ -53,12 +50,10 @@ export function RegisterPageContent() {
           </p>
         </div>
 
-        {/* Register Form */}
         <div className="bg-card rounded-lg shadow-md border border-border p-5">
           <RegisterForm onSuccess={() => router.push('/home')} />
         </div>
 
-        {/* Footer Links */}
         <div className="text-center mt-4 text-sm sm:text-base text-muted-foreground space-y-2">
           <p>
             ¿Ya tienes cuenta?{' '}

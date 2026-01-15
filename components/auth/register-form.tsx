@@ -39,7 +39,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
       await registerUser(data.nombre, data.email, data.password);
       onSuccess?.();
     } catch (error) {
-      console.error('Error en registro:', error);
+      // Error is handled by state
     } finally {
       setIsSubmitting(false);
     }
@@ -53,7 +53,6 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         </Alert>
       )}
 
-      {/* Name Field */}
       <div className="space-y-1.5">
         <Label htmlFor="nombre" className="text-foreground font-medium">
           Nombre Completo
@@ -72,7 +71,6 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         {errors.nombre && <p className="text-sm text-destructive">{errors.nombre.message}</p>}
       </div>
 
-      {/* Email Field */}
       <div className="space-y-1.5">
         <Label htmlFor="email" className="text-foreground font-medium">
           Email
@@ -91,7 +89,6 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
       </div>
 
-      {/* Password Field */}
       <div className="space-y-1.5">
         <Label htmlFor="password" className="text-foreground font-medium">
           Contraseña
@@ -123,7 +120,6 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         )}
       </div>
 
-      {/* Confirm Password Field */}
       <div className="space-y-1.5">
         <Label htmlFor="passwordConfirm" className="text-foreground font-medium">
           Confirmar Contraseña
@@ -152,7 +148,6 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         )}
       </div>
 
-      {/* Submit Button */}
       <Button
         type="submit"
         className="w-full bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground font-medium h-10 shadow-md shadow-primary/30 transition-all duration-300 mt-2"
@@ -168,7 +163,6 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         )}
       </Button>
 
-      {/* Divider */}
       <div className="relative py-2">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-border"></div>
@@ -178,7 +172,6 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         </div>
       </div>
 
-      {/* Google Auth Button */}
       <Button
         type="button"
         variant="outline"

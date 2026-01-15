@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic';
 import { Bird } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 
-// Lazy load formularios - reducción de ~20KB en bundle inicial
+// Lazy load formularios
 const LoginForm = dynamic(
   () => import('@/components/auth/login-form').then((mod) => ({ default: mod.LoginForm })),
   {
@@ -26,7 +26,6 @@ const ForgotPasswordForm = dynamic(
   }
 );
 
-// Skeleton de carga para mejor UX
 function FormSkeleton() {
   return (
     <div className="space-y-4">
@@ -43,10 +42,8 @@ export function AuthPageContent() {
   const { isAuthenticated, isLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<'login' | 'forgot-password'>('login');
 
-  // Redirigir si ya está autenticado
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
-      // Verificar si tiene familia
       const familia = localStorage.getItem('familia');
       if (familia) {
         router.push('/dashboard');
@@ -56,11 +53,9 @@ export function AuthPageContent() {
     }
   }, [isAuthenticated, isLoading, router]);
 
-  // Verificar si hay parámetro de recuperación
   useEffect(() => {
     const tab = searchParams.get('tab');
     if (tab === 'forgot-password') {
-      // Usar Promise para evitar setState directo en effect
       Promise.resolve().then(() => {
         setActiveTab('forgot-password');
       });
@@ -83,7 +78,6 @@ export function AuthPageContent() {
   return (
     <main className="min-h-screen bg-background flex items-center justify-center px-4 py-4">
       <div className="w-full max-w-md">
-        {/* Header */}
         <div className="text-center mb-4">
           <div className="flex items-center justify-center gap-2 mb-2">
             <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
@@ -96,7 +90,6 @@ export function AuthPageContent() {
           </p>
         </div>
 
-        {/* Forms Container */}
         <div className="bg-card rounded-lg shadow-md border border-border p-4 sm:p-5">
           {activeTab === 'login' ? (
             <LoginForm
@@ -108,7 +101,6 @@ export function AuthPageContent() {
           )}
         </div>
 
-        {/* Register Link */}
         <div className="text-center mt-4 text-sm sm:text-base text-muted-foreground">
           <p>
             ¿No tienes cuenta?{' '}

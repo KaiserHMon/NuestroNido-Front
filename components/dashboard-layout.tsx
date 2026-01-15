@@ -15,7 +15,6 @@ interface DashboardLayoutProps {
   activeSection?: 'miembros' | 'calendario' | 'lista' | 'notas' | 'overview';
 }
 
-// Rutas del dashboard para prefetching
 const DASHBOARD_ROUTES = [
   '/dashboard/miembros',
   '/dashboard/calendario',
@@ -32,7 +31,6 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
   const [invitarDialogOpen, setInvitarDialogOpen] = useState(false);
 
   useEffect(() => {
-    // Cargar datos de localStorage
     const familiaGuardada = localStorage.getItem('familia');
     const usuarioGuardado = localStorage.getItem('usuario');
 
@@ -44,7 +42,6 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
     const familiaData: Familia = JSON.parse(familiaGuardada);
     const usuarioData: Usuario = JSON.parse(usuarioGuardado);
 
-    // Usar Promise para evitar setState directo en effect
     Promise.resolve().then(() => {
       setFamilia(familiaData);
       setUsuario(usuarioData);
@@ -52,7 +49,6 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
     });
   }, [router]);
 
-  // Prefetch rutas del dashboard (optimización)
   useEffect(() => {
     DASHBOARD_ROUTES.forEach((route) => {
       router.prefetch(route);
@@ -65,7 +61,6 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
   };
 
   const handleFamiliaActualizada = () => {
-    // Recargar familia del localStorage
     const familiaGuardada = localStorage.getItem('familia');
     if (familiaGuardada) {
       setFamilia(JSON.parse(familiaGuardada));
@@ -101,7 +96,6 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Home Button */}
               <Link href="/">
                 <Button
                   variant="ghost"
@@ -113,7 +107,6 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
                 </Button>
               </Link>
 
-              {/* Logout Button */}
               <Button
                 variant="ghost"
                 size="sm"
@@ -201,10 +194,8 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
               </Button>
             </Link>
 
-            {/* Separador */}
             <div className="w-px h-6 bg-primary-foreground/20 mx-1"></div>
 
-            {/* Familia Actions - Nav */}
             {esCreador && (
               <div className="ml-auto">
                 <FamiliaActions
@@ -221,7 +212,6 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
 
       <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8">{children}</main>
 
-      {/* Dialog de Invitar Miembros */}
       {familia && (
         <InvitarMiembrosDialog
           familia={familia}
