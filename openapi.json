@@ -1,0 +1,1476 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "NuestroNido",
+    "description": "API para gestión de tareas y organización familiar",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/metrics": {
+      "get": {
+        "summary": "Metrics",
+        "description": "Endpoint that serves Prometheus metrics.",
+        "operationId": "metrics_metrics_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          }
+        }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "tags": ["health", "health"],
+        "summary": "Health Check",
+        "description": "Health check endpoint.\nReturns basic app info and status.",
+        "operationId": "health_check_api_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/HealthResponse" } }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/signup": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Signup",
+        "description": "Signs up a new user.",
+        "operationId": "signup_api_auth_signup_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/src__schemas__auth_schemas__UserCreate" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/src__schemas__auth_schemas__UserResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Login",
+        "description": "Logs in a user and returns a JWT token.",
+        "operationId": "login_api_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/UserLogin" } }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/Token" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "List all users",
+        "description": "Retrieve a list of users with pagination support.",
+        "operationId": "read_users_api_users__get",
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 0, "title": "Skip" }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 100, "title": "Limit" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/src__schemas__user_schemas__UserResponse"
+                  },
+                  "title": "Response Read Users Api Users  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Users"],
+        "summary": "Create user",
+        "description": "Create a new user. This is primarily for internal use or registration flows.",
+        "operationId": "create_user_api_users__post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/src__schemas__user_schemas__UserCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/src__schemas__user_schemas__UserResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/{user_id}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get user",
+        "description": "Retrieve specific user details by ID.",
+        "operationId": "read_user_api_users__user_id__get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "User Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/src__schemas__user_schemas__UserResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Users"],
+        "summary": "Update user",
+        "description": "Update user profile information.",
+        "operationId": "update_user_api_users__user_id__put",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "User Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/UserUpdate" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/src__schemas__user_schemas__UserResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Delete user",
+        "description": "Delete a user account.",
+        "operationId": "delete_user_api_users__user_id__delete",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "User Id" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Successful Response" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/families/": {
+      "post": {
+        "tags": ["Families"],
+        "summary": "Create a new family",
+        "description": "Creates a new family for the authenticated user. The user becomes the creator. Fails if user already belongs to a family.",
+        "operationId": "create_family_api_families__post",
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/FamilyCreate" } }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/FamilyResponse" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/families/invitations/code": {
+      "post": {
+        "tags": ["Families"],
+        "summary": "Create invitation code",
+        "description": "Creates a new 8-character invitation code for the family.",
+        "operationId": "create_invitation_code_api_families_invitations_code_post",
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/InvitationCreate" } }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/InvitationResponse" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/families/invitations/link": {
+      "post": {
+        "tags": ["Families"],
+        "summary": "Create invitation link",
+        "description": "Creates a sharable link with a JWT token valid for 24 hours.",
+        "operationId": "create_invitation_link_api_families_invitations_link_post",
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/InvitationLinkResponse" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/families/join/code": {
+      "post": {
+        "tags": ["Families"],
+        "summary": "Join family by code",
+        "description": "Allows an authenticated user to join a family using a valid 8-character invitation code.",
+        "operationId": "join_family_by_code_api_families_join_code_post",
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/JoinByCode" } }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/FamilyResponse" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/families/join/link": {
+      "post": {
+        "tags": ["Families"],
+        "summary": "Join family by link",
+        "description": "Allows an authenticated user to join a family using a valid invitation token.",
+        "operationId": "join_family_by_link_api_families_join_link_post",
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/JoinByLink" } }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/FamilyResponse" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/families/me": {
+      "get": {
+        "tags": ["Families"],
+        "summary": "Get my family",
+        "description": "Retrieves the family details for the currently authenticated user.",
+        "operationId": "get_my_family_api_families_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/FamilyResponse" } }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/families/{family_id}": {
+      "put": {
+        "tags": ["Families"],
+        "summary": "Update family",
+        "description": "Updates family details (e.g., name). Only the family creator can perform this action.",
+        "operationId": "update_family_api_families__family_id__put",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "family_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "Family Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/FamilyUpdate" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/FamilyResponse" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Families"],
+        "summary": "Delete family",
+        "description": "Deletes a family and removes all members. Only the family creator can perform this action.",
+        "operationId": "delete_family_api_families__family_id__delete",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "family_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "Family Id" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Successful Response" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/family-members/": {
+      "get": {
+        "tags": ["Family Members"],
+        "summary": "Get all family members",
+        "description": "Retrieves a list of all members belonging to the same family as the authenticated user.",
+        "operationId": "get_my_family_members_api_family_members__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/FamilyMemberResponse" },
+                  "type": "array",
+                  "title": "Response Get My Family Members Api Family Members  Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/family-members/me": {
+      "delete": {
+        "tags": ["Family Members"],
+        "summary": "Leave family",
+        "description": "Allows the authenticated user to leave their current family.",
+        "operationId": "leave_family_api_family_members_me_delete",
+        "responses": { "204": { "description": "Successful Response" } },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/family-members/{member_id}": {
+      "delete": {
+        "tags": ["Family Members"],
+        "summary": "Remove a member",
+        "description": "Removes a specific member from the family. Only the family creator can perform this action.",
+        "operationId": "remove_member_api_family_members__member_id__delete",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "member_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "Member Id" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Successful Response" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tasks/": {
+      "get": {
+        "summary": "Get Tasks",
+        "operationId": "get_tasks_api_tasks__get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 0, "title": "Skip" }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 100, "title": "Limit" }
+          },
+          {
+            "name": "filter_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                { "enum": ["day", "week", "month", "year"], "type": "string" },
+                { "type": "null" }
+              ],
+              "description": "Filter tasks by date range",
+              "title": "Filter By"
+            },
+            "description": "Filter tasks by date range"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/TaskResponse" },
+                  "title": "Response Get Tasks Api Tasks  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Task",
+        "operationId": "create_task_api_tasks__post",
+        "security": [{ "HTTPBearer": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/TaskCreate" } }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/TaskResponse" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tasks/{task_id}": {
+      "get": {
+        "summary": "Get Task",
+        "operationId": "get_task_api_tasks__task_id__get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "Task Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/TaskResponse" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update Task",
+        "operationId": "update_task_api_tasks__task_id__put",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "Task Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/TaskUpdate" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/TaskResponse" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Task",
+        "operationId": "delete_task_api_tasks__task_id__delete",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "Task Id" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Successful Response" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tasks/cleanup": {
+      "post": {
+        "summary": "Cleanup Tasks",
+        "description": "Triggers daily task cleanup.\nIn a production environment, this should be called by a cron job or restricted to admins.",
+        "operationId": "cleanup_tasks_api_tasks_cleanup_post",
+        "responses": { "204": { "description": "Successful Response" } }
+      }
+    },
+    "/api/lists/categories": {
+      "get": {
+        "summary": "Get Categories",
+        "operationId": "get_categories_api_lists_categories_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "type": "string" },
+                  "type": "array",
+                  "title": "Response Get Categories Api Lists Categories Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/lists/items": {
+      "get": {
+        "summary": "Get Items",
+        "operationId": "get_items_api_lists_items_get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Category" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ListItemResponse" },
+                  "title": "Response Get Items Api Lists Items Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Item",
+        "operationId": "create_item_api_lists_items_post",
+        "security": [{ "HTTPBearer": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ListItemCreate" } }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ListItemResponse" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/lists/items/{item_id}": {
+      "put": {
+        "summary": "Update Item",
+        "operationId": "update_item_api_lists_items__item_id__put",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "Item Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/ListItemUpdate" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/ListItemResponse" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Item",
+        "operationId": "delete_item_api_lists_items__item_id__delete",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "item_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "Item Id" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Successful Response" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/notes/": {
+      "get": {
+        "summary": "Get Notes",
+        "operationId": "get_notes_api_notes__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/NoteResponse" },
+                  "type": "array",
+                  "title": "Response Get Notes Api Notes  Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      },
+      "post": {
+        "summary": "Create Note",
+        "operationId": "create_note_api_notes__post",
+        "requestBody": {
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/NoteCreate" } }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/NoteResponse" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/notes/{note_id}": {
+      "get": {
+        "summary": "Get Note",
+        "operationId": "get_note_api_notes__note_id__get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "note_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "Note Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/NoteResponse" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update Note",
+        "operationId": "update_note_api_notes__note_id__put",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "note_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "Note Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": { "schema": { "$ref": "#/components/schemas/NoteUpdate" } }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": { "schema": { "$ref": "#/components/schemas/NoteResponse" } }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Note",
+        "operationId": "delete_note_api_notes__note_id__delete",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "note_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "Note Id" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Successful Response" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/openapi.json": {
+      "get": {
+        "tags": ["documentation"],
+        "summary": "Get Open Api Endpoint",
+        "description": "Expose OpenAPI schema explicitly.",
+        "operationId": "get_open_api_endpoint_api_openapi_json_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Root",
+        "description": "Root endpoint.",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ColorResponse": {
+        "properties": {
+          "name": { "type": "string", "title": "Name" },
+          "bg": { "type": "string", "title": "Bg" },
+          "id": { "type": "string", "format": "uuid", "title": "Id" }
+        },
+        "type": "object",
+        "required": ["name", "bg", "id"],
+        "title": "ColorResponse"
+      },
+      "FamilyCreate": {
+        "properties": { "name": { "type": "string", "title": "Name" } },
+        "type": "object",
+        "required": ["name"],
+        "title": "FamilyCreate"
+      },
+      "FamilyMemberResponse": {
+        "properties": {
+          "family_id": { "type": "string", "format": "uuid", "title": "Family Id" },
+          "user_id": { "type": "string", "format": "uuid", "title": "User Id" },
+          "role": { "$ref": "#/components/schemas/FamilyRole", "default": "member" },
+          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "joined_at": { "type": "string", "format": "date-time", "title": "Joined At" },
+          "user": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/src__schemas__user_schemas__UserResponse" },
+              { "type": "null" }
+            ]
+          }
+        },
+        "type": "object",
+        "required": ["family_id", "user_id", "id", "joined_at"],
+        "title": "FamilyMemberResponse"
+      },
+      "FamilyResponse": {
+        "properties": {
+          "name": { "type": "string", "title": "Name" },
+          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "created_at": { "type": "string", "format": "date-time", "title": "Created At" }
+        },
+        "type": "object",
+        "required": ["name", "id", "created_at"],
+        "title": "FamilyResponse"
+      },
+      "FamilyRole": { "type": "string", "enum": ["creator", "member"], "title": "FamilyRole" },
+      "FamilyUpdate": {
+        "properties": {
+          "name": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Name" }
+        },
+        "type": "object",
+        "title": "FamilyUpdate"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": { "$ref": "#/components/schemas/ValidationError" },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": { "type": "string", "title": "Status" },
+          "app_name": { "type": "string", "title": "App Name" },
+          "version": { "type": "string", "title": "Version" },
+          "environment": { "type": "string", "title": "Environment" },
+          "debug": { "type": "boolean", "title": "Debug" }
+        },
+        "type": "object",
+        "required": ["status", "app_name", "version", "environment", "debug"],
+        "title": "HealthResponse",
+        "description": "Health check response model."
+      },
+      "InvitationCreate": {
+        "properties": {
+          "max_uses": { "type": "integer", "minimum": 1.0, "title": "Max Uses", "default": 1 },
+          "expires_in_hours": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Expires In Hours",
+            "default": 24
+          }
+        },
+        "type": "object",
+        "title": "InvitationCreate"
+      },
+      "InvitationLinkResponse": {
+        "properties": {
+          "link": { "type": "string", "title": "Link" },
+          "expires_at": { "type": "string", "format": "date-time", "title": "Expires At" }
+        },
+        "type": "object",
+        "required": ["link", "expires_at"],
+        "title": "InvitationLinkResponse"
+      },
+      "InvitationResponse": {
+        "properties": {
+          "code": { "type": "string", "title": "Code" },
+          "expires_at": { "type": "string", "format": "date-time", "title": "Expires At" },
+          "max_uses": { "type": "integer", "title": "Max Uses" },
+          "uses": { "type": "integer", "title": "Uses" }
+        },
+        "type": "object",
+        "required": ["code", "expires_at", "max_uses", "uses"],
+        "title": "InvitationResponse"
+      },
+      "JoinByCode": {
+        "properties": {
+          "code": { "type": "string", "maxLength": 8, "minLength": 8, "title": "Code" }
+        },
+        "type": "object",
+        "required": ["code"],
+        "title": "JoinByCode"
+      },
+      "JoinByLink": {
+        "properties": { "token": { "type": "string", "title": "Token" } },
+        "type": "object",
+        "required": ["token"],
+        "title": "JoinByLink"
+      },
+      "LevelResponse": {
+        "properties": {
+          "name": { "type": "string", "title": "Name" },
+          "required_progress": { "type": "integer", "title": "Required Progress" },
+          "image_url": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Image Url"
+          },
+          "id": { "type": "string", "format": "uuid", "title": "Id" }
+        },
+        "type": "object",
+        "required": ["name", "required_progress", "id"],
+        "title": "LevelResponse"
+      },
+      "ListItemCreate": {
+        "properties": {
+          "title": { "type": "string", "title": "Title" },
+          "family_id": { "type": "string", "format": "uuid", "title": "Family Id" },
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "description": "Category of the item: Alimentos, Farmacia, Mascotas, Limpieza, Varios",
+            "default": "Varios"
+          },
+          "quantity": { "type": "integer", "title": "Quantity", "default": 1 },
+          "purchased": { "type": "boolean", "title": "Purchased", "default": false }
+        },
+        "type": "object",
+        "required": ["title", "family_id"],
+        "title": "ListItemCreate"
+      },
+      "ListItemResponse": {
+        "properties": {
+          "title": { "type": "string", "title": "Title" },
+          "family_id": { "type": "string", "format": "uuid", "title": "Family Id" },
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "description": "Category of the item: Alimentos, Farmacia, Mascotas, Limpieza, Varios",
+            "default": "Varios"
+          },
+          "quantity": { "type": "integer", "title": "Quantity", "default": 1 },
+          "purchased": { "type": "boolean", "title": "Purchased", "default": false },
+          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "created_at": { "type": "string", "format": "date-time", "title": "Created At" }
+        },
+        "type": "object",
+        "required": ["title", "family_id", "id", "created_at"],
+        "title": "ListItemResponse"
+      },
+      "ListItemUpdate": {
+        "properties": {
+          "title": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Title" },
+          "category": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Category" },
+          "quantity": { "anyOf": [{ "type": "integer" }, { "type": "null" }], "title": "Quantity" },
+          "purchased": {
+            "anyOf": [{ "type": "boolean" }, { "type": "null" }],
+            "title": "Purchased"
+          }
+        },
+        "type": "object",
+        "title": "ListItemUpdate"
+      },
+      "NoteCreate": {
+        "properties": {
+          "title": { "type": "string", "title": "Title" },
+          "content": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Content" },
+          "family_id": { "type": "string", "format": "uuid", "title": "Family Id" },
+          "user_id": { "type": "string", "format": "uuid", "title": "User Id" }
+        },
+        "type": "object",
+        "required": ["title", "family_id", "user_id"],
+        "title": "NoteCreate"
+      },
+      "NoteResponse": {
+        "properties": {
+          "title": { "type": "string", "title": "Title" },
+          "content": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Content" },
+          "family_id": { "type": "string", "format": "uuid", "title": "Family Id" },
+          "user_id": { "type": "string", "format": "uuid", "title": "User Id" },
+          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "created_at": { "type": "string", "format": "date-time", "title": "Created At" },
+          "updated_at": { "type": "string", "format": "date-time", "title": "Updated At" },
+          "user": { "$ref": "#/components/schemas/src__schemas__user_schemas__UserResponse" }
+        },
+        "type": "object",
+        "required": ["title", "family_id", "user_id", "id", "created_at", "updated_at", "user"],
+        "title": "NoteResponse"
+      },
+      "NoteUpdate": {
+        "properties": {
+          "title": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Title" },
+          "content": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Content" }
+        },
+        "type": "object",
+        "title": "NoteUpdate"
+      },
+      "TaskCreate": {
+        "properties": {
+          "title": { "type": "string", "title": "Title" },
+          "family_id": { "type": "string", "format": "uuid", "title": "Family Id" },
+          "assigned_to_user_id": {
+            "anyOf": [{ "type": "string", "format": "uuid" }, { "type": "null" }],
+            "title": "Assigned To User Id"
+          },
+          "recurrence_type": { "$ref": "#/components/schemas/TaskRecurrence", "default": "unique" },
+          "week_days": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Week Days"
+          },
+          "status": { "$ref": "#/components/schemas/TaskStatus", "default": "pending" },
+          "due_date": {
+            "anyOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }],
+            "title": "Due Date"
+          }
+        },
+        "type": "object",
+        "required": ["title", "family_id"],
+        "title": "TaskCreate"
+      },
+      "TaskRecurrence": {
+        "type": "string",
+        "enum": ["unique", "recurring"],
+        "title": "TaskRecurrence"
+      },
+      "TaskResponse": {
+        "properties": {
+          "title": { "type": "string", "title": "Title" },
+          "family_id": { "type": "string", "format": "uuid", "title": "Family Id" },
+          "assigned_to_user_id": {
+            "anyOf": [{ "type": "string", "format": "uuid" }, { "type": "null" }],
+            "title": "Assigned To User Id"
+          },
+          "recurrence_type": { "$ref": "#/components/schemas/TaskRecurrence", "default": "unique" },
+          "week_days": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Week Days"
+          },
+          "status": { "$ref": "#/components/schemas/TaskStatus", "default": "pending" },
+          "due_date": {
+            "anyOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }],
+            "title": "Due Date"
+          },
+          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "created_at": { "type": "string", "format": "date-time", "title": "Created At" },
+          "updated_at": { "type": "string", "format": "date-time", "title": "Updated At" },
+          "assigned_user": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/src__schemas__user_schemas__UserResponse" },
+              { "type": "null" }
+            ]
+          }
+        },
+        "type": "object",
+        "required": ["title", "family_id", "id", "created_at", "updated_at"],
+        "title": "TaskResponse"
+      },
+      "TaskStatus": { "type": "string", "enum": ["pending", "completed"], "title": "TaskStatus" },
+      "TaskUpdate": {
+        "properties": {
+          "title": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Title" },
+          "assigned_to_user_id": {
+            "anyOf": [{ "type": "string", "format": "uuid" }, { "type": "null" }],
+            "title": "Assigned To User Id"
+          },
+          "recurrence_type": {
+            "anyOf": [{ "$ref": "#/components/schemas/TaskRecurrence" }, { "type": "null" }]
+          },
+          "week_days": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Week Days"
+          },
+          "status": {
+            "anyOf": [{ "$ref": "#/components/schemas/TaskStatus" }, { "type": "null" }]
+          },
+          "due_date": {
+            "anyOf": [{ "type": "string", "format": "date-time" }, { "type": "null" }],
+            "title": "Due Date"
+          }
+        },
+        "type": "object",
+        "title": "TaskUpdate"
+      },
+      "Token": {
+        "properties": {
+          "access_token": { "type": "string", "title": "Access Token" },
+          "token_type": { "type": "string", "title": "Token Type" }
+        },
+        "type": "object",
+        "required": ["access_token", "token_type"],
+        "title": "Token"
+      },
+      "UserLogin": {
+        "properties": {
+          "email": { "type": "string", "format": "email", "title": "Email" },
+          "password": { "type": "string", "title": "Password" }
+        },
+        "type": "object",
+        "required": ["email", "password"],
+        "title": "UserLogin"
+      },
+      "UserUpdate": {
+        "properties": { "name": { "type": "string", "title": "Name" } },
+        "type": "object",
+        "required": ["name"],
+        "title": "UserUpdate"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": { "type": "string", "title": "Message" },
+          "type": { "type": "string", "title": "Error Type" }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
+      },
+      "src__schemas__auth_schemas__UserCreate": {
+        "properties": {
+          "email": { "type": "string", "format": "email", "title": "Email" },
+          "password": { "type": "string", "minLength": 8, "title": "Password" },
+          "full_name": { "anyOf": [{ "type": "string" }, { "type": "null" }], "title": "Full Name" }
+        },
+        "type": "object",
+        "required": ["email", "password"],
+        "title": "UserCreate"
+      },
+      "src__schemas__auth_schemas__UserResponse": {
+        "properties": {
+          "id": { "type": "string", "title": "Id" },
+          "email": { "type": "string", "format": "email", "title": "Email" }
+        },
+        "type": "object",
+        "required": ["id", "email"],
+        "title": "UserResponse"
+      },
+      "src__schemas__user_schemas__UserCreate": {
+        "properties": {
+          "name": { "type": "string", "title": "Name" },
+          "task_completed": { "type": "integer", "title": "Task Completed", "default": 0 },
+          "level_id": {
+            "anyOf": [{ "type": "string", "format": "uuid" }, { "type": "null" }],
+            "title": "Level Id"
+          },
+          "color_id": {
+            "anyOf": [{ "type": "string", "format": "uuid" }, { "type": "null" }],
+            "title": "Color Id"
+          }
+        },
+        "type": "object",
+        "required": ["name"],
+        "title": "UserCreate"
+      },
+      "src__schemas__user_schemas__UserResponse": {
+        "properties": {
+          "name": { "type": "string", "title": "Name" },
+          "task_completed": { "type": "integer", "title": "Task Completed", "default": 0 },
+          "level_id": {
+            "anyOf": [{ "type": "string", "format": "uuid" }, { "type": "null" }],
+            "title": "Level Id"
+          },
+          "color_id": {
+            "anyOf": [{ "type": "string", "format": "uuid" }, { "type": "null" }],
+            "title": "Color Id"
+          },
+          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "level": {
+            "anyOf": [{ "$ref": "#/components/schemas/LevelResponse" }, { "type": "null" }]
+          },
+          "color": {
+            "anyOf": [{ "$ref": "#/components/schemas/ColorResponse" }, { "type": "null" }]
+          }
+        },
+        "type": "object",
+        "required": ["name", "id"],
+        "title": "UserResponse"
+      }
+    },
+    "securitySchemes": { "HTTPBearer": { "type": "http", "scheme": "bearer" } }
+  }
+}

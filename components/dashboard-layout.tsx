@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Calendar, ShoppingCart, Users, StickyNote, Bird, LogOut, Home } from 'lucide-react';
 import Link from 'next/link';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { FamiliaActions } from '@/components/familia/familia-actions';
 import { InvitarMiembrosDialog } from '@/components/dialogs/invitar-miembros-dialog';
 import { useAuth } from '@/hooks/use-auth';
-import { Familia, Usuario } from '@/lib/types';
+import { useFamilia } from '@/hooks/use-familia';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -24,30 +24,18 @@ const DASHBOARD_ROUTES = [
 
 export function DashboardLayout({ children, activeSection = 'overview' }: DashboardLayoutProps) {
   const router = useRouter();
-  const { logout } = useAuth();
-  const [familia, setFamilia] = useState<Familia | null>(null);
-  const [usuario, setUsuario] = useState<Usuario | null>(null);
-  const [esCreador, setEsCreador] = useState(false);
+  const { logout, usuario, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { familia, isLoading: familiaLoading, cargarFamiliaGuardada } = useFamilia();
+  const esCreador = useMemo(() => {
+    return familia && usuario ? familia.creadorId === usuario.id : false;
+  }, [familia, usuario]);
   const [invitarDialogOpen, setInvitarDialogOpen] = useState(false);
 
   useEffect(() => {
-    const familiaGuardada = localStorage.getItem('familia');
-    const usuarioGuardado = localStorage.getItem('usuario');
-
-    if (!familiaGuardada || !usuarioGuardado) {
+    if (!authLoading && !isAuthenticated) {
       router.push('/login');
-      return;
     }
-
-    const familiaData: Familia = JSON.parse(familiaGuardada);
-    const usuarioData: Usuario = JSON.parse(usuarioGuardado);
-
-    Promise.resolve().then(() => {
-      setFamilia(familiaData);
-      setUsuario(usuarioData);
-      setEsCreador(familiaData.creadorId === usuarioData.id);
-    });
-  }, [router]);
+  }, [isAuthenticated, authLoading, router]);
 
   useEffect(() => {
     DASHBOARD_ROUTES.forEach((route) => {
@@ -61,13 +49,10 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
   };
 
   const handleFamiliaActualizada = () => {
-    const familiaGuardada = localStorage.getItem('familia');
-    if (familiaGuardada) {
-      setFamilia(JSON.parse(familiaGuardada));
-    }
+    cargarFamiliaGuardada();
   };
 
-  if (!familia || !usuario) {
+  if (authLoading || familiaLoading || !familia || !usuario) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">

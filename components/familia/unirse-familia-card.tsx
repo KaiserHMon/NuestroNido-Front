@@ -18,12 +18,13 @@ interface UnirseAFamiliaCardProps {
 
 export function UnirseAFamiliaCard({ onSuccess }: UnirseAFamiliaCardProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [validacionCodigo, setValidacionCodigo] = useState<{
     valido: boolean;
     nombreFamilia?: string;
     miembrosActuales?: number;
   } | null>(null);
-  const { unirseAFamilia, validarCodigo, error } = useFamilia();
+  const { unirseAFamilia, validarCodigo } = useFamilia();
 
   const {
     register,
@@ -42,7 +43,7 @@ export function UnirseAFamiliaCard({ onSuccess }: UnirseAFamiliaCardProps) {
       try {
         const resultado = await validarCodigo(codigo);
         setValidacionCodigo(resultado);
-      } catch (error) {
+      } catch {
         // Ignored
       }
     } else {
@@ -52,11 +53,13 @@ export function UnirseAFamiliaCard({ onSuccess }: UnirseAFamiliaCardProps) {
 
   const onSubmit = async (data: UnirseAFamiliaFormInputs) => {
     setIsSubmitting(true);
+    setError(null);
     try {
       await unirseAFamilia(data.codigoInvitacion);
       onSuccess?.();
-    } catch (error) {
-      // Ignored
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error al unirse a la familia';
+      setError(message);
     } finally {
       setIsSubmitting(false);
     }

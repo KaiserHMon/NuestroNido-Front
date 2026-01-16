@@ -6,8 +6,14 @@
 export interface Usuario {
   id: string;
   nombre: string;
-  email: string;
+  email?: string;
   familiaId?: string;
+  color?: ColorMiembro;
+  puntos?: number;
+  nivel?: {
+    nombre: string;
+    imageUrl?: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
@@ -122,6 +128,10 @@ export interface Miembro {
   nombre: string;
   color: ColorMiembro;
   puntos: number;
+  nivel?: {
+    nombre: string;
+    imageUrl?: string;
+  };
   rolId: 'creador' | 'miembro';
   familiaId: string;
   createdAt: Date;
@@ -155,22 +165,19 @@ export interface Nota {
   contenido: string;
   colorCreador: ColorMiembro;
   fechaCreacion: string; // ISO string
-  prioridad?: 'baja' | 'media' | 'alta';
-  completado: boolean;
-  miembrosAsignados?: string[];
   familiaId: string;
+  user_id?: string; // Optional helper for filtering
 }
 
 export interface Tarea {
   id: string;
   titulo: string;
-  descripcion?: string;
-  tipoFecha?: 'fecha' | 'dias'; // Nuevo campo
+  tipoFecha?: 'fecha' | 'dias';
   fecha?: string; // ISO date: "2025-12-10" (Opcional si es por días)
-  diasSemana?: string[]; // Nuevo campo para días de la semana (["1", "3"] para Lunes y Miércoles)
+  diasSemana?: string[]; // ["1", "3"] para Lunes y Miércoles
   hora?: string; // Opcional: "14:30"
-  creadorId: string; // ID del miembro que creó
-  colorCreador: ColorMiembro; // Color del creador
+  creadorId: string;
+  colorCreador: ColorMiembro;
   prioridad?: 'baja' | 'media' | 'alta';
   frecuencia?: 'unica' | 'diaria' | 'semanal' | 'mensual' | 'anual';
   completada: boolean;

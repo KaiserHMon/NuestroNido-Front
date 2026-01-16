@@ -39,7 +39,7 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
   const miembrosOrdenados = [...miembros].sort((a, b) => b.puntos - a.puntos);
 
   const entries: LeaderboardEntry[] = miembrosOrdenados.map((m, index) => {
-    const nivel = getNivelActual(m.puntos);
+    const nivelCalculado = getNivelActual(m.puntos);
     const distintivo = getDistintivo(index + 1);
 
     return {
@@ -51,9 +51,10 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
       },
       puntos: m.puntos,
       nivel: {
-        numero: nivel.nivel,
-        nombre: nivel.nombre,
-        puntosParaSiguiente: nivel.nivel === 5 ? 0 : nivel.maxPuntos - m.puntos + 1,
+        numero: nivelCalculado.nivel, // API doesn't return level number yet, keeping calc
+        nombre: m.nivel?.nombre || nivelCalculado.nombre,
+        puntosParaSiguiente:
+          nivelCalculado.nivel === 5 ? 0 : nivelCalculado.maxPuntos - m.puntos + 1,
       },
       distintivo: distintivo ? (distintivo.label as 'oro' | 'plata' | 'bronce') : undefined,
     };

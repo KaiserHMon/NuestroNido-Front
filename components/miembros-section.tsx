@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Trash2, Edit2, Plus } from 'lucide-react';
@@ -11,43 +11,28 @@ import { EliminarMiembroDialog } from '@/components/dialogs/eliminar-miembro-dia
 import { EliminarFamiliaDialog } from '@/components/dialogs/eliminar-familia-dialog';
 import { EditarPerfilDialog } from '@/components/dialogs/editar-perfil-dialog';
 import { InvitarMiembrosDialog } from '@/components/dialogs/invitar-miembros-dialog';
-import { Familia, Miembro, Usuario } from '@/lib/types';
+import { Miembro } from '@/lib/types';
+import { useFamilia } from '@/hooks/use-familia';
+import { useAuth } from '@/hooks/use-auth';
+import { FamilyService } from '@/services/family-service';
+import { UserService } from '@/services/user-service';
+import { toast } from 'sonner';
+import { SectionSkeleton } from '@/components/ui/section-skeleton';
 
 export function MiembrosSection() {
-  const [familia, setFamilia] = useState<Familia | null>(null);
-  const [usuario, setUsuario] = useState<Usuario | null>(null);
-  const [esCreador, setEsCreador] = useState(false);
+  const { familia, cargarFamiliaGuardada, eliminarFamilia } = useFamilia();
+  const { usuario } = useAuth();
+
+  const esCreador = useMemo(() => {
+    return familia && usuario ? familia.creadorId === usuario.id : false;
+  }, [familia, usuario]);
+
   const [miembroAEliminar, setMiembroAEliminar] = useState<Miembro | null>(null);
   const [dialogEliminarOpen, setDialogEliminarOpen] = useState(false);
   const [dialogEliminarFamiliaOpen, setDialogEliminarFamiliaOpen] = useState(false);
   const [miembroAEditar, setMiembroAEditar] = useState<Miembro | null>(null);
   const [dialogEditarOpen, setDialogEditarOpen] = useState(false);
   const [invitarDialogOpen, setInvitarDialogOpen] = useState(false);
-
-  useEffect(() => {
-    const familiaGuardada = localStorage.getItem('familia');
-    const usuarioGuardado = localStorage.getItem('usuario');
-
-    if (familiaGuardada) {
-      const familiaData: Familia = JSON.parse(familiaGuardada);
-      // Usar Promise para evitar setState directo en effect
-      Promise.resolve().then(() => {
-        setFamilia(familiaData);
-      });
-    }
-
-    if (usuarioGuardado) {
-      const usuarioData = JSON.parse(usuarioGuardado);
-      // Usar Promise para evitar setState directo en effect
-      Promise.resolve().then(() => {
-        setUsuario(usuarioData);
-        if (familiaGuardada) {
-          const familiaData: Familia = JSON.parse(familiaGuardada);
-          setEsCreador(familiaData.creadorId === usuarioData.id);
-        }
-      });
-    }
-  }, []);
 
   const handleEliminarMiembro = (miembro: Miembro) => {
     if (miembro.rolId === 'creador' && familia?.miembros.length === 1) {
@@ -66,49 +51,61 @@ export function MiembrosSection() {
   const handleConfirmarEliminacion = async () => {
     if (!familia || !miembroAEliminar) return;
 
-    // Simulación - en realidad esto iría al backend
-    const familiaActualizada: Familia = {
-      ...familia,
-      miembros: familia.miembros.filter((m) => m.id !== miembroAEliminar.id),
-    };
-
-    localStorage.setItem('familia', JSON.stringify(familiaActualizada));
-    setFamilia(familiaActualizada);
-    setMiembroAEliminar(null);
+    try {
+      if (miembroAEliminar.id === usuario?.id) {
+        await FamilyService.leave();
+      } else {
+        await FamilyService.removeMember(miembroAEliminar.id);
+      }
+              cargarFamiliaGuardada();
+              setMiembroAEliminar(null);
+              toast.success('Miembro eliminado');
+          } catch (error) {
+              console.error('Error removing member:', error);
+              toast.error('Error al eliminar miembro');
+          }
+      
   };
 
   const handleConfirmarEdicion = async (miembroActualizado: Miembro) => {
-    if (!familia) return;
+    if (!familia || !usuario) return;
 
-    // Actualizar el miembro en la familia
-    const familiaActualizada: Familia = {
-      ...familia,
-      miembros: familia.miembros.map((m) =>
-        m.id === miembroActualizado.id ? miembroActualizado : m
-      ),
-    };
-
-    // Si es el usuario actual, también actualizar en localStorage
-    if (usuario?.id === miembroActualizado.id) {
-      const usuarioActualizado = {
-        ...usuario,
-        nombre: miembroActualizado.nombre,
-      };
-      localStorage.setItem('usuario', JSON.stringify(usuarioActualizado));
-      setUsuario(usuarioActualizado);
+    // Only allow editing self
+    if (usuario.id === miembroActualizado.id) {
+      try {
+        await UserService.updateUser(usuario.id, {
+          name: miembroActualizado.nombre,
+          // Color update not supported by simple user update yet?
+          // UserUpdate schema has 'name'. Color might be separate.
+        });
+                    // Also need to refresh family to see updated name in list
+                    cargarFamiliaGuardada();
+                    setMiembroAEditar(null);
+                    toast.success('Perfil actualizado');
+                } catch (error) {
+                    console.error('Error updating profile:', error);
+                    toast.error('Error al actualizar perfil');
+                }
+        
     }
+  };
 
-    localStorage.setItem('familia', JSON.stringify(familiaActualizada));
-    setFamilia(familiaActualizada);
-    setMiembroAEditar(null);
+  const handleEliminarFamilia = async () => {
+    if (familia) {
+      try {
+                      await eliminarFamilia(familia.id);
+                      // Redirect or state update handled by hook/parent
+                      toast.success('Familia eliminada');
+                  } catch (error) {
+                      console.error('Error deleting family:', error);
+                      toast.error('Error al eliminar familia');
+                  }
+        
+    }
   };
 
   if (!familia || !usuario) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <p className="text-muted-foreground">Cargando...</p>
-      </div>
-    );
+    return <SectionSkeleton />;
   }
 
   return (
@@ -215,6 +212,7 @@ export function MiembrosSection() {
           trigger={null}
           open={dialogEliminarFamiliaOpen}
           onOpenChange={setDialogEliminarFamiliaOpen}
+          onConfirm={handleEliminarFamilia}
         />
       )}
 

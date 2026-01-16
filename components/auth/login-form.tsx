@@ -34,7 +34,7 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
     try {
       await login(data.email, data.password);
       onSuccess?.();
-    } catch (error) {
+    } catch {
       // Error is handled by state
     } finally {
       setIsSubmitting(false);

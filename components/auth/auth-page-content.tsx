@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { Bird } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
+import { useFamilia } from '@/hooks/use-familia';
 
 // Lazy load formularios
 const LoginForm = dynamic(
@@ -39,19 +40,19 @@ function FormSkeleton() {
 export function AuthPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { familia, isLoading: familiaLoading } = useFamilia();
   const [activeTab, setActiveTab] = useState<'login' | 'forgot-password'>('login');
 
   useEffect(() => {
-    if (isAuthenticated && !isLoading) {
-      const familia = localStorage.getItem('familia');
+    if (isAuthenticated && !authLoading && !familiaLoading) {
       if (familia) {
         router.push('/dashboard');
       } else {
         router.push('/home');
       }
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isAuthenticated, authLoading, familiaLoading, familia, router]);
 
   useEffect(() => {
     const tab = searchParams.get('tab');
@@ -62,7 +63,7 @@ export function AuthPageContent() {
     }
   }, [searchParams]);
 
-  if (isLoading) {
+  if (authLoading || familiaLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">

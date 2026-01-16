@@ -5,36 +5,30 @@ import { useRouter } from 'next/navigation';
 import { Bird, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
+import { useFamilia } from '@/hooks/use-familia';
 import { Button } from '@/components/ui/button';
 import { CrearFamiliaCard } from '@/components/familia/crear-familia-card';
 import { UnirseAFamiliaCard } from '@/components/familia/unirse-familia-card';
 import { SupportDialog } from '@/components/dialogs/support-dialog';
-import { Familia } from '@/lib/types';
 
 export default function HomePage() {
   const router = useRouter();
-  const { isAuthenticated, usuario, isLoading } = useAuth();
-  const [_familia, _setFamilia] = useState<Familia | null>(null);
+  const { isAuthenticated, usuario, isLoading: authLoading } = useAuth();
+  const { familia, isLoading: familiaLoading } = useFamilia();
   const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!authLoading && !isAuthenticated) {
       router.push('/login');
       return;
     }
 
-    if (!isLoading && isAuthenticated) {
-      const familiaGuardada = localStorage.getItem('familia');
-      if (familiaGuardada) {
-        Promise.resolve().then(() => {
-          _setFamilia(JSON.parse(familiaGuardada));
-          router.push('/dashboard');
-        });
-      }
+    if (!authLoading && !familiaLoading && isAuthenticated && familia) {
+      router.push('/dashboard');
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isAuthenticated, authLoading, familiaLoading, familia, router]);
 
-  if (isLoading) {
+  if (authLoading || familiaLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -62,7 +56,7 @@ export default function HomePage() {
               </div>
               <h1 className="text-lg sm:text-xl font-bold text-foreground">NuestroNido</h1>
             </div>
-            
+
             <Link href="/">
               <Button variant="ghost" size="sm" className="gap-2">
                 <ArrowLeft className="w-4 h-4" />

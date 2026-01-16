@@ -52,7 +52,6 @@ export function EliminarFamiliaDialog({
       setOpen(false);
       reset();
 
-      localStorage.removeItem('familia');
       router.push('/home');
     } catch (error) {
       console.error('Error eliminando familia:', error);

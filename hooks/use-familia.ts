@@ -5,9 +5,9 @@
 
 'use client';
 
-import { useState, useCallback } from 'react';
-import { Familia, ApiResponse } from '@/lib/types';
-import { generarCodigoInvitacion } from '@/lib/validation';
+import { useState, useCallback, useEffect } from 'react';
+import { Familia } from '@/lib/types';
+import { FamilyService } from '@/services/family-service';
 
 interface FamiliaState {
   familia: Familia | null;
@@ -18,73 +18,45 @@ interface FamiliaState {
 export const useFamilia = () => {
   const [state, setState] = useState<FamiliaState>({
     familia: null,
-    isLoading: false,
+    isLoading: true, // Start loading to check initial family status
     error: null,
   });
 
-  const cargarFamiliaGuardada = useCallback(() => {
+  const cargarFamiliaGuardada = useCallback(async () => {
+    setState((prev) => ({ ...prev, isLoading: true, error: null }));
     try {
-      const familiaStr = localStorage.getItem('familia');
-      if (familiaStr) {
-        const familia = JSON.parse(familiaStr);
-        setState((prev) => ({ ...prev, familia }));
-      }
+      const familia = await FamilyService.getMyFamily();
+      setState({
+        familia,
+        isLoading: false,
+        error: null,
+      });
     } catch (error) {
-      // Ignored
+      console.error('Error loading family:', error);
+      setState((prev) => ({ ...prev, isLoading: false }));
+      // We don't set error here as having no family is a valid state
     }
   }, []);
+
+  // Load family on mount
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    cargarFamiliaGuardada();
+  }, [cargarFamiliaGuardada]);
 
   const crearFamilia = useCallback(async (nombre: string) => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-      const _token = localStorage.getItem('auth_token');
+      const familia = await FamilyService.create(nombre);
 
-      const mockResponse: ApiResponse<Familia> = {
-        success: true,
-        data: {
-          id: 'familia-' + Date.now(),
-          nombre,
-          codigoInvitacion: generarCodigoInvitacion(),
-          creadorId: usuario.id,
-          miembros: [
-            {
-              id: usuario.id,
-              nombre: usuario.nombre,
-              color: {
-                id: 'blue',
-                nombre: 'Azul',
-                bg: '#4ECDC4',
-                text: '#FFFFFF',
-                accent: '#2FA09F',
-                wcagContrast: 4.7,
-              },
-              puntos: 0,
-              rolId: 'creador',
-              familiaId: '',
-              createdAt: new Date(),
-              updatedAt: new Date(),
-            },
-          ],
-          activa: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      };
+      setState({
+        familia,
+        isLoading: false,
+        error: null,
+      });
 
-      if (mockResponse.success && mockResponse.data) {
-        const familia = mockResponse.data;
-        localStorage.setItem('familia', JSON.stringify(familia));
-
-        setState({
-          familia,
-          isLoading: false,
-          error: null,
-        });
-
-        return familia;
-      }
+      return familia;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error al crear familia';
       setState({
@@ -100,69 +72,15 @@ export const useFamilia = () => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+      const familia = await FamilyService.joinByCode(codigo);
 
-      const mockResponse: ApiResponse<Familia> = {
-        success: true,
-        data: {
-          id: 'familia-mock',
-          nombre: 'Familia Ejemplo',
-          codigoInvitacion: codigo.toUpperCase(),
-          creadorId: 'user-other',
-          miembros: [
-            {
-              id: 'user-other',
-              nombre: 'Otro Usuario',
-              color: {
-                id: 'red',
-                nombre: 'Rojo',
-                bg: '#FF6B6B',
-                text: '#FFFFFF',
-                accent: '#FF5252',
-                wcagContrast: 4.5,
-              },
-              puntos: 100,
-              rolId: 'creador',
-              familiaId: '',
-              createdAt: new Date(),
-              updatedAt: new Date(),
-            },
-            {
-              id: usuario.id,
-              nombre: usuario.nombre,
-              color: {
-                id: 'green',
-                nombre: 'Verde',
-                bg: '#95E1D3',
-                text: '#1A1A1A',
-                accent: '#6BBF9F',
-                wcagContrast: 5.2,
-              },
-              puntos: 0,
-              rolId: 'miembro',
-              familiaId: '',
-              createdAt: new Date(),
-              updatedAt: new Date(),
-            },
-          ],
-          activa: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      };
+      setState({
+        familia,
+        isLoading: false,
+        error: null,
+      });
 
-      if (mockResponse.success && mockResponse.data) {
-        const familia = mockResponse.data;
-        localStorage.setItem('familia', JSON.stringify(familia));
-
-        setState({
-          familia,
-          isLoading: false,
-          error: null,
-        });
-
-        return familia;
-      }
+      return familia;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error al unirse a familia';
       setState({
@@ -176,16 +94,7 @@ export const useFamilia = () => {
 
   const validarCodigo = useCallback(async (codigo: string) => {
     try {
-      if (codigo.length < 6) {
-        return { valido: false, error: 'Código inválido' };
-      }
-
-      return {
-        valido: true,
-        nombreFamilia: 'Familia Ejemplo',
-        miembrosActuales: 2,
-        maxMiembros: 10,
-      };
+      return await FamilyService.validateCode(codigo);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error validando código';
       return { valido: false, error: errorMessage };
@@ -196,15 +105,7 @@ export const useFamilia = () => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      const familiaGuardada = JSON.parse(localStorage.getItem('familia') || '{}');
-
-      const familiaActualizada: Familia = {
-        ...familiaGuardada,
-        nombre: nuevoNombre,
-        updatedAt: new Date(),
-      };
-
-      localStorage.setItem('familia', JSON.stringify(familiaActualizada));
+      const familiaActualizada = await FamilyService.update(familiaId, nuevoNombre);
 
       setState({
         familia: familiaActualizada,
@@ -215,20 +116,20 @@ export const useFamilia = () => {
       return familiaActualizada;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error actualizando familia';
-      setState({
-        familia: null,
+      setState((prev) => ({
+        ...prev,
         isLoading: false,
         error: errorMessage,
-      });
+      }));
       throw error;
     }
   }, []);
 
-  const eliminarFamilia = useCallback(async (_familiaId: string) => {
+  const eliminarFamilia = useCallback(async (familiaId: string) => {
     setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      localStorage.removeItem('familia');
+      await FamilyService.delete(familiaId);
 
       setState({
         familia: null,
@@ -239,11 +140,11 @@ export const useFamilia = () => {
       return true;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Error eliminando familia';
-      setState({
-        familia: null,
+      setState((prev) => ({
+        ...prev,
         isLoading: false,
         error: errorMessage,
-      });
+      }));
       throw error;
     }
   }, []);

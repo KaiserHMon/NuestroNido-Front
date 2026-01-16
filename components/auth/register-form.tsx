@@ -38,7 +38,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
     try {
       await registerUser(data.nombre, data.email, data.password);
       onSuccess?.();
-    } catch (error) {
+    } catch {
       // Error is handled by state
     } finally {
       setIsSubmitting(false);

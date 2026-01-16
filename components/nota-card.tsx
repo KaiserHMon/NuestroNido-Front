@@ -12,17 +12,14 @@ interface NotaCardProps {
   creador?: Miembro;
   onEdit?: (nota: Nota) => void;
   onDelete?: (notaId: string) => void;
-  _onToggleComplete?: (notaId: string) => void;
 }
 
-export function NotaCard({ nota, creador, onEdit, onDelete, _onToggleComplete }: NotaCardProps) {
+export function NotaCard({ nota, creador, onEdit, onDelete }: NotaCardProps) {
   const fechaFormato = format(new Date(nota.fechaCreacion), "d 'de' MMMM", { locale: es });
 
   return (
     <Card
-      className={`border-l-4 overflow-hidden transition-opacity ${
-        nota.completado ? 'opacity-60' : ''
-      }`}
+      className="border-l-4 overflow-hidden transition-opacity"
       style={{
         borderLeftColor: nota.colorCreador.bg,
       }}
@@ -31,11 +28,7 @@ export function NotaCard({ nota, creador, onEdit, onDelete, _onToggleComplete }:
         {/* Header */}
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <h3
-              className={`font-semibold text-foreground break-words text-left ${
-                nota.completado ? 'line-through text-muted-foreground' : ''
-              }`}
-            >
+            <h3 className="font-semibold text-foreground break-words text-left">
               {nota.titulo || nota.contenido}
             </h3>
             <p className="text-xs text-muted-foreground mt-1">{fechaFormato}</p>
@@ -88,13 +81,7 @@ export function NotaCard({ nota, creador, onEdit, onDelete, _onToggleComplete }:
 
         {/* Content */}
         {nota.contenido && (
-          <p
-            className={`text-sm text-muted-foreground line-clamp-3 ${
-              nota.completado ? 'line-through' : ''
-            }`}
-          >
-            {nota.contenido}
-          </p>
+          <p className="text-sm text-muted-foreground line-clamp-3">{nota.contenido}</p>
         )}
       </CardContent>
     </Card>

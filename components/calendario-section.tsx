@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Familia, Tarea, Usuario } from '@/lib/types';
+import { useEffect, useState, useCallback } from 'react';
+import { Tarea } from '@/lib/types';
 import { TareasTab } from '@/components/tareas-tab';
 import { FechaExpandidaModal } from '@/components/fecha-expandida-modal';
 import { CrearTareaDialog } from '@/components/dialogs/crear-tarea-dialog';
@@ -18,7 +18,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
 import {
   format,
   startOfMonth,
@@ -29,131 +29,130 @@ import {
   subMonths,
 } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { TaskService } from '@/services/task-service';
+import { useAuth } from '@/hooks/use-auth';
+import { useFamilia } from '@/hooks/use-familia';
+import { toast } from 'sonner';
+import { SectionSkeleton } from '@/components/ui/section-skeleton';
 
 interface ColorDot {
   bg: string;
   nombre: string;
 }
 
+interface ApiTask {
+  id: string;
+  title: string;
+  due_date: string | null;
+  created_at: string;
+  assigned_to_user_id?: string;
+  assigned_user?: { id: string };
+  status: string;
+  family_id: string;
+  week_days?: string;
+  recurrence_type: string;
+}
+
+interface CrearTareaData {
+  titulo: string;
+  fecha?: Date;
+  asignadoA: string;
+  recurrencia: string;
+  diasSemana?: string[];
+}
+
 export function CalendarioSection() {
-  const [familia, setFamilia] = useState<Familia | null>(null);
-  const [usuario, setUsuario] = useState<Usuario | null>(null);
+  const { usuario } = useAuth();
+  const { familia } = useFamilia();
   const [tareas, setTareas] = useState<Tarea[]>([]);
   const [mesActual, setMesActual] = useState(new Date());
   const [fechaSeleccionada, setFechaSeleccionada] = useState<Date | null>(null);
   const [isNuevaTareaOpen, setIsNuevaTareaOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [tareaAEditar, setTareaAEditar] = useState<Tarea | undefined>(undefined);
   const [tareaAEliminar, setTareaAEliminar] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Cargar familia, usuario y tareas desde localStorage
-    const familiaGuardada = localStorage.getItem('familia');
-    const usuarioGuardado = localStorage.getItem('usuario');
-    const tareasGuardadas = localStorage.getItem('tareas');
+  const fetchTareas = useCallback(async () => {
+    if (!familia) return;
+    try {
+      setLoading(true);
+      const data = await TaskService.getTasks() as unknown as ApiTask[];
 
-    if (familiaGuardada) {
-      try {
-        Promise.resolve().then(() => {
-          setFamilia(JSON.parse(familiaGuardada));
-        });
-      } catch (error) {
-        console.error('Error loading familia:', error);
-      }
-    }
+      const mappedTareas: Tarea[] = data.map((t) => {
+        const creatorMember =
+          familia.miembros.find((m) => m.id === t.assigned_to_user_id) ||
+          familia.miembros.find((m) => m.id === t.assigned_user?.id); // or fallback
 
-    if (usuarioGuardado) {
-      try {
-        Promise.resolve().then(() => {
-          setUsuario(JSON.parse(usuarioGuardado));
-        });
-      } catch (error) {
-        console.error('Error loading usuario:', error);
-      }
-    }
-
-    if (tareasGuardadas) {
-      try {
-        Promise.resolve().then(() => {
-          setTareas(JSON.parse(tareasGuardadas));
-        });
-      } catch (error) {
-        console.error('Error loading tareas:', error);
-      }
-    } else {
-        // Datos mock iniciales si no hay tareas
-        const tareasMock: Tarea[] = [
-          {
-            id: 'tarea-1',
-            titulo: 'Comprar verduras',
-            tipoFecha: 'fecha',
-            fecha: format(new Date(), 'yyyy-MM-dd'),
-            creadorId: 'miembro-1', // Placeholder
-            colorCreador: {
-              id: 'color-azul-mock',
-              nombre: 'Azul',
-              bg: '#3B82F6',
+        const color = creatorMember
+          ? creatorMember.color
+          : {
+              id: 'temp',
+              nombre: 'Gris',
+              bg: '#9CA3AF',
               text: '#FFFFFF',
-              accent: '#6EA1F9',
+              accent: '#9CA3AF',
               wcagContrast: 4.5,
-            },
-            frecuencia: 'unica',
-            completada: false,
-            familiaId: 'familia-1',
-          },
-        ];
-        Promise.resolve().then(() => {
-            // Only set if we really have no tasks and valid familia/usuario later
-            // For now just keep empty or let the above catch handle it.
-            // Simplified for this context.
-        });
-    }
+            };
 
-    Promise.resolve().then(() => {
+        return {
+          id: t.id,
+          titulo: t.title,
+          tipoFecha: 'fecha', // Defaulting as API structure for recurrence is different
+          fecha: t.due_date
+            ? format(new Date(t.due_date), 'yyyy-MM-dd')
+            : t.created_at
+              ? format(new Date(t.created_at), 'yyyy-MM-dd')
+              : undefined,
+          // Mapping recurrence
+          frecuencia: t.recurrence_type === 'unique' ? 'unica' : 'semanal', // Simplification
+          creadorId: t.assigned_to_user_id || '',
+          colorCreador: color,
+          completada: t.status === 'completed',
+          familiaId: t.family_id,
+          diasSemana: t.week_days ? [t.week_days] : undefined, // week_days is string in schema?
+        };
+      });
+
+      setTareas(mappedTareas);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+      toast.error('Error al cargar las tareas');
+    } finally {
       setLoading(false);
-    });
-  }, []);
-
-  // Update localStorage when tasks change
-  useEffect(() => {
-    if (!loading && tareas.length > 0) {
-        localStorage.setItem('tareas', JSON.stringify(tareas));
     }
-  }, [tareas, loading]);
+  }, [familia]);
 
+  useEffect(() => {
+    fetchTareas();
+  }, [fetchTareas]);
 
   const isTareaOnDay = (tarea: Tarea, dia: Date) => {
     const diaISO = format(dia, 'yyyy-MM-dd');
     const diaSemana = dia.getDay().toString(); // 0 (Domingo) - 6 (Sábado)
 
     if (tarea.tipoFecha === 'dias' && tarea.diasSemana) {
-        return tarea.diasSemana.includes(diaSemana);
+      return tarea.diasSemana.includes(diaSemana);
     }
 
     if (tarea.fecha) {
-         if (tarea.frecuencia === 'mensual') {
-             // Check day of month
-             // Parse tarea.fecha (yyyy-MM-dd)
-             const [year, month, day] = tarea.fecha.split('-').map(Number);
-             // dia.getDate() matches day
-             return day === dia.getDate();
-         }
-         if (tarea.frecuencia === 'anual') {
-             const [year, month, day] = tarea.fecha.split('-').map(Number);
-             // dia.getDate() and dia.getMonth() (0-11) match
-             // month in string is 1-12
-             return day === dia.getDate() && (month - 1) === dia.getMonth();
-         }
-         // Unica
-         return tarea.fecha === diaISO;
+      if (tarea.frecuencia === 'mensual') {
+        const [, , day] = tarea.fecha.split('-').map(Number);
+        return day === dia.getDate();
+      }
+      if (tarea.frecuencia === 'anual') {
+        const [, month, day] = tarea.fecha.split('-').map(Number);
+        return day === dia.getDate() && month - 1 === dia.getMonth();
+      }
+      return tarea.fecha === diaISO;
     }
+    // Fallback if we use created_at as date
+    if (tarea.fecha) return tarea.fecha === diaISO;
     return false;
   };
 
   const getColoresParaDia = (dia: Date): ColorDot[] => {
     const tareasDelDia = tareas.filter((tarea) => isTareaOnDay(tarea, dia));
 
-    // Devolver colores únicos
     const colores = new Map<string, ColorDot>();
     tareasDelDia.forEach((tarea) => {
       const key = tarea.colorCreador.bg;
@@ -168,104 +167,94 @@ export function CalendarioSection() {
   const avanzarMes = () => setMesActual(addMonths(mesActual, 1));
   const retrocederMes = () => setMesActual(subMonths(mesActual, 1));
 
-  const handleCrearTarea = (data: any) => {
+  const handleCrearTarea = async (data: CrearTareaData) => {
     if (!familia || !usuario) return;
 
-    let fechaStr = undefined;
+    let fechaStr = null;
     if (data.fecha) {
-        fechaStr = format(data.fecha, 'yyyy-MM-dd');
+      fechaStr = format(data.fecha, 'yyyy-MM-dd');
     }
 
-    // Determine assignee (creator or selected member)
-    const asignadoId = data.asignadoA || usuario.id;
-    const miembroAsignado = familia.miembros.find(m => m.id === asignadoId);
-    
-    // Fallback to current user if member not found (shouldn't happen if logic is correct)
-    const finalCreadorId = miembroAsignado ? miembroAsignado.id : usuario.id;
-    const finalColor = miembroAsignado ? miembroAsignado.color : (familia.miembros.find((m) => m.id === usuario.id)?.color || {
-        id: 'temp',
-        nombre: 'Gris',
-        bg: '#9CA3AF',
-        text: '#FFFFFF',
-        accent: '#9CA3AF',
-        wcagContrast: 4.5
+    try {
+      await TaskService.create({
+        title: data.titulo,
+        family_id: familia.id,
+        assigned_to_user_id: data.asignadoA || usuario.id,
+        recurrence_type: data.recurrencia === 'unica' ? 'unique' : 'recurring',
+        week_days: data.diasSemana ? data.diasSemana[0] : null, // Schema says string
+        status: 'pending',
+        due_date: data.recurrencia === 'unica' ? fechaStr : null,
       });
-
-
-    const nuevaTarea: Tarea = {
-      id: `tarea-${Date.now()}`,
-      titulo: data.titulo,
-      descripcion: data.descripcion,
-      tipoFecha: data.tipoFecha,
-      fecha: fechaStr,
-      diasSemana: data.diasSemana,
-      creadorId: finalCreadorId,
-      colorCreador: finalColor,
-      frecuencia: data.recurrencia, 
-      completada: false,
-      familiaId: familia.id,
-    };
-
-    const nuevasTareas = [...tareas, nuevaTarea];
-    setTareas(nuevasTareas);
-    setIsNuevaTareaOpen(false);
+      fetchTareas();
+      setIsNuevaTareaOpen(false);
+      toast.success('Tarea creada');
+    } catch (error) {
+      console.error('Error creating task:', error);
+      toast.error('Error al crear la tarea');
+    }
   };
 
-  const handleGuardarEdicion = (data: any) => {
-      if (!tareaAEditar || !familia) return;
+  const handleGuardarEdicion = async (data: CrearTareaData) => {
+    if (!tareaAEditar || !familia) return;
 
-      let fechaStr = undefined;
-      if (data.fecha) {
-        fechaStr = format(data.fecha, 'yyyy-MM-dd');
-      }
+    let fechaStr = null;
+    if (data.fecha) {
+      fechaStr = format(data.fecha, 'yyyy-MM-dd');
+    }
 
-      // Determine assignee (creator or selected member)
-      const asignadoId = data.asignadoA || tareaAEditar.creadorId;
-      const miembroAsignado = familia.miembros.find(m => m.id === asignadoId);
-
-      // Fallback to existing if not found
-      const finalCreadorId = miembroAsignado ? miembroAsignado.id : tareaAEditar.creadorId;
-      const finalColor = miembroAsignado ? miembroAsignado.color : tareaAEditar.colorCreador;
-
-      const tareasActualizadas = tareas.map(t => {
-          if (t.id === tareaAEditar.id) {
-              return {
-                  ...t,
-                  titulo: data.titulo,
-                  descripcion: data.descripcion,
-                  tipoFecha: data.tipoFecha,
-                  fecha: fechaStr,
-                  diasSemana: data.diasSemana,
-                  frecuencia: data.recurrencia,
-                  creadorId: finalCreadorId,
-                  colorCreador: finalColor,
-              };
-          }
-          return t;
+    try {
+      await TaskService.update(tareaAEditar.id, {
+        title: data.titulo,
+        assigned_to_user_id: data.asignadoA,
+        recurrence_type: data.recurrencia === 'unica' ? 'unique' : 'recurring',
+        week_days: data.diasSemana ? data.diasSemana[0] : null,
+        status: tareaAEditar.completada ? 'completed' : 'pending', // Preserve status
+        due_date: data.recurrencia === 'unica' ? fechaStr : null,
       });
-
-      setTareas(tareasActualizadas);
+      fetchTareas();
       setTareaAEditar(undefined);
       setIsNuevaTareaOpen(false);
+      toast.success('Tarea actualizada');
+    } catch (error) {
+      console.error('Error updating task:', error);
+      toast.error('Error al actualizar la tarea');
+    }
   };
 
   const handleEditarTarea = (tarea: Tarea) => {
-      setTareaAEditar(tarea);
-      // setIsNuevaTareaOpen(true); // Will be handled by the dialog usage
+    setTareaAEditar(tarea);
+    // setIsNuevaTareaOpen(true); // Handled by dialog prop
   };
 
-  const handleEliminarTarea = () => {
-      if (tareaAEliminar) {
-          setTareas(tareas.filter(t => t.id !== tareaAEliminar));
-          setTareaAEliminar(null);
+  const handleEliminarTarea = async () => {
+    if (tareaAEliminar) {
+      try {
+        await TaskService.delete(tareaAEliminar);
+        setTareas((prev) => prev.filter((t) => t.id !== tareaAEliminar));
+        setTareaAEliminar(null);
+        toast.success('Tarea eliminada');
+      } catch (error) {
+        console.error('Error deleting task:', error);
+        toast.error('Error al eliminar la tarea');
       }
-  };
-  
-  const handleToggleCompletada = (tareaId: string, completada: boolean) => {
-      setTareas(tareas.map(t => t.id === tareaId ? { ...t, completada } : t));
+    }
   };
 
-  // Obtener los días del mes actual
+  const handleToggleCompletada = async (tareaId: string, completada: boolean) => {
+    try {
+      // Optimistic update
+      setTareas((prev) => prev.map((t) => (t.id === tareaId ? { ...t, completada } : t)));
+
+      await TaskService.update(tareaId, {
+        status: completada ? 'completed' : 'pending',
+      });
+    } catch (error) {
+      console.error('Error toggling task:', error);
+      toast.error('Error al cambiar estado');
+      fetchTareas(); // Revert on error
+    }
+  };
+
   const primerDiaMes = startOfMonth(mesActual);
   const ultimoDiaMes = endOfMonth(mesActual);
   const diasDelMes = eachDayOfInterval({
@@ -273,23 +262,21 @@ export function CalendarioSection() {
     end: ultimoDiaMes,
   });
 
-  if (loading) {
-    return (
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold text-foreground">Calendario</h2>
-        <p className="text-muted-foreground">Cargando...</p>
-      </div>
-    );
+  if (loading && tareas.length === 0) {
+    return <SectionSkeleton />;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-foreground">Calendario</h2>
-        <Button className="bg-primary hover:bg-primary/90" onClick={() => {
+        <Button
+          className="bg-primary hover:bg-primary/90"
+          onClick={() => {
             setTareaAEditar(undefined);
             setIsNuevaTareaOpen(true);
-        }}>
+          }}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Nueva Tarea
         </Button>
@@ -301,11 +288,10 @@ export function CalendarioSection() {
             Calendario
           </TabsTrigger>
           <TabsTrigger value="mis-tareas" className="text-sm">
-            Mis Tareas
+            Nuestras Tareas
           </TabsTrigger>
         </TabsList>
 
-        {/* TAB: CALENDARIO */}
         <TabsContent value="calendario" className="space-y-4">
           <Card className="bg-card border border-border">
             <CardHeader className="pb-2">
@@ -325,7 +311,6 @@ export function CalendarioSection() {
             </CardHeader>
 
             <CardContent className="p-3">
-              {/* Leyenda de colores */}
               {familia && familia.miembros.length > 0 && (
                 <div className="mb-3 pb-2 border-b border-border">
                   <div className="flex flex-wrap gap-1.5">
@@ -342,7 +327,6 @@ export function CalendarioSection() {
                 </div>
               )}
 
-              {/* Encabezados de días */}
               <div className="grid grid-cols-7 gap-0.5 mb-2">
                 {['D', 'L', 'M', 'X', 'J', 'V', 'S'].map((dia) => (
                   <div
@@ -354,16 +338,13 @@ export function CalendarioSection() {
                 ))}
               </div>
 
-              {/* Grid de días */}
               <div className="grid grid-cols-7 gap-0.5">
-                {/* Días vacíos */}
                 {Array.from({
                   length: primerDiaMes.getDay(),
                 }).map((_, i) => (
                   <div key={`empty-${i}`} className="h-12 sm:h-14 rounded-sm p-1 bg-muted/20" />
                 ))}
 
-                {/* Días del mes */}
                 {diasDelMes.map((dia) => {
                   const coloresDelDia = getColoresParaDia(dia);
                   const esHoy = isSameDay(dia, new Date());
@@ -387,13 +368,12 @@ export function CalendarioSection() {
                         {format(dia, 'd')}
                       </div>
 
-                      {/* Indicadores de color - Puntos más grandes */}
                       {coloresDelDia.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-1 w-full justify-start">
                           {coloresDelDia.slice(0, 4).map((color, idx) => (
                             <div
                               key={`${color.bg}-${idx}`}
-                              className="w-3 h-3 rounded-full flex-shrink-0" // Increased size
+                              className="w-3 h-3 rounded-full flex-shrink-0"
                               style={{ backgroundColor: color.bg }}
                               title={`Tarea de ${color.nombre}`}
                             />
@@ -413,15 +393,15 @@ export function CalendarioSection() {
           </Card>
         </TabsContent>
 
-        {/* TAB: MIS TAREAS */}
         <TabsContent value="mis-tareas" className="space-y-4">
           <Card className="bg-card border border-border">
             <CardContent className="p-4">
-              <TareasTab 
-                tareas={tareas} 
-                usuarioId={usuario?.id} 
-                filtroInicial="semana"
-                onEditar={handleEditarTarea}
+                            <TareasTab 
+                              tareas={tareas} 
+                              miembros={familia?.miembros || []}
+                              filtroInicial="unicas"
+                              onEditar={handleEditarTarea}
+              
                 onEliminar={(id) => setTareaAEliminar(id)}
                 onToggleCompletada={handleToggleCompletada}
               />
@@ -430,35 +410,36 @@ export function CalendarioSection() {
         </TabsContent>
       </Tabs>
 
-      {/* Modal de fecha expandida */}
       <FechaExpandidaModal
         fecha={fechaSeleccionada}
-        tareas={fechaSeleccionada ? tareas.filter(t => isTareaOnDay(t, fechaSeleccionada)) : []}
+        tareas={fechaSeleccionada ? tareas.filter((t) => isTareaOnDay(t, fechaSeleccionada)) : []}
         miembros={familia?.miembros || []}
         onClose={() => setFechaSeleccionada(null)}
       />
 
-      {/* Dialog Nueva/Editar Tarea */}
-      <CrearTareaDialog 
-        open={isNuevaTareaOpen || !!tareaAEditar} 
+      <CrearTareaDialog
+        open={isNuevaTareaOpen || !!tareaAEditar}
         onOpenChange={(open) => {
-            if (!open) setTareaAEditar(undefined);
-            setIsNuevaTareaOpen(open);
+          if (!open) setTareaAEditar(undefined);
+          setIsNuevaTareaOpen(open);
         }}
         onSubmit={tareaAEditar ? handleGuardarEdicion : handleCrearTarea}
-        tareaAEditar={tareaAEditar ? {
-            titulo: tareaAEditar.titulo,
-            tipoFecha: tareaAEditar.tipoFecha || 'fecha',
-            fecha: tareaAEditar.fecha ? new Date(tareaAEditar.fecha + 'T12:00:00') : undefined,
-            diasSemana: tareaAEditar.diasSemana,
-            recurrencia: tareaAEditar.frecuencia as any,
-            asignadoA: tareaAEditar.creadorId,
-        } : undefined}
+        tareaAEditar={
+          tareaAEditar
+            ? {
+                titulo: tareaAEditar.titulo,
+                tipoFecha: tareaAEditar.tipoFecha || 'fecha',
+                fecha: tareaAEditar.fecha ? new Date(tareaAEditar.fecha + 'T12:00:00') : undefined,
+                diasSemana: tareaAEditar.diasSemana,
+                recurrencia: tareaAEditar.frecuencia || 'unica',
+                asignadoA: tareaAEditar.creadorId,
+              }
+            : undefined
+        }
         miembros={familia?.miembros || []}
         usuarioActualId={usuario?.id}
       />
 
-      {/* Dialog Confirmar Eliminación */}
       <AlertDialog open={!!tareaAEliminar} onOpenChange={() => setTareaAEliminar(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -469,7 +450,10 @@ export function CalendarioSection() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleEliminarTarea} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction
+              onClick={handleEliminarTarea}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
               Eliminar
             </AlertDialogAction>
           </AlertDialogFooter>

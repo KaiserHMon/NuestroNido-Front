@@ -57,7 +57,11 @@ export default [
         MouseEvent: 'readonly',
         Event: 'readonly',
         // Other globals
+        URL: 'readonly',
         URLSearchParams: 'readonly',
+        atob: 'readonly',
+        RequestInit: 'readonly',
+        process: 'readonly',
         __dirname: 'readonly',
         __filename: 'readonly',
         global: 'readonly',

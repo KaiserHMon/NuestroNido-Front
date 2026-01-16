@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Calendar, ShoppingCart, StickyNote, Trophy, ArrowRight, Bird } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,11 +8,8 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 import { birdLayout } from '@/config/birdConfig';
 import { LandingHeader } from '@/components/landing-header';
 import { SupportDialog } from '@/components/dialogs/support-dialog';
-import { useAuth } from '@/hooks/use-auth';
 
 export default function LandingPage() {
-  const router = useRouter();
-  const { isAuthenticated } = useAuth();
   const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   return (
@@ -229,9 +225,9 @@ export default function LandingPage() {
               <p className="text-foreground/80 text-sm sm:text-base max-w-md">
                 Conectando familias, un nido a la vez.
               </p>
-              
+
               {/* Support Link */}
-              <button 
+              <button
                 onClick={() => setIsSupportOpen(true)}
                 className="text-primary hover:underline text-sm font-medium"
               >

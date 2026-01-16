@@ -18,7 +18,8 @@ interface CrearFamiliaCardProps {
 
 export function CrearFamiliaCard({ onSuccess }: CrearFamiliaCardProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { crearFamilia, error } = useFamilia();
+  const [error, setError] = useState<string | null>(null);
+  const { crearFamilia } = useFamilia();
 
   const {
     register,
@@ -30,11 +31,13 @@ export function CrearFamiliaCard({ onSuccess }: CrearFamiliaCardProps) {
 
   const onSubmit = async (data: CrearFamiliaFormInputs) => {
     setIsSubmitting(true);
+    setError(null);
     try {
       await crearFamilia(data.nombre);
       onSuccess?.();
-    } catch (error) {
-      // Error handled by state
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error al crear la familia';
+      setError(message);
     } finally {
       setIsSubmitting(false);
     }

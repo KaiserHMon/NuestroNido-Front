@@ -88,14 +88,27 @@ export function FechaExpandidaModal({
                   {/* Detalles */}
                   <div className="flex items-center gap-2 flex-wrap text-xs px-5">
                     {tarea.frecuencia && tarea.frecuencia !== 'unica' && (
-                        <Badge variant="secondary" className="capitalize">
-                            {tarea.frecuencia}
-                        </Badge>
+                      <Badge variant="secondary" className="capitalize">
+                        {tarea.frecuencia}
+                      </Badge>
                     )}
                     {tarea.diasSemana && tarea.diasSemana.length > 0 && (
-                        <span className="text-muted-foreground">
-                            {tarea.diasSemana.map(d => ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][parseInt(d)]).join(', ')}
-                        </span>
+                      <span className="text-muted-foreground">
+                        {tarea.diasSemana
+                          .map(
+                            (d) =>
+                              [
+                                'Domingo',
+                                'Lunes',
+                                'Martes',
+                                'Miércoles',
+                                'Jueves',
+                                'Viernes',
+                                'Sábado',
+                              ][parseInt(d)]
+                          )
+                          .join(', ')}
+                      </span>
                     )}
                   </div>
 

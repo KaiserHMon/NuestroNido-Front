@@ -36,23 +36,30 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Miembro } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { es } from 'date-fns/locale';
+import { toast } from 'sonner';
 
 // Schema de validación
-const crearTareaSchema = z.object({
-  titulo: z.string().min(1, 'El título es requerido').max(50, 'Máximo 50 caracteres'),
-  tipoFecha: z.enum(['fecha', 'dias']).default('fecha'),
-  fecha: z.date().optional(),
-  diasSemana: z.array(z.string()).optional(),
-  recurrencia: z.enum(['unica', 'mensual', 'anual']).default('unica'),
-  asignadoA: z.string().optional(),
-}).refine((data) => {
-  if (data.tipoFecha === 'fecha' && !data.fecha) return false;
-  if (data.tipoFecha === 'dias' && (!data.diasSemana || data.diasSemana.length === 0)) return false;
-  return true;
-}, {
-  message: "Debes seleccionar una fecha o al menos un día de la semana",
-  path: ["fecha"], // Apuntar el error al campo fecha
-});
+const crearTareaSchema = z
+  .object({
+    titulo: z.string().min(1, 'El título es requerido').max(50, 'Máximo 50 caracteres'),
+    tipoFecha: z.enum(['fecha', 'dias']).default('fecha'),
+    fecha: z.date().optional(),
+    diasSemana: z.array(z.string()).optional(),
+    recurrencia: z.enum(['unica', 'mensual', 'anual']).default('unica'),
+    asignadoA: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.tipoFecha === 'fecha' && !data.fecha) return false;
+      if (data.tipoFecha === 'dias' && (!data.diasSemana || data.diasSemana.length === 0))
+        return false;
+      return true;
+    },
+    {
+      message: 'Debes seleccionar una fecha o al menos un día de la semana',
+      path: ['fecha'], // Apuntar el error al campo fecha
+    }
+  );
 
 type CrearTareaFormValues = z.infer<typeof crearTareaSchema>;
 
@@ -75,7 +82,14 @@ const DIAS_SEMANA = [
   { id: '0', label: 'D' }, // Domingo
 ];
 
-export function CrearTareaDialog({ open, onOpenChange, onSubmit, tareaAEditar, miembros, usuarioActualId }: CrearTareaDialogProps) {
+export function CrearTareaDialog({
+  open,
+  onOpenChange,
+  onSubmit,
+  tareaAEditar,
+  miembros,
+  usuarioActualId,
+}: CrearTareaDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<CrearTareaFormValues>({
@@ -94,12 +108,12 @@ export function CrearTareaDialog({ open, onOpenChange, onSubmit, tareaAEditar, m
     if (open) {
       if (tareaAEditar) {
         form.reset({
-            titulo: tareaAEditar.titulo,
-            tipoFecha: tareaAEditar.tipoFecha || 'fecha',
-            fecha: tareaAEditar.fecha ? new Date(tareaAEditar.fecha) : undefined,
-            diasSemana: tareaAEditar.diasSemana || [],
-            recurrencia: tareaAEditar.recurrencia || 'unica',
-            asignadoA: tareaAEditar.asignadoA || usuarioActualId,
+          titulo: tareaAEditar.titulo,
+          tipoFecha: tareaAEditar.tipoFecha || 'fecha',
+          fecha: tareaAEditar.fecha ? new Date(tareaAEditar.fecha) : undefined,
+          diasSemana: tareaAEditar.diasSemana || [],
+          recurrencia: tareaAEditar.recurrencia || 'unica',
+          asignadoA: tareaAEditar.asignadoA || usuarioActualId,
         });
       } else {
         form.reset({
@@ -120,8 +134,10 @@ export function CrearTareaDialog({ open, onOpenChange, onSubmit, tareaAEditar, m
       await onSubmit(data);
       form.reset();
       onOpenChange(false);
+      // Success toast is handled by the parent component (calendario-section) to avoid duplication
     } catch (error) {
       console.error('Error creating task:', error);
+      toast.error('Error al guardar la tarea. Verifica los datos.');
     } finally {
       setIsSubmitting(false);
     }
@@ -138,7 +154,6 @@ export function CrearTareaDialog({ open, onOpenChange, onSubmit, tareaAEditar, m
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            
             {/* Título */}
             <FormField
               control={form.control}
@@ -154,14 +169,18 @@ export function CrearTareaDialog({ open, onOpenChange, onSubmit, tareaAEditar, m
               )}
             />
 
-             {/* Asignar a */}
-             <FormField
+            {/* Asignar a */}
+            <FormField
               control={form.control}
               name="asignadoA"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Asignar a</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    value={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecciona un familiar" />
@@ -170,13 +189,13 @@ export function CrearTareaDialog({ open, onOpenChange, onSubmit, tareaAEditar, m
                     <SelectContent>
                       {miembros.map((miembro) => (
                         <SelectItem key={miembro.id} value={miembro.id}>
-                           <div className="flex items-center gap-2">
-                            <div 
-                                className="w-3 h-3 rounded-full" 
-                                style={{ backgroundColor: miembro.color.bg }}
+                          <div className="flex items-center gap-2">
+                            <div
+                              className="w-3 h-3 rounded-full"
+                              style={{ backgroundColor: miembro.color.bg }}
                             />
                             {miembro.nombre}
-                           </div>
+                          </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -188,27 +207,27 @@ export function CrearTareaDialog({ open, onOpenChange, onSubmit, tareaAEditar, m
 
             {/* Selector de Tipo de Fecha */}
             <div className="flex gap-4">
-                <Button
-                    type="button"
-                    variant={tipoFecha === 'fecha' ? 'default' : 'outline'}
-                    onClick={() => form.setValue('tipoFecha', 'fecha')}
-                    className="flex-1"
-                >
-                    Fecha Específica
-                </Button>
-                <Button
-                    type="button"
-                    variant={tipoFecha === 'dias' ? 'default' : 'outline'}
-                    onClick={() => form.setValue('tipoFecha', 'dias')}
-                    className="flex-1"
-                >
-                    Varios Días
-                </Button>
+              <Button
+                type="button"
+                variant={tipoFecha === 'fecha' ? 'default' : 'outline'}
+                onClick={() => form.setValue('tipoFecha', 'fecha')}
+                className="flex-1"
+              >
+                Fecha Específica
+              </Button>
+              <Button
+                type="button"
+                variant={tipoFecha === 'dias' ? 'default' : 'outline'}
+                onClick={() => form.setValue('tipoFecha', 'dias')}
+                className="flex-1"
+              >
+                Varios Días
+              </Button>
             </div>
 
             {/* Fecha Específica */}
             {tipoFecha === 'fecha' && (
-                <FormField
+              <FormField
                 control={form.control}
                 name="fecha"
                 render={({ field }) => (
@@ -220,12 +239,12 @@ export function CrearTareaDialog({ open, onOpenChange, onSubmit, tareaAEditar, m
                           <Button
                             variant="outline"
                             className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
+                              'w-full pl-3 text-left font-normal',
+                              !field.value && 'text-muted-foreground'
                             )}
                           >
                             {field.value ? (
-                              format(field.value, "PPP", { locale: es })
+                              format(field.value, 'PPP', { locale: es })
                             ) : (
                               <span>Selecciona fecha</span>
                             )}
@@ -250,51 +269,47 @@ export function CrearTareaDialog({ open, onOpenChange, onSubmit, tareaAEditar, m
 
             {/* Días de la Semana */}
             {tipoFecha === 'dias' && (
-                <FormField
-                    control={form.control}
-                    name="diasSemana"
-                    render={() => (
-                        <FormItem>
-                            <FormLabel className="mb-2 block">Días de la semana</FormLabel>
-                            <div className="flex justify-between">
-                                {DIAS_SEMANA.map((dia) => (
-                                    <FormField
-                                        key={dia.id}
-                                        control={form.control}
-                                        name="diasSemana"
-                                        render={({ field }) => {
-                                            return (
-                                                <FormItem
-                                                    key={dia.id}
-                                                    className="flex flex-col items-center space-y-1"
-                                                >
-                                                    <FormControl>
-                                                        <Checkbox
-                                                            checked={field.value?.includes(dia.id)}
-                                                            onCheckedChange={(checked) => {
-                                                                return checked
-                                                                    ? field.onChange([...(field.value || []), dia.id])
-                                                                    : field.onChange(
-                                                                        field.value?.filter(
-                                                                            (value) => value !== dia.id
-                                                                        )
-                                                                    )
-                                                            }}
-                                                        />
-                                                    </FormControl>
-                                                    <FormLabel className="font-normal text-xs">
-                                                        {dia.label}
-                                                    </FormLabel>
-                                                </FormItem>
-                                            )
-                                        }}
-                                    />
-                                ))}
-                            </div>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+              <FormField
+                control={form.control}
+                name="diasSemana"
+                render={() => (
+                  <FormItem>
+                    <FormLabel className="mb-2 block">Días de la semana</FormLabel>
+                    <div className="flex justify-between">
+                      {DIAS_SEMANA.map((dia) => (
+                        <FormField
+                          key={dia.id}
+                          control={form.control}
+                          name="diasSemana"
+                          render={({ field }) => {
+                            return (
+                              <FormItem
+                                key={dia.id}
+                                className="flex flex-col items-center space-y-1"
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(dia.id)}
+                                    onCheckedChange={(checked) => {
+                                      return checked
+                                        ? field.onChange([...(field.value || []), dia.id])
+                                        : field.onChange(
+                                            field.value?.filter((value) => value !== dia.id)
+                                          );
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="font-normal text-xs">{dia.label}</FormLabel>
+                              </FormItem>
+                            );
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             )}
 
             {/* Recurrencia */}
@@ -304,7 +319,11 @@ export function CrearTareaDialog({ open, onOpenChange, onSubmit, tareaAEditar, m
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Recurrencia</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    value={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecciona" />
@@ -326,7 +345,7 @@ export function CrearTareaDialog({ open, onOpenChange, onSubmit, tareaAEditar, m
                 Cancelar
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Guardando...' : (tareaAEditar ? 'Guardar Cambios' : 'Crear Tarea')}
+                {isSubmitting ? 'Guardando...' : tareaAEditar ? 'Guardar Cambios' : 'Crear Tarea'}
               </Button>
             </DialogFooter>
           </form>

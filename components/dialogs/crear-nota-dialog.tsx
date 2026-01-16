@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { toast } from 'sonner';
 
 const crearNotaSchema = z.object({
   titulo: z.string().min(1, 'El título es requerido').max(50, 'Máximo 50 caracteres'),
@@ -53,8 +54,10 @@ export function CrearNotaDialog({ open, onOpenChange, onSubmit }: CrearNotaDialo
       await onSubmit(data);
       form.reset();
       onOpenChange(false);
+      // Success toast handled by parent
     } catch (error) {
       console.error('Error creating note:', error);
+      toast.error('Error al crear la nota');
     } finally {
       setIsSubmitting(false);
     }
@@ -90,10 +93,10 @@ export function CrearNotaDialog({ open, onOpenChange, onSubmit }: CrearNotaDialo
                 <FormItem>
                   <FormLabel>Contenido</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      placeholder="Escribe tu nota aquí..." 
-                      className="resize-none" 
-                      {...field} 
+                    <Textarea
+                      placeholder="Escribe tu nota aquí..."
+                      className="resize-none"
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />

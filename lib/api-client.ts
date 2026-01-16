@@ -1,0 +1,61 @@
+import { TokenService } from '@/services/token-service';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://nuestro-nido.onrender.com';
+
+type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+
+interface FetchOptions {
+  method?: HttpMethod;
+  body?: unknown;
+  headers?: Record<string, string>;
+  requiresAuth?: boolean;
+}
+
+export class ApiError extends Error {
+  status: number;
+  data: unknown;
+
+  constructor(status: number, message: string, data?: unknown) {
+    super(message);
+    this.status = status;
+    this.data = data;
+  }
+}
+
+export async function fetchClient<T>(endpoint: string, options: FetchOptions = {}): Promise<T> {
+  const { method = 'GET', body, headers = {}, requiresAuth = true } = options;
+
+  const config: RequestInit = {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...headers,
+    },
+  };
+
+  if (requiresAuth) {
+    const token = TokenService.getToken();
+    if (token) {
+      (config.headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
+    }
+  }
+
+  if (body) {
+    config.body = JSON.stringify(body);
+  }
+
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+
+  if (response.status === 401 && requiresAuth) {
+    TokenService.removeToken();
+    // Optional: Redirect to login or dispatch event
+  }
+
+  const responseData = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new ApiError(response.status, response.statusText, responseData);
+  }
+
+  return responseData as T;
+}

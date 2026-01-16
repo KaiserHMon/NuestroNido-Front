@@ -5,23 +5,24 @@ import { useRouter } from 'next/navigation';
 import { Bird } from 'lucide-react';
 import { RegisterForm } from '@/components/auth/register-form';
 import { useAuth } from '@/hooks/use-auth';
+import { useFamilia } from '@/hooks/use-familia';
 
 export function RegisterPageContent() {
   const router = useRouter();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { familia, isLoading: familiaLoading } = useFamilia();
 
   useEffect(() => {
-    if (isAuthenticated && !isLoading) {
-      const familia = localStorage.getItem('familia');
+    if (isAuthenticated && !authLoading && !familiaLoading) {
       if (familia) {
         router.push('/dashboard');
       } else {
         router.push('/home');
       }
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isAuthenticated, authLoading, familiaLoading, familia, router]);
 
-  if (isLoading) {
+  if (authLoading || familiaLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">

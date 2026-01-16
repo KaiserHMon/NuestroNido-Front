@@ -45,6 +45,7 @@ export const useAuth = () => {
           setState((prev) => ({ ...prev, isLoading: false }));
         }
       } catch (error) {
+        console.error('Error checking session:', error);
         setState((prev) => ({ ...prev, isLoading: false }));
       }
     };
