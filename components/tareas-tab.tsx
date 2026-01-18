@@ -5,6 +5,7 @@ import { Tarea, Miembro } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Pencil, Trash2, Filter } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -23,6 +24,7 @@ interface TareasTabProps {
   onFiltroChange?: (filtro: 'unicas' | 'recurrentes') => void;
   onEditar?: (tarea: Tarea) => void;
   onEliminar?: (tareaId: string) => void;
+  onToggleCompletada?: (tareaId: string, completada: boolean) => void;
 }
 
 export function TareasTab({
@@ -32,6 +34,7 @@ export function TareasTab({
   onFiltroChange,
   onEditar,
   onEliminar,
+  onToggleCompletada,
 }: TareasTabProps) {
   const [filtro, setFiltro] = useState<'unicas' | 'recurrentes'>(filtroInicial);
   const [usuarioFiltro, setUsuarioFiltro] = useState<string>('todos');
@@ -59,6 +62,10 @@ export function TareasTab({
         return true;
       })
       .sort((a, b) => {
+        // Sort completed tasks to bottom
+        if (a.completada !== b.completada) {
+          return a.completada ? 1 : -1;
+        }
         if (filtro === 'unicas') {
           // Sort by date if available
           if (a.fecha && b.fecha) {
@@ -151,7 +158,7 @@ export function TareasTab({
       ) : (
         <div className="space-y-2">
           {tareasFiltradas.map((tarea) => (
-            <Card key={tarea.id} className="border border-border bg-card transition-colors">
+            <Card key={tarea.id} className={`border border-border bg-card transition-colors ${tarea.completada ? 'opacity-60' : ''}`}>
               <CardContent className="p-3">
                 <div className="flex items-center justify-between gap-3">
                   {/* Left side: Dot + Info */}
@@ -163,7 +170,7 @@ export function TareasTab({
                     />
 
                     <div className="flex-1 min-w-0 space-y-1">
-                      <h4 className="font-medium text-sm truncate text-foreground">
+                      <h4 className={`font-medium text-sm truncate text-foreground ${tarea.completada ? 'line-through text-muted-foreground' : ''}`}>
                         {tarea.titulo}
                       </h4>
 

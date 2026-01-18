@@ -55,8 +55,9 @@ interface ApiTask {
 
 interface CrearTareaData {
   titulo: string;
+  tipoFecha?: 'fecha' | 'dias';
   fecha?: Date;
-  asignadoA: string;
+  asignadoA?: string;
   recurrencia: string;
   diasSemana?: string[];
 }
@@ -181,7 +182,7 @@ export function CalendarioSection() {
         family_id: familia.id,
         assigned_to_user_id: data.asignadoA || usuario.id,
         recurrence_type: data.recurrencia === 'unica' ? 'unique' : 'recurring',
-        week_days: data.diasSemana ? data.diasSemana[0] : null, // Schema says string
+        week_days: data.diasSemana ? data.diasSemana[0] : undefined, // Schema says string
         status: 'pending',
         due_date: data.recurrencia === 'unica' ? fechaStr : null,
       });
@@ -207,7 +208,7 @@ export function CalendarioSection() {
         title: data.titulo,
         assigned_to_user_id: data.asignadoA,
         recurrence_type: data.recurrencia === 'unica' ? 'unique' : 'recurring',
-        week_days: data.diasSemana ? data.diasSemana[0] : null,
+        week_days: data.diasSemana ? data.diasSemana[0] : undefined, // Schema says string
         status: tareaAEditar.completada ? 'completed' : 'pending', // Preserve status
         due_date: data.recurrencia === 'unica' ? fechaStr : null,
       });
@@ -354,7 +355,7 @@ export function CalendarioSection() {
                     <button
                       key={dia.toISOString()}
                       onClick={() => setFechaSeleccionada(dia)}
-                      className={`h-24 sm:h-32 rounded-sm border transition-all relative flex flex-col items-start justify-start p-1.5
+                      className={`h-24 sm:h-28 rounded-sm border transition-all relative flex flex-col items-start justify-start p-1.5
                         ${
                           esSeleccionada
                             ? 'border-primary bg-primary/10 scale-105'
@@ -415,6 +416,7 @@ export function CalendarioSection() {
         tareas={fechaSeleccionada ? tareas.filter((t) => isTareaOnDay(t, fechaSeleccionada)) : []}
         miembros={familia?.miembros || []}
         onClose={() => setFechaSeleccionada(null)}
+        onToggleCompletada={handleToggleCompletada}
       />
 
       <CrearTareaDialog
@@ -431,7 +433,7 @@ export function CalendarioSection() {
                 tipoFecha: tareaAEditar.tipoFecha || 'fecha',
                 fecha: tareaAEditar.fecha ? new Date(tareaAEditar.fecha + 'T12:00:00') : undefined,
                 diasSemana: tareaAEditar.diasSemana,
-                recurrencia: tareaAEditar.frecuencia || 'unica',
+                recurrencia: (tareaAEditar.frecuencia || 'unica') as any,
                 asignadoA: tareaAEditar.creadorId,
               }
             : undefined

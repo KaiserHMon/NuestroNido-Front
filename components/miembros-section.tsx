@@ -212,7 +212,6 @@ export function MiembrosSection() {
           trigger={null}
           open={dialogEliminarFamiliaOpen}
           onOpenChange={setDialogEliminarFamiliaOpen}
-          onConfirm={handleEliminarFamilia}
         />
       )}
 

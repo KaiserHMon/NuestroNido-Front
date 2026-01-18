@@ -3,6 +3,7 @@
 import { Tarea, Miembro } from '@/lib/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -11,6 +12,7 @@ interface FechaExpandidaModalProps {
   tareas: Tarea[];
   onClose: () => void;
   miembros?: Miembro[];
+  onToggleCompletada?: (tareaId: string, completada: boolean) => void;
 }
 
 export function FechaExpandidaModal({
@@ -18,6 +20,7 @@ export function FechaExpandidaModal({
   tareas,
   onClose,
   miembros = [],
+  onToggleCompletada,
 }: FechaExpandidaModalProps) {
   if (!fecha) return null;
 
@@ -54,26 +57,33 @@ export function FechaExpandidaModal({
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-start gap-2 flex-1">
-                      {/* Dot de color */}
-                      <div
-                        className="w-3 h-3 rounded-full flex-shrink-0 mt-1"
-                        style={{ backgroundColor: tarea.colorCreador.bg }}
-                        title={tarea.colorCreador.nombre}
+                    <div className="flex items-start gap-3 flex-1">
+                      <Checkbox
+                        checked={tarea.completada}
+                        onCheckedChange={(c) => onToggleCompletada?.(tarea.id, !!c)}
+                        className="mt-1"
                       />
-                      {/* Contenido */}
-                      <div className="flex-1 min-w-0">
-                        <h4
-                          className={`font-semibold text-foreground text-sm break-words ${
-                            tarea.completada ? 'line-through text-muted-foreground' : ''
-                          }`}
-                        >
-                          {tarea.titulo}
-                        </h4>
-                        <p className="text-xs text-muted-foreground">
-                          Por:{' '}
-                          <span className="font-medium">{getNombreMiembro(tarea.creadorId)}</span>
-                        </p>
+                      <div className="flex items-start gap-2 flex-1">
+                        {/* Dot de color */}
+                        <div
+                          className="w-3 h-3 rounded-full flex-shrink-0 mt-1"
+                          style={{ backgroundColor: tarea.colorCreador.bg }}
+                          title={tarea.colorCreador.nombre}
+                        />
+                        {/* Contenido */}
+                        <div className="flex-1 min-w-0">
+                          <h4
+                            className={`font-semibold text-foreground text-sm break-words ${
+                              tarea.completada ? 'line-through text-muted-foreground' : ''
+                            }`}
+                          >
+                            {tarea.titulo}
+                          </h4>
+                          <p className="text-xs text-muted-foreground">
+                            Por:{' '}
+                            <span className="font-medium">{getNombreMiembro(tarea.creadorId)}</span>
+                          </p>
+                        </div>
                       </div>
                     </div>
 
@@ -86,7 +96,7 @@ export function FechaExpandidaModal({
                   </div>
 
                   {/* Detalles */}
-                  <div className="flex items-center gap-2 flex-wrap text-xs px-5">
+                  <div className="flex items-center gap-2 flex-wrap text-xs px-10">
                     {tarea.frecuencia && tarea.frecuencia !== 'unica' && (
                       <Badge variant="secondary" className="capitalize">
                         {tarea.frecuencia}
@@ -111,13 +121,6 @@ export function FechaExpandidaModal({
                       </span>
                     )}
                   </div>
-
-                  {/* Descripción (si existe) */}
-                  {tarea.descripcion && (
-                    <p className="text-xs text-muted-foreground px-5 break-words">
-                      {tarea.descripcion}
-                    </p>
-                  )}
                 </div>
               ))}
             </div>

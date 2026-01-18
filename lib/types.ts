@@ -132,7 +132,7 @@ export interface Miembro {
     nombre: string;
     imageUrl?: string;
   };
-  rolId: 'creador' | 'miembro';
+  rolId: 'creador' | 'miembro' | 'member';
   familiaId: string;
   createdAt: Date;
   updatedAt: Date;
