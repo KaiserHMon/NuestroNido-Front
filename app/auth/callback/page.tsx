@@ -58,10 +58,10 @@ function AuthCallbackContent() {
         if (familyResponse.status === 'fulfilled' && familyResponse.value) {
            usuario.familiaId = familyResponse.value.id;
            TokenService.setUser(usuario);
-           router.push('/dashboard');
+           window.location.href = '/dashboard';
         } else {
            TokenService.setUser(usuario);
-           router.push('/home');
+           window.location.href = '/home';
         }
 
       } catch (error) {
