@@ -1,9 +1,4 @@
 # Mas correciones
 
-- En el register si usuario ya existe que le salga un aviso.
-- Hacer que se vea menos los caracteres de relleno de contrasenia y confirmar contrasenia porque sino cuando alguien agrega un caracter no se nota la diferencia
-
-- 'Volver al Inicio' en /home deberia llevar a / pero no deslogear al usuario
-- Revisar si boton 'Crear Familia' en /home esta vinculada al endpoint
-
-- Pasarme svg del pajaro usado en el favicon
+- Cuando el usuario ya inicio sesion y esta en / que el simbolo de dashboard diga de titulo 'Dashboard'
+- Que en /home el boton de configuracion y 'Volver al inicio' tengan un fondo igual a los botones de / cuando se coloca el mouse encima

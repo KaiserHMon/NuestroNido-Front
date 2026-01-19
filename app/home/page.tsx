@@ -11,25 +11,43 @@ import { CrearFamiliaCard } from '@/components/familia/crear-familia-card';
 import { UnirseAFamiliaCard } from '@/components/familia/unirse-familia-card';
 import { SupportDialog } from '@/components/dialogs/support-dialog';
 import { SettingsDialog } from '@/components/dialogs/settings-dialog';
+import { FamilyService } from '@/services/family-service';
 
 export default function HomePage() {
   const router = useRouter();
   const { isAuthenticated, usuario, isLoading: authLoading } = useAuth();
   const { familia, isLoading: familiaLoading } = useFamilia();
   const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [isCheckingFamily, setIsCheckingFamily] = useState(true);
 
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      router.push('/login');
-      return;
-    }
+    const checkExistingFamily = async () => {
+      if (isAuthenticated && !familia) {
+        try {
+          const existingFamily = await FamilyService.getMyFamily();
+          if (existingFamily) {
+            router.push('/dashboard');
+            return;
+          }
+        } catch (error) {
+          console.error('Error checking existing family:', error);
+        }
+      }
+      setIsCheckingFamily(false);
+    };
 
-    if (!authLoading && !familiaLoading && isAuthenticated && familia) {
-      router.push('/dashboard');
+    if (!authLoading) {
+      if (!isAuthenticated) {
+        router.push('/login');
+      } else if (familia) {
+        router.push('/dashboard');
+      } else {
+        checkExistingFamily();
+      }
     }
-  }, [isAuthenticated, authLoading, familiaLoading, familia, router]);
+  }, [isAuthenticated, authLoading, familia, router]);
 
-  if (authLoading || familiaLoading) {
+  if (authLoading || familiaLoading || (isAuthenticated && isCheckingFamily)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -61,7 +79,7 @@ export default function HomePage() {
             <div className="flex items-center gap-2">
               <SettingsDialog />
               <Link href="/">
-                <Button variant="ghost" size="sm" className="gap-2">
+                <Button variant="ghost" size="sm" className="gap-2 hover:bg-primary/10 text-primary">
                   <ArrowLeft className="w-4 h-4" />
                   <span className="hidden sm:inline">Volver al inicio</span>
                 </Button>

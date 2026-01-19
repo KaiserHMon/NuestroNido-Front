@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Home, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,7 @@ interface CrearFamiliaCardProps {
 }
 
 export function CrearFamiliaCard({ onSuccess }: CrearFamiliaCardProps) {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { crearFamilia } = useFamilia();
@@ -35,8 +37,18 @@ export function CrearFamiliaCard({ onSuccess }: CrearFamiliaCardProps) {
     try {
       await crearFamilia(data.nombre);
       onSuccess?.();
-    } catch (err) {
+    } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Error al crear la familia';
+      
+      // Check for specific error indicating user already has a family
+      if (
+        message.includes('User already belongs to a family') || 
+        (err && typeof err === 'object' && 'response' in err && (err as any).response?.status === 400 && message.includes('belongs to a family'))
+      ) {
+        router.push('/dashboard');
+        return;
+      }
+
       setError(message);
     } finally {
       setIsSubmitting(false);

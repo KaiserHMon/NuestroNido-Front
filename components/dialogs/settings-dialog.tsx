@@ -55,7 +55,7 @@ export function SettingsDialog() {
     <>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant="ghost" size="icon" title="Configuración">
+          <Button variant="ghost" size="icon" title="Configuración" className="hover:bg-primary/10 text-primary">
             <Settings className="h-5 w-5" />
           </Button>
         </DialogTrigger>
