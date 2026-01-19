@@ -270,7 +270,7 @@ export function CalendarioSection() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-foreground">Calendario</h2>
+        <h2 className="text-2xl font-bold text-foreground">Calendario de Tareas</h2>
         <Button
           className="bg-primary hover:bg-primary/90"
           onClick={() => {
@@ -286,7 +286,7 @@ export function CalendarioSection() {
       <Tabs defaultValue="calendario" className="w-full">
         <TabsList className="grid w-full grid-cols-2 bg-muted">
           <TabsTrigger value="calendario" className="text-sm">
-            Calendario
+            Calendario de Tareas
           </TabsTrigger>
           <TabsTrigger value="mis-tareas" className="text-sm">
             Nuestras Tareas

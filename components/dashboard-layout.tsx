@@ -147,7 +147,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
                 }`}
               >
                 <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span className="hidden xs:inline">Calendario</span>
+                <span className="hidden xs:inline">Calendario de Tareas</span>
               </Button>
             </Link>
 

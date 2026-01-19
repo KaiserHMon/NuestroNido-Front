@@ -67,7 +67,7 @@ export default function LandingPage() {
                     <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
                   </div>
                   <CardTitle className="text-lg sm:text-xl text-primary">
-                    Calendario Familiar
+                    Calendario de Tareas
                   </CardTitle>
                   <CardDescription className="text-sm sm:text-base text-foreground">
                     Organiza las tareas del hogar y visualízalas en un calendario intuitivo.

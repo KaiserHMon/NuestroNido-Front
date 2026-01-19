@@ -17,9 +17,9 @@ export default function DashboardPage() {
       color: 'bg-primary text-primary-foreground',
     },
     {
-      title: 'Calendario',
-      description: 'Planifica tareas, turnos y eventos familiares en un solo calendario.',
-      icon: Calendar,
+    icon: Calendar,
+    title: 'Calendario de Tareas',
+    description: 'Planifica tareas, turnos y eventos familiares en un solo calendario.',
       href: '/dashboard/calendario',
       color: 'bg-primary text-primary-foreground',
     },
