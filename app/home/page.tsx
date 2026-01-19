@@ -12,17 +12,48 @@ import { UnirseAFamiliaCard } from '@/components/familia/unirse-familia-card';
 import { SupportDialog } from '@/components/dialogs/support-dialog';
 import { SettingsDialog } from '@/components/dialogs/settings-dialog';
 import { FamilyService } from '@/services/family-service';
+import { toast } from 'sonner';
 
 export default function HomePage() {
   const router = useRouter();
-  const { isAuthenticated, usuario, isLoading: authLoading } = useAuth();
+  const { isAuthenticated, usuario, isLoading: authLoading, unirseAFamilia } = useAuth();
   const { familia, isLoading: familiaLoading } = useFamilia();
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isCheckingFamily, setIsCheckingFamily] = useState(true);
 
   useEffect(() => {
-    const checkExistingFamily = async () => {
-      if (isAuthenticated && !familia) {
+    const checkStatus = async () => {
+      if (authLoading) return;
+
+      if (!isAuthenticated) {
+        router.push('/login');
+        return;
+      }
+
+      if (familia) {
+        router.push('/dashboard');
+        return;
+      }
+
+      // Check for pending invitation
+      const pendingCode = sessionStorage.getItem('pendingInvitationCode');
+      if (pendingCode) {
+        try {
+          await unirseAFamilia(pendingCode);
+          sessionStorage.removeItem('pendingInvitationCode');
+          toast.success('¡Te has unido a la familia exitosamente!');
+          router.push('/dashboard');
+          return;
+        } catch (error) {
+          console.error('Error joining with pending code:', error);
+          toast.error('No se pudo procesar la invitación. El código podría ser inválido.');
+          sessionStorage.removeItem('pendingInvitationCode');
+          // Continue to show home page
+        }
+      }
+
+      // Fallback check (in case context didn't catch it but API has it)
+      if (!familia) {
         try {
           const existingFamily = await FamilyService.getMyFamily();
           if (existingFamily) {
@@ -33,19 +64,12 @@ export default function HomePage() {
           console.error('Error checking existing family:', error);
         }
       }
+      
       setIsCheckingFamily(false);
     };
 
-    if (!authLoading) {
-      if (!isAuthenticated) {
-        router.push('/login');
-      } else if (familia) {
-        router.push('/dashboard');
-      } else {
-        checkExistingFamily();
-      }
-    }
-  }, [isAuthenticated, authLoading, familia, router]);
+    checkStatus();
+  }, [isAuthenticated, authLoading, familia, router, unirseAFamilia]);
 
   if (authLoading || familiaLoading || (isAuthenticated && isCheckingFamily)) {
     return (

@@ -68,6 +68,9 @@ export function CrearNotaDialog({ open, onOpenChange, onSubmit }: CrearNotaDialo
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Nueva Nota</DialogTitle>
+          <DialogDescription className="sr-only">
+            Formulario para crear una nueva nota familiar
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Bird } from 'lucide-react';
 import { RegisterForm } from '@/components/auth/register-form';
 import { useAuth } from '@/hooks/use-auth';
@@ -9,8 +9,16 @@ import { useFamilia } from '@/hooks/use-familia';
 
 export function RegisterPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { familia, isLoading: familiaLoading } = useFamilia();
+
+  useEffect(() => {
+    const code = searchParams.get('code');
+    if (code) {
+      sessionStorage.setItem('pendingInvitationCode', code);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (isAuthenticated && !authLoading && !familiaLoading) {

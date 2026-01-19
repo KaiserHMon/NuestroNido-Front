@@ -33,6 +33,9 @@ export function InvitarMiembrosDialog({ familia, open, onOpenChange }: InvitarMi
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="text-foreground">Invitar a Familiar</DialogTitle>
+          <DialogDescription className="text-muted-foreground text-sm">
+            Comparte el código o enlace para agregar miembros a tu familia.
+          </DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="codigo" className="w-full">

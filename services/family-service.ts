@@ -14,19 +14,38 @@ interface ApiMember {
   joined_at: string;
 }
 
+interface ApiFamily {
+  id: string;
+  name: string;
+  invitation_code: string;
+  creator_id: string;
+  created_at: string;
+  updated_at: string;
+}
+
+function mapApiFamilyToFamilia(apiFamily: ApiFamily, members: Miembro[] = []): Familia {
+  return {
+    id: apiFamily.id,
+    nombre: apiFamily.name,
+    codigoInvitacion: apiFamily.invitation_code,
+    creadorId: apiFamily.creator_id,
+    miembros: members,
+    activa: true, // Defaulting to true as not in API response?
+    createdAt: new Date(apiFamily.created_at),
+    updatedAt: new Date(apiFamily.updated_at),
+  };
+}
+
 export const FamilyService = {
   async getMyFamily(): Promise<Familia | null> {
     try {
       // The API returns the family object directly or 404
-      const family = await fetchClient<Familia>('/api/families/me');
-      if (!family) return null;
+      const apiFamily = await fetchClient<ApiFamily>('/api/families/me');
+      if (!apiFamily) return null;
 
       // We also need members to populate the full Familia object as per types
       const members = await this.getMembers();
-      return {
-        ...family,
-        miembros: members,
-      };
+      return mapApiFamilyToFamilia(apiFamily, members);
     } catch (error) {
       if ((error as { status?: number }).status === 404) return null;
       throw error;
@@ -68,32 +87,30 @@ export const FamilyService = {
   },
 
   async create(nombre: string): Promise<Familia> {
-    const family = await fetchClient<Familia>('/api/families/', {
+    const apiFamily = await fetchClient<ApiFamily>('/api/families/', {
       method: 'POST',
       body: { name: nombre },
     });
-    // API returns created family. We assume it puts the creator as member implicitly or we fetch members.
-    // For consistency with frontend types, we might want to fetch members.
     const members = await this.getMembers();
-    return { ...family, miembros: members };
+    return mapApiFamilyToFamilia(apiFamily, members);
   },
 
   async joinByCode(code: string): Promise<Familia> {
-    const family = await fetchClient<Familia>('/api/families/join/code', {
+    const apiFamily = await fetchClient<ApiFamily>('/api/families/join/code', {
       method: 'POST',
       body: { code },
     });
     const members = await this.getMembers();
-    return { ...family, miembros: members };
+    return mapApiFamilyToFamilia(apiFamily, members);
   },
 
   async update(familyId: string, nombre: string): Promise<Familia> {
-    const family = await fetchClient<Familia>(`/api/families/${familyId}`, {
+    const apiFamily = await fetchClient<ApiFamily>(`/api/families/${familyId}`, {
       method: 'PUT',
       body: { name: nombre },
     });
     const members = await this.getMembers();
-    return { ...family, miembros: members };
+    return mapApiFamilyToFamilia(apiFamily, members);
   },
 
   async delete(familyId: string): Promise<void> {
@@ -122,5 +139,5 @@ export const FamilyService = {
     // We can't verify existence without trying to join (which is a state change).
     // Returning true potentially, or we could handle this in the UI.
     return { valido: true };
-  },
+  }
 };

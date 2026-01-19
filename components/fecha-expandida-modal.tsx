@@ -43,6 +43,9 @@ export function FechaExpandidaModal({
           <DialogTitle className="text-foreground text-center">
             {format(fecha, "EEEE, d 'de' MMMM 'de' yyyy", { locale: es })}
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Detalle de tareas para {format(fecha, "EEEE, d 'de' MMMM 'de' yyyy", { locale: es })}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">

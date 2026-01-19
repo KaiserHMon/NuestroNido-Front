@@ -150,6 +150,9 @@ export function CrearTareaDialog({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{tareaAEditar ? 'Editar Tarea' : 'Nueva Tarea'}</DialogTitle>
+          <DialogDescription className="sr-only">
+            Formulario para {tareaAEditar ? 'editar la' : 'crear una nueva'} tarea
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
