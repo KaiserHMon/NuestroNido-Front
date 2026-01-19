@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Calendar, ShoppingCart, StickyNote, Trophy, ArrowRight, Bird } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,8 +9,22 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 import { LandingHeader } from '@/components/landing-header';
 import { SupportDialog } from '@/components/dialogs/support-dialog';
 
-export default function LandingPage() {
+function LandingPageContent() {
   const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const code = searchParams.get('code');
+    const token = searchParams.get('token'); // In case implicit flow is used or param name varies
+
+    if (code || token) {
+      // Redirect to the auth callback handler to process the login
+      // Construct the new URL preserving the query params
+      const newUrl = `/auth/callback?${searchParams.toString()}`;
+      router.push(newUrl);
+    }
+  }, [searchParams, router]);
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-cover bg-center" style={{ backgroundImage: "url('/bg.svg')" }}>
@@ -235,5 +250,13 @@ export default function LandingPage() {
       {/* Support Dialog */}
       <SupportDialog open={isSupportOpen} onOpenChange={setIsSupportOpen} />
     </div>
+  );
+}
+
+export default function LandingPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <LandingPageContent />
+    </Suspense>
   );
 }
