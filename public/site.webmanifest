@@ -1,0 +1,17 @@
+{
+  "name": "NuestroNido - Organización Familiar",
+  "short_name": "NuestroNido",
+  "description": "Un hogar más organizado, conectado y en armonía. Gestiona tareas, listas de compras y notas familiares.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f76e6e",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
