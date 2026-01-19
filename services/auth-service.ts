@@ -102,32 +102,6 @@ export const AuthService = {
 
       // 2. Login immediately to get token
       return this.login(email, password);
-import { ApiError } from '@/lib/api-client';
-
-// ... imports
-
-export const AuthService = {
-  // ... login
-
-  async register(
-    nombre: string,
-    email: string,
-    password: string
-  ): Promise<ApiResponse<{ token: string; usuario: Usuario }>> {
-    try {
-      // 1. Signup
-      await fetchClient('/api/auth/signup', {
-        method: 'POST',
-        body: {
-          email,
-          password,
-          full_name: nombre,
-        },
-        requiresAuth: false,
-      });
-
-      // 2. Login immediately to get token
-      return this.login(email, password);
     } catch (error) {
       console.error('Register error:', error);
       let message = 'Error al registrar usuario';
