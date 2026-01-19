@@ -8,12 +8,14 @@ import { useAuth } from '@/hooks/use-auth';
 
 export function LandingHeader() {
   const router = useRouter();
-  const { isAuthenticated, isLoading, logout } = useAuth();
+  const { isAuthenticated, isLoading, logout, usuario } = useAuth();
 
   const handleLogout = async () => {
     await logout();
     router.push('/');
   };
+
+  const dashboardRoute = usuario?.familiaId ? '/dashboard' : '/home';
 
   if (isLoading) {
     return (
@@ -49,12 +51,12 @@ export function LandingHeader() {
           <div className="flex items-center gap-2">
             {isAuthenticated ? (
               <>
-                <Link href="/dashboard">
+                <Link href={dashboardRoute}>
                   <Button
                     variant="ghost"
                     size="sm"
                     className="h-8 w-8 sm:h-10 sm:w-10 p-0 hover:bg-primary/10 text-primary"
-                    title="Dashboard"
+                    title={usuario?.familiaId ? "Dashboard" : "Inicio"}
                   >
                     <LayoutDashboard className="w-5 h-5 sm:w-6 sm:h-6" />
                   </Button>
