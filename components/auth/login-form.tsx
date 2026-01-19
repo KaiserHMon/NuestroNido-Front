@@ -23,7 +23,7 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
   const { login, error: authError } = useAuth();
 
   const handleGoogleLogin = () => {
-    window.location.href = `${API_BASE_URL}/auth/login/google`;
+    window.location.href = `${API_BASE_URL}/api/auth/login/google`;
   };
 
   const {
