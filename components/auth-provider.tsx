@@ -19,6 +19,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const storedToken = TokenService.getToken();
       const storedUser = TokenService.getUser();
+      console.log('AuthProvider checkSession:', { hasToken: !!storedToken, hasUser: !!storedUser });
 
       if (storedToken && storedUser) {
         setToken(storedToken);
@@ -29,10 +30,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
              try {
                 const fam = await FamilyService.getMyFamily();
                 setFamilia(fam);
-             } catch {
+             } catch (err) {
+                console.error("Error loading family in checkSession:", err);
                 // Ignore
              }
         }
+      } else {
+        console.log("No stored session found, clearing.");
+        TokenService.clearSession();
       }
     } catch (error) {
       console.error('Error checking session:', error);
