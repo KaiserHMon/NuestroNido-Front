@@ -87,15 +87,8 @@ export const useFamilia = () => {
   }, []);
 
   const cargarFamiliaGuardada = useCallback(async () => {
-    // This is now handled by provider, but if we want to force refresh:
-    // We would need a 'refreshFamilia' method in context.
-    // For now, let's just ignore or implement if needed.
-    // The DashboardLayout calls this.
-    // We can assume provider keeps it fresh enough, or implement refresh.
-    // Let's leave it no-op or maybe re-fetch via context?
-    // Context doesn't expose refresh.
-    // Let's rely on actions updating the state.
-  }, []);
+    await context.refreshFamily();
+  }, [context]);
 
   return {
     familia: context.familia,

@@ -270,4 +270,5 @@ export interface AuthContextType {
   unirseAFamilia: (codigo: string) => Promise<void>;
   actualizarFamilia: (familiaId: string, nombre: string) => Promise<void>;
   eliminarFamilia: (familiaId: string) => Promise<void>;
+  refreshFamily: () => Promise<void>;
 }

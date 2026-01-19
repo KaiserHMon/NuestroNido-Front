@@ -132,6 +132,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [usuario]);
 
+  const refreshFamily = useCallback(async () => {
+    try {
+      const fam = await FamilyService.getMyFamily();
+      setFamilia(fam);
+    } catch (error) {
+      console.error('Error refreshing family:', error);
+    }
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -146,7 +155,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         crearFamilia,
         unirseAFamilia,
         actualizarFamilia,
-        eliminarFamilia
+        eliminarFamilia,
+        refreshFamily
       }}
     >
       {children}

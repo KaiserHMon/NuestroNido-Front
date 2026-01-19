@@ -64,7 +64,7 @@ interface CrearTareaData {
 
 export function CalendarioSection() {
   const { usuario } = useAuth();
-  const { familia } = useFamilia();
+  const { familia, cargarFamiliaGuardada } = useFamilia();
   const [tareas, setTareas] = useState<Tarea[]>([]);
   const [mesActual, setMesActual] = useState(new Date());
   const [fechaSeleccionada, setFechaSeleccionada] = useState<Date | null>(null);
@@ -249,6 +249,8 @@ export function CalendarioSection() {
       await TaskService.update(tareaId, {
         status: completada ? 'completed' : 'pending',
       });
+      
+      cargarFamiliaGuardada();
     } catch (error) {
       console.error('Error toggling task:', error);
       toast.error('Error al cambiar estado');

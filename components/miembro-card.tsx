@@ -24,7 +24,7 @@ export function MiembroCard({
 }: MiembroCardProps) {
   return (
     <Card className="border border-border bg-card overflow-hidden h-full">
-      <CardContent className="p-3 space-y-3 flex flex-col h-full">
+      <CardContent className="p-2 space-y-2 flex flex-col h-full">
         {/* Header del Card */}
         <div className="flex items-start justify-between gap-2">
           <MiembroAvatar
@@ -40,19 +40,19 @@ export function MiembroCard({
                   variant="ghost"
                   size="sm"
                   onClick={() => onEliminar(miembro)}
-                  className="h-8 w-8 p-0 hover:bg-destructive/10 text-destructive"
+                  className="h-6 w-6 p-0 hover:bg-destructive/10 text-destructive"
                   title="Salir de la familia"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-3 h-3" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => onEditar(miembro)}
-                  className="h-8 w-8 p-0 hover:bg-primary/10 text-primary"
+                  className="h-6 w-6 p-0 hover:bg-primary/10 text-primary"
                   title="Editar perfil"
                 >
-                  <Edit2 className="w-4 h-4" />
+                  <Edit2 className="w-3 h-3" />
                 </Button>
               </>
             )}
@@ -61,10 +61,10 @@ export function MiembroCard({
                 variant="ghost"
                 size="sm"
                 onClick={() => onEliminar(miembro)}
-                className="h-8 w-8 p-0 hover:bg-destructive/10 text-destructive"
+                className="h-6 w-6 p-0 hover:bg-destructive/10 text-destructive"
                 title="Eliminar miembro"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="w-3 h-3" />
               </Button>
             )}
           </div>
@@ -73,15 +73,15 @@ export function MiembroCard({
         {/* Nombre y rol */}
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h4 className="font-semibold text-foreground">{miembro.nombre}</h4>
+            <h4 className="font-semibold text-foreground text-sm">{miembro.nombre}</h4>
             {esMiembro && (
-              <Badge className="text-xs bg-primary/20 text-primary border border-primary/30">
+              <Badge className="text-[10px] px-1 h-4 bg-primary/20 text-primary border border-primary/30">
                 Tú
               </Badge>
             )}
           </div>
           {miembro.rolId === 'creador' && (
-            <Badge className="mt-1 bg-primary text-primary-foreground">Creador</Badge>
+            <Badge className="mt-1 text-[10px] px-1 h-4 bg-primary text-primary-foreground">Creador</Badge>
           )}
         </div>
       </CardContent>

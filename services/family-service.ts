@@ -1,11 +1,12 @@
 import { fetchClient } from '@/lib/api-client';
 import { Familia, Miembro, ValidarCodigoResponse } from '@/lib/types';
+import { getColorById } from '@/lib/colors';
 
 interface ApiMember {
   user_id: string;
   user?: {
     name?: string;
-    color?: { id?: string; name?: string; bg?: string };
+    color?: { id?: string; name?: string; bg?: string } | string;
     level?: { name?: string; image_url?: string };
     task_completed?: number;
   };
@@ -57,7 +58,18 @@ export const FamilyService = {
 
     return response.map((apiMember) => {
       const user = apiMember.user || {};
-      const colorData = user.color || { name: 'Gris', bg: '#9CA3AF', id: 'default' };
+      
+      let colorData: { id?: string; name?: string; bg?: string } = { name: 'Gris', bg: '#9CA3AF', id: 'default' };
+      
+      if (typeof user.color === 'string') {
+        const foundColor = getColorById(user.color);
+        if (foundColor) {
+           colorData = foundColor;
+        }
+      } else if (user.color) {
+        colorData = user.color;
+      }
+
       const levelData = user.level || {};
 
       return {

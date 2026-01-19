@@ -1,10 +1,11 @@
 import { fetchClient } from '@/lib/api-client';
 import { Usuario } from '@/lib/types';
+import { getColorById } from '@/lib/colors';
 
 interface ApiUserResponse {
   id: string;
   name: string;
-  color?: { id?: string; name?: string; bg?: string };
+  color?: { id?: string; name?: string; bg?: string } | string;
   level?: { name?: string; image_url?: string };
   task_completed?: number;
 }
@@ -12,7 +13,15 @@ interface ApiUserResponse {
 export const UserService = {
   async getUser(userId: string): Promise<Usuario> {
     const response = await fetchClient<ApiUserResponse>(`/api/users/${userId}`);
-    const colorData = response.color || { name: 'Gris', bg: '#9CA3AF', id: 'default' };
+    
+    let colorData: { id?: string; name?: string; bg?: string } = { name: 'Gris', bg: '#9CA3AF', id: 'default' };
+    if (typeof response.color === 'string') {
+        const found = getColorById(response.color);
+        if (found) colorData = found;
+    } else if (response.color) {
+        colorData = response.color;
+    }
+
     const levelData = response.level || {};
 
     return {
@@ -44,7 +53,14 @@ export const UserService = {
       method: 'PUT',
       body: data,
     });
-    const colorData = response.color || { name: 'Gris', bg: '#9CA3AF', id: 'default' };
+    
+    let colorData: { id?: string; name?: string; bg?: string } = { name: 'Gris', bg: '#9CA3AF', id: 'default' };
+    if (typeof response.color === 'string') {
+        const found = getColorById(response.color);
+        if (found) colorData = found;
+    } else if (response.color) {
+        colorData = response.color;
+    }
 
     return {
       id: response.id,

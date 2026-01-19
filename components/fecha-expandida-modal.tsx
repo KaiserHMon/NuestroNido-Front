@@ -1,7 +1,7 @@
 'use client';
 
 import { Tarea, Miembro } from '@/lib/types';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { format, isSameDay, isBefore, startOfToday } from 'date-fns';
@@ -69,7 +69,7 @@ export function FechaExpandidaModal({
                         <Checkbox
                           checked={tarea.completada}
                           onCheckedChange={(c) => onToggleCompletada?.(tarea.id, !!c)}
-                          className="mt-1"
+                          className="mt-1 border-2 border-primary/70"
                         />
                       )}
                       <div className="flex items-start gap-2 flex-1">

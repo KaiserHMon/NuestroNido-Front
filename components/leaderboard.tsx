@@ -9,18 +9,6 @@ interface LeaderboardProps {
   miembros: Miembro[];
 }
 
-const NIVELES = [
-  { nivel: 1, nombre: 'Polluelo', minPuntos: 0, maxPuntos: 50 },
-  { nivel: 2, nombre: 'Pájaro Joven', minPuntos: 51, maxPuntos: 150 },
-  { nivel: 3, nombre: 'Pájaro Adulto', minPuntos: 151, maxPuntos: 300 },
-  { nivel: 4, nombre: 'Pájaro Majestuoso', minPuntos: 301, maxPuntos: 500 },
-  { nivel: 5, nombre: 'Pájaro Legendario', minPuntos: 501, maxPuntos: Number.POSITIVE_INFINITY },
-];
-
-const getNivelActual = (puntos: number) => {
-  return NIVELES.find((n) => puntos >= n.minPuntos && puntos <= n.maxPuntos) || NIVELES[0];
-};
-
 const getDistintivo = (posicion: number) => {
   switch (posicion) {
     case 1:
@@ -39,7 +27,6 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
   const miembrosOrdenados = [...miembros].sort((a, b) => b.puntos - a.puntos);
 
   const entries: LeaderboardEntry[] = miembrosOrdenados.map((m, index) => {
-    const nivelCalculado = getNivelActual(m.puntos);
     const distintivo = getDistintivo(index + 1);
 
     return {
@@ -52,10 +39,9 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
       },
       puntos: m.puntos,
       nivel: {
-        numero: nivelCalculado.nivel, // API doesn't return level number yet, keeping calc
-        nombre: m.nivel?.nombre || nivelCalculado.nombre,
-        puntosParaSiguiente:
-          nivelCalculado.nivel === 5 ? 0 : nivelCalculado.maxPuntos - m.puntos + 1,
+        numero: 0, // Not available in simple member view
+        nombre: m.nivel?.nombre || 'Huevo',
+        puntosParaSiguiente: 0, // Not available
       },
       distintivo: distintivo ? (distintivo.label as 'oro' | 'plata' | 'bronce') : undefined,
     };
