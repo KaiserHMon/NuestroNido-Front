@@ -88,7 +88,12 @@ export function EditarPerfilDialog({
       submitButtonLabel="Guardar Cambios"
     >
       <div className="flex justify-center py-4">
-        <MiembroAvatar nombre={miembro.nombre} color={miembro.color} size="lg" />
+        <MiembroAvatar
+          nombre={miembro.nombre}
+          color={miembro.color}
+          imageUrl={miembro.nivel?.imageUrl}
+          size="lg"
+        />
       </div>
 
       <div className="space-y-2">

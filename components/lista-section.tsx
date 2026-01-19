@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, Check, X, ShoppingBasket, Pill, Home, Wrench, Sparkles } from 'lucide-react';
+import { Plus, Check, X, ShoppingBasket, Pill, Home, Wrench, Sparkles, ShoppingCart } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -28,21 +28,10 @@ import { useFamilia } from '@/hooks/use-familia';
 import { toast } from 'sonner';
 import { SectionSkeleton } from '@/components/ui/section-skeleton';
 
-// Extending ListItem or using it directly.
-// API returns category, title, quantity, purchased, id.
-// We map category to our UI categories.
-
-const CATEGORIAS = [
-  { value: 'alimentos', label: 'Alimentos', icon: ShoppingBasket, color: 'bg-green-500' },
-  { value: 'farmacia', label: 'Farmacia', icon: Pill, color: 'bg-blue-500' },
-  { value: 'ferreteria', label: 'Ferretería', icon: Wrench, color: 'bg-orange-500' },
-  { value: 'limpieza', label: 'Limpieza', icon: Sparkles, color: 'bg-cyan-500' },
-  { value: 'hogar', label: 'Varios', icon: Home, color: 'bg-purple-500' },
-];
-
 export function ListaSection() {
   const { familia } = useFamilia();
   const [items, setItems] = useState<ListItem[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [categoriaActiva, setCategoriaActiva] = useState('todas');
   const [lastActionMsg, setLastActionMsg] = useState('');
@@ -50,22 +39,39 @@ export function ListaSection() {
 
   const [nuevoItem, setNuevoItem] = useState({
     nombre: '',
-    categoria: 'alimentos',
+    categoria: '',
     cantidad: '1',
   });
+
+  const getCategoryIcon = (categoryName: string) => {
+    const lower = categoryName.toLowerCase();
+    if (lower.includes('aliment') || lower.includes('comida')) return ShoppingBasket;
+    if (lower.includes('farmacia') || lower.includes('medicin')) return Pill;
+    if (lower.includes('ferreter') || lower.includes('herramient')) return Wrench;
+    if (lower.includes('limpieza') || lower.includes('aseo')) return Sparkles;
+    if (lower.includes('hogar') || lower.includes('casa')) return Home;
+    return ShoppingCart;
+  };
 
   const fetchItems = useCallback(async () => {
     if (!familia) return;
     try {
       setLoading(true);
-      const data = await ListService.getItems();
+      const [data, cats] = await Promise.all([
+        ListService.getItems(),
+        ListService.getCategories()
+      ]);
       setItems(data);
+      setCategories(cats);
+      if (cats.length > 0 && !nuevoItem.categoria) {
+          setNuevoItem(prev => ({ ...prev, categoria: cats[0] }));
+      }
     } catch (error) {
-      console.error('Error fetching list items:', error);
+      console.error('Error fetching list data:', error);
     } finally {
       setLoading(false);
     }
-  }, [familia]);
+  }, [familia]); // Removed nuevoItem.categoria dependency to avoid loop, handled inside logic
 
   useEffect(() => {
     fetchItems();
@@ -80,7 +86,7 @@ export function ListaSection() {
       .slice(0, 100);
     const cantidadLimpia = parseInt(nuevoItem.cantidad.trim().slice(0, 50)) || 1;
 
-    if (nombreLimpio) {
+    if (nombreLimpio && nuevoItem.categoria) {
       try {
         const createdItem = await ListService.create({
           title: nombreLimpio,
@@ -91,7 +97,7 @@ export function ListaSection() {
         });
 
         setItems((prev) => [...prev, createdItem]);
-        setNuevoItem({ nombre: '', categoria: 'alimentos', cantidad: '1' });
+        setNuevoItem({ nombre: '', categoria: categories[0] || '', cantidad: '1' });
         setDialogOpen(false);
         setLastActionMsg('Item agregado a la lista');
         setTimeout(() => setLastActionMsg(''), 1500);
@@ -101,54 +107,62 @@ export function ListaSection() {
         toast.error('Error al crear el producto');
       }
     }
-  }, [nuevoItem, familia]);
+  }, [nuevoItem, familia, categories]);
 
   const toggleComprado = useCallback(async (item: ListItem) => {
+    // Optimistic update
+    setItems((prev) =>
+      prev.map((i) => (i.id === item.id ? { ...i, purchased: !i.purchased } : i))
+    );
+
     try {
       const updatedItem = await ListService.update(item.id, {
         purchased: !item.purchased,
       });
-              setItems((prev) =>
-                  prev.map((i) => (i.id === item.id ? updatedItem : i))
-              );
-          } catch (error) {
-              console.error('Error updating item:', error);
-              toast.error('Error al actualizar el producto');
-          }
-      
+      // Confirm with server response
+      setItems((prev) =>
+          prev.map((i) => (i.id === item.id ? updatedItem : i))
+      );
+    } catch (error) {
+      console.error('Error updating item:', error);
+      toast.error('Error al actualizar el producto');
+      // Revert
+      setItems((prev) =>
+        prev.map((i) => (i.id === item.id ? item : i))
+      );
+    }
   }, []);
 
   const eliminarItem = useCallback(async (itemId: string) => {
     try {
       await ListService.delete(itemId);
       setItems((prev) => prev.filter((item) => item.id !== itemId));
-              setLastActionMsg('Item eliminado');
-              setTimeout(() => setLastActionMsg(''), 1500);
-              toast.success('Producto eliminado');
-          } catch (error) {
-              console.error('Error deleting item:', error);
-              toast.error('Error al eliminar el producto');
-          }
-      
+      setLastActionMsg('Item eliminado');
+      setTimeout(() => setLastActionMsg(''), 1500);
+      toast.success('Producto eliminado');
+    } catch (error) {
+      console.error('Error deleting item:', error);
+      toast.error('Error al eliminar el producto');
+    }
   }, []);
 
   const limpiarComprados = useCallback(async () => {
-    // API might not have batch delete, so we loop or filter locally?
-    // Instruction says "Cleanup purchased".
-    // We can delete them one by one or if API supported batch delete.
-    // Given current API, we iterate.
     const purchased = items.filter((i) => i.purchased);
-    await Promise.all(purchased.map((i) => ListService.delete(i.id)));
-
-    setItems((prev) => prev.filter((item) => !item.purchased));
-    setLastActionMsg('Items comprados limpiados');
-    setTimeout(() => setLastActionMsg(''), 1500);
+    try {
+      await Promise.all(purchased.map((i) => ListService.delete(i.id)));
+      setItems((prev) => prev.filter((item) => !item.purchased));
+      setLastActionMsg('Items comprados limpiados');
+      setTimeout(() => setLastActionMsg(''), 1500);
+      toast.success('Lista de comprados limpiada');
+    } catch (error) {
+      console.error('Error cleaning purchased items:', error);
+      toast.error('Error al limpiar la lista');
+    }
   }, [items]);
 
-  const getCategoria = useCallback((categoriaValue: string) => {
-    // API returns exact string stored.
-    return CATEGORIAS.find((c) => c.value === categoriaValue) || CATEGORIAS.find(c => c.value === 'hogar');
-  }, []);
+  const getCategoriaLabel = (categoriaValue: string) => {
+      return categoriaValue.charAt(0).toUpperCase() + categoriaValue.slice(1);
+  };
 
   const itemsFiltrados =
     categoriaActiva === 'todas'
@@ -169,6 +183,7 @@ export function ListaSection() {
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+        {/* ... Header ... */}
         <div>
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Lista de Compras</h2>
           <p className="text-sm sm:text-base text-muted-foreground mt-1">
@@ -218,16 +233,16 @@ export function ListaSection() {
                     onValueChange={(value) => setNuevoItem({ ...nuevoItem, categoria: value })}
                   >
                     <SelectTrigger id="categoria">
-                      <SelectValue />
+                      <SelectValue placeholder="Selecciona una categoría" />
                     </SelectTrigger>
                     <SelectContent>
-                      {CATEGORIAS.map((cat) => {
-                        const Icon = cat.icon;
+                      {categories.map((cat) => {
+                        const Icon = getCategoryIcon(cat);
                         return (
-                          <SelectItem key={cat.value} value={cat.value}>
+                          <SelectItem key={cat} value={cat}>
                             <div className="flex items-center gap-2">
                               <Icon className="w-4 h-4" aria-hidden="true" />
-                              {cat.label}
+                              {getCategoriaLabel(cat)}
                             </div>
                           </SelectItem>
                         );
@@ -274,17 +289,17 @@ export function ListaSection() {
               </Badge>
             )}
           </TabsTrigger>
-          {CATEGORIAS.map((cat) => {
-            const Icon = cat.icon;
-            const count = contarPorCategoria(cat.value);
+          {categories.map((cat) => {
+            const Icon = getCategoryIcon(cat);
+            const count = contarPorCategoria(cat);
             return (
               <TabsTrigger
-                key={cat.value}
-                value={cat.value}
+                key={cat}
+                value={cat}
                 className="gap-0.5 sm:gap-1 text-xs sm:text-sm px-1 sm:px-3 py-2"
               >
                 <Icon className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
-                <span className="hidden lg:inline">{cat.label}</span>
+                <span className="hidden lg:inline">{getCategoriaLabel(cat)}</span>
                 {count > 0 && (
                   <Badge
                     variant="secondary"
@@ -324,8 +339,7 @@ export function ListaSection() {
                   ) : (
                     <div className="space-y-2">
                       {itemsPendientes.map((item) => {
-                        const categoria = getCategoria(item.category);
-                        const Icon = categoria?.icon || ShoppingBasket;
+                        const Icon = getCategoryIcon(item.category);
                         return (
                           <div
                             key={item.id}
@@ -352,7 +366,7 @@ export function ListaSection() {
                                         aria-hidden="true"
                                       />
                                       <span className="text-xs text-muted-foreground">
-                                        {categoria?.label}
+                                        {getCategoriaLabel(item.category)}
                                       </span>
                                     </div>
                                     <span className="text-xs text-muted-foreground">
@@ -393,8 +407,7 @@ export function ListaSection() {
                   ) : (
                     <div className="space-y-2">
                       {itemsComprados.map((item) => {
-                        const categoria = getCategoria(item.category);
-                        const Icon = categoria?.icon || ShoppingBasket;
+                        const Icon = getCategoryIcon(item.category);
                         return (
                           <div
                             key={item.id}
@@ -418,7 +431,7 @@ export function ListaSection() {
                                     <div className="flex items-center gap-1">
                                       <Icon className="w-3 h-3 text-muted-foreground" />
                                       <span className="text-xs text-muted-foreground">
-                                        {categoria?.label}
+                                        {getCategoriaLabel(item.category)}
                                       </span>
                                     </div>
                                     <span className="text-xs text-muted-foreground">

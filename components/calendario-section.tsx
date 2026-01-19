@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { Tarea } from '@/lib/types';
 import { TareasTab } from '@/components/tareas-tab';
 import { FechaExpandidaModal } from '@/components/fecha-expandida-modal';
@@ -72,17 +72,23 @@ export function CalendarioSection() {
   const [loading, setLoading] = useState(false);
   const [tareaAEditar, setTareaAEditar] = useState<Tarea | undefined>(undefined);
   const [tareaAEliminar, setTareaAEliminar] = useState<string | null>(null);
+  
+  const familiaRef = useRef(familia);
+  useEffect(() => {
+    familiaRef.current = familia;
+  }, [familia]);
 
   const fetchTareas = useCallback(async () => {
-    if (!familia) return;
+    const currentFamilia = familiaRef.current;
+    if (!currentFamilia) return;
     try {
       setLoading(true);
       const data = await TaskService.getTasks() as unknown as ApiTask[];
 
       const mappedTareas: Tarea[] = data.map((t) => {
         const creatorMember =
-          familia.miembros.find((m) => m.id === t.assigned_to_user_id) ||
-          familia.miembros.find((m) => m.id === t.assigned_user?.id); // or fallback
+          currentFamilia.miembros.find((m) => m.id === t.assigned_to_user_id) ||
+          currentFamilia.miembros.find((m) => m.id === t.assigned_user?.id); // or fallback
 
         const color = creatorMember
           ? creatorMember.color
@@ -121,11 +127,11 @@ export function CalendarioSection() {
     } finally {
       setLoading(false);
     }
-  }, [familia]);
+  }, []);
 
   useEffect(() => {
     fetchTareas();
-  }, [fetchTareas]);
+  }, [fetchTareas, familia?.id]);
 
   const isTareaOnDay = (tarea: Tarea, dia: Date) => {
     const diaISO = format(dia, 'yyyy-MM-dd');

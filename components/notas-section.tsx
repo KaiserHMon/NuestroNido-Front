@@ -83,20 +83,42 @@ export function NotasSection() {
     if (!familia || !usuario) return;
 
     try {
-      await NoteService.create({
+      const newNote = await NoteService.create({
         title: data.titulo,
         content: data.contenido,
         family_id: familia.id,
         user_id: usuario.id,
-      });
-            fetchNotas();
-            setIsNuevaNotaOpen(false);
-            toast.success('Nota creada');
-          } catch (error) {
-              console.error('Error creating note:', error);
-              toast.error('Error al crear la nota');
-          }
-      
+      }) as unknown as ApiNote;
+
+      const creatorMember = familia.miembros.find((m) => m.id === newNote.user_id);
+      const color = creatorMember
+        ? creatorMember.color
+        : {
+            id: 'temp',
+            nombre: 'Gris',
+            bg: '#9CA3AF',
+            text: '#FFFFFF',
+            accent: '#9CA3AF',
+            wcagContrast: 4.5,
+          };
+
+      const mappedNote: Nota = {
+        id: newNote.id,
+        titulo: newNote.title,
+        contenido: newNote.content || '',
+        colorCreador: color,
+        fechaCreacion: newNote.created_at,
+        familiaId: newNote.family_id,
+        user_id: newNote.user_id,
+      };
+
+      setNotas((prev) => [mappedNote, ...prev]);
+      setIsNuevaNotaOpen(false);
+      toast.success('Nota creada');
+    } catch (error) {
+      console.error('Error creating note:', error);
+      toast.error('Error al crear la nota');
+    }
   };
 
   const handleDeleteNota = async (noteId: string) => {

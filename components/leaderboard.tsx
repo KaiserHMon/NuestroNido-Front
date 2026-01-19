@@ -99,6 +99,7 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
                         <MiembroAvatar
                           nombre={entry.miembro.nombre}
                           color={entry.miembro.color}
+                          imageUrl={entry.miembro.imageUrl}
                           size="sm"
                         />
                         <span className="text-foreground font-medium">{entry.miembro.nombre}</span>
@@ -135,6 +136,7 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
                     <MiembroAvatar
                       nombre={entry.miembro.nombre}
                       color={entry.miembro.color}
+                      imageUrl={entry.miembro.imageUrl}
                       size="md"
                     />
                     <div className="flex-1">

@@ -31,7 +31,7 @@ export function MiembroCard({
             nombre={miembro.nombre}
             color={miembro.color}
             imageUrl={miembro.nivel?.imageUrl}
-            size="md"
+            size="lg"
           />
           <div className="flex flex-col items-end gap-1 flex-shrink-0">
             {esMiembro && (

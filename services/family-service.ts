@@ -1,6 +1,6 @@
 import { fetchClient } from '@/lib/api-client';
 import { Familia, Miembro, ValidarCodigoResponse } from '@/lib/types';
-import { getColorById } from '@/lib/colors';
+import { getColorById, COLORES_DISPONIBLES } from '@/lib/colors';
 
 interface ApiMember {
   user_id: string;
@@ -10,7 +10,7 @@ interface ApiMember {
     level?: { name?: string; image_url?: string };
     task_completed?: number;
   };
-  role?: 'creador' | 'miembro';
+  role?: 'creador' | 'miembro' | 'creator' | 'owner';
   family_id: string;
   joined_at: string;
 }
@@ -70,7 +70,25 @@ export const FamilyService = {
         colorData = user.color;
       }
 
+      // If color is still default, assign a consistent random color based on user_id
+      if (colorData.id === 'default' && COLORES_DISPONIBLES.length > 0) {
+        let hash = 0;
+        const str = apiMember.user_id;
+        for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const index = Math.abs(hash) % COLORES_DISPONIBLES.length;
+        colorData = COLORES_DISPONIBLES[index];
+      }
+
       const levelData = user.level || {};
+      
+      let role: 'creador' | 'miembro' | 'member' = 'member';
+      if (apiMember.role === 'creador' || apiMember.role === 'creator' || apiMember.role === 'owner') {
+          role = 'creador';
+      } else if (apiMember.role === 'miembro' || apiMember.role === 'member') {
+          role = 'miembro';
+      }
 
       return {
         id: apiMember.user_id, // The member ID in UI usually refers to the User ID for identification
@@ -90,7 +108,7 @@ export const FamilyService = {
               imageUrl: levelData.image_url,
             }
           : undefined,
-        rolId: apiMember.role || 'member',
+        rolId: role,
         familiaId: apiMember.family_id,
         createdAt: new Date(apiMember.joined_at), // Using joined_at as proxy
         updatedAt: new Date(apiMember.joined_at),
