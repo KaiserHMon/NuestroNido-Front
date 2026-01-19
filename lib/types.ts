@@ -221,6 +221,7 @@ export interface LeaderboardEntry {
     id: string;
     nombre: string;
     color: ColorMiembro;
+    imageUrl?: string;
   };
   puntos: number;
   nivel: {

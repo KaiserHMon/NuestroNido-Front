@@ -48,6 +48,7 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
         id: m.id,
         nombre: m.nombre,
         color: m.color,
+        imageUrl: m.nivel?.imageUrl,
       },
       puntos: m.puntos,
       nivel: {

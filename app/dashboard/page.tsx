@@ -17,12 +17,12 @@ export default function DashboardPage() {
       color: 'bg-primary text-primary-foreground',
     },
     {
-    icon: Calendar,
-    title: 'Calendario de Tareas',
-    description: 'Planifica tareas, turnos y eventos familiares en un solo calendario.',
-    href: '/dashboard/tareas',
-    color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
-    borderColor: 'border-blue-200 dark:border-blue-800',
+      icon: Calendar,
+      title: 'Calendario de Tareas',
+      description: 'Planifica tareas, turnos y eventos familiares en un solo calendario.',
+      href: '/dashboard/tareas',
+      color: 'bg-primary text-primary-foreground',
+      borderColor: 'border-blue-200 dark:border-blue-800',
   },
     {
       title: 'Lista de Compras',
