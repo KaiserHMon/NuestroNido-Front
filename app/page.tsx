@@ -210,13 +210,17 @@ export default function LandingPage() {
                 Conectando familias, un nido a la vez.
               </p>
 
-              {/* Support Link */}
-              <button
-                onClick={() => setIsSupportOpen(true)}
-                className="text-primary hover:underline text-sm font-medium"
-              >
-                ¿Necesitas ayuda? Contacta con soporte
-              </button>
+              <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+                <button
+                  onClick={() => setIsSupportOpen(true)}
+                  className="text-primary hover:underline text-sm font-medium"
+                >
+                  ¿Necesitas ayuda? Contacta con soporte
+                </button>
+                <Link href="/privacy-policy" className="text-primary hover:underline text-sm font-medium">
+                  Política de Privacidad
+                </Link>
+              </div>
 
               <div className="border-t border-card w-full max-w-md mt-4 pt-4">
                 <p className="text-xs sm:text-sm text-foreground/80">

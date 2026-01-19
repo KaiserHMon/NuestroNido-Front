@@ -63,4 +63,10 @@ export const UserService = {
       updatedAt: new Date(),
     };
   },
+
+  async deleteUser(userId: string): Promise<void> {
+    await fetchClient(`/api/users/${userId}`, {
+      method: 'DELETE',
+    });
+  },
 };

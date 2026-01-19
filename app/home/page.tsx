@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { CrearFamiliaCard } from '@/components/familia/crear-familia-card';
 import { UnirseAFamiliaCard } from '@/components/familia/unirse-familia-card';
 import { SupportDialog } from '@/components/dialogs/support-dialog';
+import { SettingsDialog } from '@/components/dialogs/settings-dialog';
 
 export default function HomePage() {
   const router = useRouter();
@@ -57,12 +58,15 @@ export default function HomePage() {
               <h1 className="text-lg sm:text-xl font-bold text-foreground">NuestroNido</h1>
             </div>
 
-            <Link href="/">
-              <Button variant="ghost" size="sm" className="gap-2">
-                <ArrowLeft className="w-4 h-4" />
-                <span className="hidden sm:inline">Volver al inicio</span>
-              </Button>
-            </Link>
+            <div className="flex items-center gap-2">
+              <SettingsDialog />
+              <Link href="/">
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <ArrowLeft className="w-4 h-4" />
+                  <span className="hidden sm:inline">Volver al inicio</span>
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </header>
