@@ -38,10 +38,10 @@ function AuthCallbackContent() {
           throw new Error('No access token received');
         }
 
+        console.log("Token received:", token);
         // Store tokens
         TokenService.setToken(token);
-        // If you have a mechanism for refresh tokens, store it too. 
-        // TokenService currently might only support access token based on previous files read.
+        console.log("Token stored check:", TokenService.getToken());
         
         // Decode token to get user ID
         const decoded = parseJwt(token);
