@@ -4,7 +4,7 @@ import { Tarea, Miembro } from '@/lib/types';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { format } from 'date-fns';
+import { format, isSameDay, isBefore, startOfToday } from 'date-fns';
 import { es } from 'date-fns/locale';
 
 interface FechaExpandidaModalProps {
@@ -32,6 +32,10 @@ export function FechaExpandidaModal({
     return miembro?.nombre || 'Desconocido';
   };
 
+  const today = new Date();
+  const isToday = fecha ? isSameDay(fecha, today) : false;
+  const isPast = fecha ? isBefore(fecha, startOfToday()) : false;
+
   return (
     <Dialog open={!!fecha} onOpenChange={onClose}>
       <DialogContent className="bg-card border border-border max-w-md">
@@ -53,16 +57,18 @@ export function FechaExpandidaModal({
                 <div
                   key={tarea.id}
                   className={`p-3 rounded-lg border border-border bg-card/50 space-y-2 ${
-                    tarea.completada ? 'opacity-60' : ''
+                    tarea.completada || isPast ? 'opacity-60' : ''
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-start gap-3 flex-1">
-                      <Checkbox
-                        checked={tarea.completada}
-                        onCheckedChange={(c) => onToggleCompletada?.(tarea.id, !!c)}
-                        className="mt-1"
-                      />
+                      {isToday && (
+                        <Checkbox
+                          checked={tarea.completada}
+                          onCheckedChange={(c) => onToggleCompletada?.(tarea.id, !!c)}
+                          className="mt-1"
+                        />
+                      )}
                       <div className="flex items-start gap-2 flex-1">
                         {/* Dot de color */}
                         <div
@@ -74,7 +80,7 @@ export function FechaExpandidaModal({
                         <div className="flex-1 min-w-0">
                           <h4
                             className={`font-semibold text-foreground text-sm break-words ${
-                              tarea.completada ? 'line-through text-muted-foreground' : ''
+                              tarea.completada || isPast ? 'line-through text-muted-foreground' : ''
                             }`}
                           >
                             {tarea.titulo}

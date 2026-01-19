@@ -20,9 +20,10 @@ export default function DashboardPage() {
     icon: Calendar,
     title: 'Calendario de Tareas',
     description: 'Planifica tareas, turnos y eventos familiares en un solo calendario.',
-      href: '/dashboard/calendario',
-      color: 'bg-primary text-primary-foreground',
-    },
+    href: '/dashboard/tareas',
+    color: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
+    borderColor: 'border-blue-200 dark:border-blue-800',
+  },
     {
       title: 'Lista de Compras',
       description: 'Organiza lo pendiente y mantén la casa siempre al día.',

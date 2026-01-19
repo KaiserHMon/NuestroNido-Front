@@ -17,7 +17,7 @@ interface DashboardLayoutProps {
 
 const DASHBOARD_ROUTES = [
   '/dashboard/miembros',
-  '/dashboard/calendario',
+  '/dashboard/tareas',
   '/dashboard/lista',
   '/dashboard/notas',
 ];
@@ -137,7 +137,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
               </Button>
             </Link>
 
-            <Link href="/dashboard/calendario" prefetch={true}>
+            <Link href="/dashboard/tareas" prefetch={true}>
               <Button
                 variant="ghost"
                 className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
