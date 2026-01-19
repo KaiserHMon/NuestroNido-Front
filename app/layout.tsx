@@ -2,7 +2,9 @@ import type React from 'react';
 import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
+import Script from 'next/script';
 import { ThemeProvider } from '@/components/theme-provider';
+import { AuthProvider } from '@/components/auth-provider';
 import { Toaster } from '@/components/ui/sonner';
 import '@/styles/globals.css';
 
@@ -64,8 +66,8 @@ export const metadata: Metadata = {
     creator: '@nuestronido',
   },
   icons: {
-    icon: '/favicon.ico', // Asegúrate de tener estos archivos o ajusta las rutas
-    apple: '/apple-touch-icon.png',
+    icon: '/icon.svg',
+    apple: '/icon.svg',
   },
   manifest: '/site.webmanifest',
 };
@@ -78,11 +80,20 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <body className={`${_geist.variable} ${_geistMono.variable} font-sans antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          {children}
-          <Toaster />
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+            {children}
+            <Toaster />
+          </ThemeProvider>
+        </AuthProvider>
         <Analytics />
+        <Script
+          src="https://owlight-widget.vercel.app/widget-feedback.umd.js"
+          data-theme="dark" 
+          data-position="left" 
+          data-lang="es" 
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );

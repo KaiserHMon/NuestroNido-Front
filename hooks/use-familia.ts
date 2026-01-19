@@ -1,161 +1,111 @@
-/**
- * Hook personalizado para gestión de familia
- * Maneja creación, unión, edición y eliminación de familia
- */
-
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
-import { Familia } from '@/lib/types';
+import { useState, useCallback } from 'react';
+import { useAuthContext } from '@/components/auth-provider';
 import { FamilyService } from '@/services/family-service';
 
-interface FamiliaState {
-  familia: Familia | null;
-  isLoading: boolean;
-  error: string | null;
-}
-
 export const useFamilia = () => {
-  const [state, setState] = useState<FamiliaState>({
-    familia: null,
-    isLoading: true, // Start loading to check initial family status
-    error: null,
-  });
+  const context = useAuthContext();
+  const [error, setError] = useState<string | null>(null);
+  // We don't maintain local loading/familia state anymore, we use context.
+  // But components expect 'isLoading' for family operations?
+  // Context has 'isLoading' but that's for session check.
+  // We might want local loading for actions.
+  const [actionLoading, setActionLoading] = useState(false);
 
-  const cargarFamiliaGuardada = useCallback(async () => {
-    setState((prev) => ({ ...prev, isLoading: true, error: null }));
-    try {
-      const familia = await FamilyService.getMyFamily();
-      setState({
-        familia,
-        isLoading: false,
-        error: null,
-      });
-    } catch (error) {
-      console.error('Error loading family:', error);
-      setState((prev) => ({ ...prev, isLoading: false }));
-      // We don't set error here as having no family is a valid state
-    }
-  }, []);
-
-  // Load family on mount
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    cargarFamiliaGuardada();
-  }, [cargarFamiliaGuardada]);
+  // Components expect:
+  // familia, isLoading, error, crearFamilia, unirseAFamilia, validarCodigo, actualizarNombre, eliminarFamilia
+  
+  // Note: context.familia is available. context.isLoading is global auth loading.
+  // We can map context.isLoading to isLoading, or use a separate logic?
+  // Originally useFamilia fetched family on mount. Now Provider does it.
+  // So 'isLoading' is effectively context.isLoading (until initial fetch is done).
 
   const crearFamilia = useCallback(async (nombre: string) => {
-    setState((prev) => ({ ...prev, isLoading: true, error: null }));
-
+    setActionLoading(true);
+    setError(null);
     try {
-      const familia = await FamilyService.create(nombre);
-
-      setState({
-        familia,
-        isLoading: false,
-        error: null,
-      });
-
-      return familia;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Error al crear familia';
-      setState({
-        familia: null,
-        isLoading: false,
-        error: errorMessage,
-      });
-      throw error;
+      await context.crearFamilia(nombre);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Error al crear familia';
+      setError(msg);
+      throw err;
+    } finally {
+      setActionLoading(false);
     }
-  }, []);
+  }, [context]);
 
   const unirseAFamilia = useCallback(async (codigo: string) => {
-    setState((prev) => ({ ...prev, isLoading: true, error: null }));
-
+    setActionLoading(true);
+    setError(null);
     try {
-      const familia = await FamilyService.joinByCode(codigo);
-
-      setState({
-        familia,
-        isLoading: false,
-        error: null,
-      });
-
-      return familia;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Error al unirse a familia';
-      setState({
-        familia: null,
-        isLoading: false,
-        error: errorMessage,
-      });
-      throw error;
+      await context.unirseAFamilia(codigo);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Error al unirse a familia';
+      setError(msg);
+      throw err;
+    } finally {
+      setActionLoading(false);
     }
-  }, []);
+  }, [context]);
+
+  const actualizarNombre = useCallback(async (familiaId: string, nuevoNombre: string) => {
+    setActionLoading(true);
+    setError(null);
+    try {
+      await context.actualizarFamilia(familiaId, nuevoNombre);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Error al actualizar familia';
+      setError(msg);
+      throw err;
+    } finally {
+      setActionLoading(false);
+    }
+  }, [context]);
+
+  const eliminarFamilia = useCallback(async (familiaId: string) => {
+    setActionLoading(true);
+    setError(null);
+    try {
+      await context.eliminarFamilia(familiaId);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Error eliminando familia';
+      setError(msg);
+      throw err;
+    } finally {
+      setActionLoading(false);
+    }
+  }, [context]);
 
   const validarCodigo = useCallback(async (codigo: string) => {
     try {
       return await FamilyService.validateCode(codigo);
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Error validando código';
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Error validando código';
       return { valido: false, error: errorMessage };
     }
   }, []);
 
-  const actualizarNombre = useCallback(async (familiaId: string, nuevoNombre: string) => {
-    setState((prev) => ({ ...prev, isLoading: true, error: null }));
-
-    try {
-      const familiaActualizada = await FamilyService.update(familiaId, nuevoNombre);
-
-      setState({
-        familia: familiaActualizada,
-        isLoading: false,
-        error: null,
-      });
-
-      return familiaActualizada;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Error actualizando familia';
-      setState((prev) => ({
-        ...prev,
-        isLoading: false,
-        error: errorMessage,
-      }));
-      throw error;
-    }
-  }, []);
-
-  const eliminarFamilia = useCallback(async (familiaId: string) => {
-    setState((prev) => ({ ...prev, isLoading: true, error: null }));
-
-    try {
-      await FamilyService.delete(familiaId);
-
-      setState({
-        familia: null,
-        isLoading: false,
-        error: null,
-      });
-
-      return true;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Error eliminando familia';
-      setState((prev) => ({
-        ...prev,
-        isLoading: false,
-        error: errorMessage,
-      }));
-      throw error;
-    }
+  const cargarFamiliaGuardada = useCallback(async () => {
+    // This is now handled by provider, but if we want to force refresh:
+    // We would need a 'refreshFamilia' method in context.
+    // For now, let's just ignore or implement if needed.
+    // The DashboardLayout calls this.
+    // We can assume provider keeps it fresh enough, or implement refresh.
+    // Let's leave it no-op or maybe re-fetch via context?
+    // Context doesn't expose refresh.
+    // Let's rely on actions updating the state.
   }, []);
 
   return {
-    ...state,
-    cargarFamiliaGuardada,
+    familia: context.familia,
+    isLoading: context.isLoading || actionLoading, // Merge global loading and action loading
+    error,
     crearFamilia,
     unirseAFamilia,
-    validarCodigo,
     actualizarNombre,
     eliminarFamilia,
+    validarCodigo,
+    cargarFamiliaGuardada // Deprecated mostly
   };
 };

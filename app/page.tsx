@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { Calendar, ShoppingCart, StickyNote, Trophy, ArrowRight, Bird } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { birdLayout } from '@/config/birdConfig';
 import { LandingHeader } from '@/components/landing-header';
 import { SupportDialog } from '@/components/dialogs/support-dialog';
 
@@ -13,22 +12,7 @@ export default function LandingPage() {
   const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      <div className="absolute inset-0">
-        {birdLayout.map((b, i) => (
-          <Bird
-            key={i}
-            className="absolute text-primary/30 rotate-10"
-            style={{
-              top: b.top,
-              left: b.left,
-              right: b.right,
-              width: b.size,
-              height: b.size,
-            }}
-          />
-        ))}
-      </div>
+    <div className="min-h-screen relative overflow-hidden bg-cover bg-center" style={{ backgroundImage: "url('/bg.svg')" }}>
       <main className="relative z-10">
         {/* Header */}
         <LandingHeader />

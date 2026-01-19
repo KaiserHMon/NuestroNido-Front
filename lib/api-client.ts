@@ -1,6 +1,6 @@
 import { TokenService } from '@/services/token-service';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://nuestro-nido.onrender.com';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://nuestro-nido.onrender.com';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 

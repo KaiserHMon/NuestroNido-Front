@@ -4,7 +4,7 @@
  */
 
 import { Usuario, ApiResponse, Familia } from '@/lib/types';
-import { fetchClient } from '@/lib/api-client';
+import { fetchClient, ApiError } from '@/lib/api-client';
 import { TokenService } from './token-service';
 import { parseJwt } from '@/lib/jwt-utils';
 import { UserService } from './user-service';
@@ -102,13 +102,48 @@ export const AuthService = {
 
       // 2. Login immediately to get token
       return this.login(email, password);
+import { ApiError } from '@/lib/api-client';
+
+// ... imports
+
+export const AuthService = {
+  // ... login
+
+  async register(
+    nombre: string,
+    email: string,
+    password: string
+  ): Promise<ApiResponse<{ token: string; usuario: Usuario }>> {
+    try {
+      // 1. Signup
+      await fetchClient('/api/auth/signup', {
+        method: 'POST',
+        body: {
+          email,
+          password,
+          full_name: nombre,
+        },
+        requiresAuth: false,
+      });
+
+      // 2. Login immediately to get token
+      return this.login(email, password);
     } catch (error) {
       console.error('Register error:', error);
+      let message = 'Error al registrar usuario';
+      
+      if (error instanceof ApiError && error.data && typeof error.data === 'object' && 'detail' in error.data) {
+         // FastAPI usually returns { detail: "message" }
+         message = String((error.data as any).detail);
+      } else if (error instanceof Error) {
+         message = error.message;
+      }
+
       return {
         success: false,
         error: {
           code: 'REGISTER_FAILED',
-          message: error instanceof Error ? error.message : 'Error al registrar usuario',
+          message,
         },
       };
     }

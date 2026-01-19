@@ -11,6 +11,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox as _Checkbox } from '@/components/ui/checkbox';
 import { RegisterSchema, RegisterFormInputs } from '@/lib/validation';
 import { useAuth } from '@/hooks/use-auth';
+import { API_BASE_URL } from '@/lib/api-client';
 
 interface RegisterFormProps {
   onSuccess?: () => void;
@@ -21,6 +22,10 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { register: registerUser, error: authError } = useAuth();
+
+  const handleGoogleLogin = () => {
+    window.location.href = `${API_BASE_URL}/api/auth/v1/google`;
+  };
 
   const {
     register,
@@ -98,7 +103,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           <Input
             id="password"
             type={showPassword ? 'text' : 'password'}
-            placeholder="••••••••"
+            placeholder="Ingresa tu contraseña"
             className="pl-10 pr-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
             {...register('password')}
             disabled={isSubmitting}
@@ -129,7 +134,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           <Input
             id="passwordConfirm"
             type={showConfirmPassword ? 'text' : 'password'}
-            placeholder="••••••••"
+            placeholder="Confirma tu contraseña"
             className="pl-10 pr-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
             {...register('passwordConfirm')}
             disabled={isSubmitting}
@@ -175,6 +180,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
       <Button
         type="button"
         variant="outline"
+        onClick={handleGoogleLogin}
         className="w-full flex items-center justify-center gap-2 h-10 bg-background hover:bg-muted text-foreground border-input"
         disabled={isSubmitting}
       >

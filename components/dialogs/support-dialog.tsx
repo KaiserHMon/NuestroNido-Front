@@ -26,10 +26,14 @@ export function SupportDialog({ open, onOpenChange }: SupportDialogProps) {
     if (!message.trim()) return;
 
     setIsSubmitting(true);
-    // Mock sending email
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    
+    const subject = encodeURIComponent('Consulta Soporte - NuestroNido');
+    const body = encodeURIComponent(message);
+    const mailtoUrl = `mailto:segundohardoym@gmail.com?subject=${subject}&body=${body}`;
+    
+    window.location.href = mailtoUrl;
 
-    toast.success('Mensaje enviado a soporte');
+    toast.success('Abriendo cliente de correo...');
 
     setIsSubmitting(false);
     setMessage('');

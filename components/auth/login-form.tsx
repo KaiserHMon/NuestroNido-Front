@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { LoginSchema, LoginFormInputs } from '@/lib/validation';
 import { useAuth } from '@/hooks/use-auth';
+import { API_BASE_URL } from '@/lib/api-client';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -20,6 +21,10 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, error: authError } = useAuth();
+
+  const handleGoogleLogin = () => {
+    window.location.href = `${API_BASE_URL}/api/auth/v1/google`;
+  };
 
   const {
     register,
@@ -76,7 +81,7 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
           <Input
             id="password"
             type={showPassword ? 'text' : 'password'}
-            placeholder="••••••••"
+            placeholder="Ingresa tu contraseña"
             className="pl-10 pr-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
             {...register('password')}
             disabled={isSubmitting}
@@ -131,6 +136,7 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
       <Button
         type="button"
         variant="outline"
+        onClick={handleGoogleLogin}
         className="w-full flex items-center justify-center gap-2 h-10 bg-background hover:bg-muted text-foreground border-input"
         disabled={isSubmitting}
       >
