@@ -15,8 +15,23 @@ function AuthCallbackContent() {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        const token = searchParams.get('token');
+        let token = searchParams.get('token');
+        const code = searchParams.get('code');
         const refreshToken = searchParams.get('refresh_token');
+
+        if (!token && code) {
+           // Exchange code for token via backend
+           try {
+             const response = await fetchClient<{ access_token: string }>(`/api/auth/callback?code=${code}`, {
+               requiresAuth: false
+             });
+             console.log("Backend exchange response:", response);
+             token = response.access_token;
+           } catch (err) {
+             console.error("Error exchanging code:", err);
+             throw new Error("Failed to exchange code for token");
+           }
+        }
 
         if (!token) {
           throw new Error('No access token received');
