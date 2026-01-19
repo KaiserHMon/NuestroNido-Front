@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { LoginSchema, LoginFormInputs } from '@/lib/validation';
 import { useAuth } from '@/hooks/use-auth';
-import { API_BASE_URL } from '@/lib/api-client';
+import { API_BASE_URL, fetchClient } from '@/lib/api-client';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -22,8 +22,17 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, error: authError } = useAuth();
 
-  const handleGoogleLogin = () => {
-    window.location.href = `${API_BASE_URL}/api/auth/login/google`;
+  const handleGoogleLogin = async () => {
+    try {
+      const response = await fetchClient<{ url: string }>('/api/auth/login/google', {
+        requiresAuth: false,
+      });
+      if (response.url) {
+        window.location.href = response.url;
+      }
+    } catch (error) {
+      console.error('Error fetching Google login URL:', error);
+    }
   };
 
   const {

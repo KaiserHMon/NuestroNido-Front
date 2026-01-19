@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox as _Checkbox } from '@/components/ui/checkbox';
 import { RegisterSchema, RegisterFormInputs } from '@/lib/validation';
 import { useAuth } from '@/hooks/use-auth';
-import { API_BASE_URL } from '@/lib/api-client';
+import { API_BASE_URL, fetchClient } from '@/lib/api-client';
 
 interface RegisterFormProps {
   onSuccess?: () => void;
@@ -23,8 +23,17 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { register: registerUser, error: authError } = useAuth();
 
-  const handleGoogleLogin = () => {
-    window.location.href = `${API_BASE_URL}/api/auth/login/google`;
+  const handleGoogleLogin = async () => {
+    try {
+      const response = await fetchClient<{ url: string }>('/api/auth/login/google', {
+        requiresAuth: false,
+      });
+      if (response.url) {
+        window.location.href = response.url;
+      }
+    } catch (error) {
+      console.error('Error fetching Google login URL:', error);
+    }
   };
 
   const {
