@@ -61,11 +61,11 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-      {authError && (
+      {authError ? (
         <Alert variant="destructive" className="mb-2">
           <AlertDescription>{authError}</AlertDescription>
         </Alert>
-      )}
+      ) : null}
 
       <div className="space-y-1.5">
         <Label htmlFor="nombre" className="text-foreground font-medium">
@@ -126,12 +126,12 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
         </div>
-        {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
-        {!password && (
+        {errors.password ? <p className="text-xs text-destructive">{errors.password.message}</p> : null}
+        {!password ? (
           <p className="text-xs text-muted-foreground">
             Mínimo 8 caracteres, mayúsculas, números y símbolos
           </p>
-        )}
+        ) : null}
       </div>
 
       <div className="space-y-1.5">

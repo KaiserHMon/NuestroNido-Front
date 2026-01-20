@@ -57,11 +57,11 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-      {authError && (
+      {authError ? (
         <Alert variant="destructive" className="mb-2">
           <AlertDescription>{authError}</AlertDescription>
         </Alert>
-      )}
+      ) : null}
 
       <div className="space-y-1.5">
         <Label htmlFor="email" className="text-foreground font-medium">

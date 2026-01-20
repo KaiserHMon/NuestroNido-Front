@@ -6,8 +6,14 @@ interface ApiUserResponse {
   id: string;
   name: string;
   color?: { id?: string; name?: string; bg?: string } | string;
-  level?: { name?: string; image_url?: string };
-  task_completed?: number;
+  level?: {
+    id: string;
+    name: string;
+    level_number: number;
+    required_progress: number;
+    image_url?: string;
+  };
+  experience_points?: number;
 }
 
 export const UserService = {
@@ -22,7 +28,7 @@ export const UserService = {
         colorData = response.color;
     }
 
-    const levelData = response.level || {};
+    const levelData = response.level;
 
     return {
       id: response.id,
@@ -36,11 +42,14 @@ export const UserService = {
         accent: colorData.bg || '#9CA3AF',
         wcagContrast: 4.5,
       },
-      puntos: response.task_completed || 0,
-      nivel: levelData.name
+      experience_points: response.experience_points || 0,
+      nivel: levelData
         ? {
-            nombre: levelData.name,
-            imageUrl: levelData.image_url,
+            id: levelData.id,
+            name: levelData.name,
+            level_number: levelData.level_number,
+            required_progress: levelData.required_progress,
+            image_url: levelData.image_url,
           }
         : undefined,
       createdAt: new Date(),
@@ -62,6 +71,9 @@ export const UserService = {
         colorData = response.color;
     }
 
+    // Note: Update usually returns the updated user, but level might not change immediately unless explicitly returned
+    const levelData = response.level;
+
     return {
       id: response.id,
       nombre: response.name,
@@ -74,7 +86,16 @@ export const UserService = {
         accent: colorData.bg || '#9CA3AF',
         wcagContrast: 4.5,
       },
-      puntos: response.task_completed || 0,
+      experience_points: response.experience_points || 0,
+      nivel: levelData
+        ? {
+            id: levelData.id,
+            name: levelData.name,
+            level_number: levelData.level_number,
+            required_progress: levelData.required_progress,
+            image_url: levelData.image_url,
+          }
+        : undefined,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

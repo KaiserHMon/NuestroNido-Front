@@ -3,9 +3,29 @@
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Bird } from 'lucide-react';
-import { RegisterForm } from '@/components/auth/register-form';
+import dynamic from 'next/dynamic';
 import { useAuth } from '@/hooks/use-auth';
 import { useFamilia } from '@/hooks/use-familia';
+
+// Lazy load form
+const RegisterForm = dynamic(
+  () => import('@/components/auth/register-form').then((mod) => ({ default: mod.RegisterForm })),
+  {
+    loading: () => <FormSkeleton />,
+    ssr: false,
+  }
+);
+
+function FormSkeleton() {
+  return (
+    <div className="space-y-4">
+      <div className="h-10 bg-muted rounded animate-pulse" />
+      <div className="h-10 bg-muted rounded animate-pulse" />
+      <div className="h-10 bg-muted rounded animate-pulse" />
+      <div className="h-10 bg-muted rounded animate-pulse" />
+    </div>
+  );
+}
 
 export function RegisterPageContent() {
   const router = useRouter();
@@ -31,16 +51,7 @@ export function RegisterPageContent() {
   }, [isAuthenticated, authLoading, familiaLoading, familia, router]);
 
   if (authLoading || familiaLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mx-auto mb-4">
-            <Bird className="w-8 h-8 text-primary-foreground animate-bounce" />
-          </div>
-          <p className="text-foreground">Cargando...</p>
-        </div>
-      </div>
-    );
+    return null; // Let the parent's Suspense fallback handle it
   }
 
   return (

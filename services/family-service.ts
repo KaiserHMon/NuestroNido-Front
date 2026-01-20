@@ -7,7 +7,14 @@ interface ApiMember {
   user?: {
     name?: string;
     color?: { id?: string; name?: string; bg?: string } | string;
-    level?: { name?: string; image_url?: string };
+    level?: {
+      id: string;
+      name: string;
+      level_number: number;
+      required_progress: number;
+      image_url?: string;
+    };
+    experience_points?: number;
     task_completed?: number;
   };
   role?: 'creador' | 'miembro' | 'creator' | 'owner';
@@ -40,12 +47,14 @@ function mapApiFamilyToFamilia(apiFamily: ApiFamily, members: Miembro[] = []): F
 export const FamilyService = {
   async getMyFamily(): Promise<Familia | null> {
     try {
-      // The API returns the family object directly or 404
-      const apiFamily = await fetchClient<ApiFamily>('/api/families/me');
+      // Parallelize family and members fetch to eliminate waterfall
+      const [apiFamily, members] = await Promise.all([
+        fetchClient<ApiFamily>('/api/families/me'),
+        this.getMembers(),
+      ]);
+
       if (!apiFamily) return null;
 
-      // We also need members to populate the full Familia object as per types
-      const members = await this.getMembers();
       return mapApiFamilyToFamilia(apiFamily, members);
     } catch (error) {
       if ((error as { status?: number }).status === 404) return null;
@@ -81,7 +90,7 @@ export const FamilyService = {
         colorData = COLORES_DISPONIBLES[index];
       }
 
-      const levelData = user.level || {};
+      const levelData = user.level;
       
       let role: 'creador' | 'miembro' | 'member' = 'member';
       if (apiMember.role === 'creador' || apiMember.role === 'creator' || apiMember.role === 'owner') {
@@ -101,11 +110,14 @@ export const FamilyService = {
           accent: colorData.bg || '#9CA3AF', // Default
           wcagContrast: 4.5,
         },
-        puntos: user.task_completed || 0,
-        nivel: levelData.name
+        experience_points: user.experience_points || 0,
+        nivel: levelData
           ? {
-              nombre: levelData.name,
-              imageUrl: levelData.image_url,
+              id: levelData.id,
+              name: levelData.name,
+              level_number: levelData.level_number,
+              required_progress: levelData.required_progress,
+              image_url: levelData.image_url,
             }
           : undefined,
         rolId: role,
@@ -117,29 +129,35 @@ export const FamilyService = {
   },
 
   async create(nombre: string): Promise<Familia> {
-    const apiFamily = await fetchClient<ApiFamily>('/api/families/', {
-      method: 'POST',
-      body: { name: nombre },
-    });
-    const members = await this.getMembers();
+    const [apiFamily, members] = await Promise.all([
+      fetchClient<ApiFamily>('/api/families/', {
+        method: 'POST',
+        body: { name: nombre },
+      }),
+      this.getMembers(),
+    ]);
     return mapApiFamilyToFamilia(apiFamily, members);
   },
 
   async joinByCode(code: string): Promise<Familia> {
-    const apiFamily = await fetchClient<ApiFamily>('/api/families/join/code', {
-      method: 'POST',
-      body: { code },
-    });
-    const members = await this.getMembers();
+    const [apiFamily, members] = await Promise.all([
+      fetchClient<ApiFamily>('/api/families/join/code', {
+        method: 'POST',
+        body: { code },
+      }),
+      this.getMembers(),
+    ]);
     return mapApiFamilyToFamilia(apiFamily, members);
   },
 
   async update(familyId: string, nombre: string): Promise<Familia> {
-    const apiFamily = await fetchClient<ApiFamily>(`/api/families/${familyId}`, {
-      method: 'PUT',
-      body: { name: nombre },
-    });
-    const members = await this.getMembers();
+    const [apiFamily, members] = await Promise.all([
+      fetchClient<ApiFamily>(`/api/families/${familyId}`, {
+        method: 'PUT',
+        body: { name: nombre },
+      }),
+      this.getMembers(),
+    ]);
     return mapApiFamilyToFamilia(apiFamily, members);
   },
 

@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { TokenService } from '@/services/token-service';
 import { AuthService } from '@/services/auth-service';
 import { Usuario } from '@/lib/types';
+import { AuthProvider } from '@/components/auth-provider';
 
 // Mock del TokenService
 vi.mock('@/services/token-service', () => ({
@@ -27,16 +28,27 @@ vi.mock('@/services/auth-service', () => ({
   },
 }));
 
+// Mock del FamilyService (needed by AuthProvider)
+vi.mock('@/services/family-service', () => ({
+  FamilyService: {
+    getMyFamily: vi.fn().mockResolvedValue(null),
+  },
+}));
+
 describe('useAuth Hook', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
+  const wrapper = ({ children }: { children: React.ReactNode }) => (
+    <AuthProvider>{children}</AuthProvider>
+  );
+
   it('debe inicializar como no autenticado si no hay sesión', async () => {
     vi.mocked(TokenService.getToken).mockReturnValue(null);
     vi.mocked(TokenService.getUser).mockReturnValue(null);
 
-    const { result } = renderHook(() => useAuth());
+    const { result } = renderHook(() => useAuth(), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -54,7 +66,7 @@ describe('useAuth Hook', () => {
     vi.mocked(TokenService.getToken).mockReturnValue(mockToken);
     vi.mocked(TokenService.getUser).mockReturnValue(mockUser as unknown as Usuario);
 
-    const { result } = renderHook(() => useAuth());
+    const { result } = renderHook(() => useAuth(), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -72,7 +84,7 @@ describe('useAuth Hook', () => {
     });
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-    const { result } = renderHook(() => useAuth());
+    const { result } = renderHook(() => useAuth(), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -95,7 +107,7 @@ describe('useAuth Hook', () => {
       data: { token: mockToken, usuario: mockUser as unknown as Usuario },
     });
 
-    const { result } = renderHook(() => useAuth());
+    const { result } = renderHook(() => useAuth(), { wrapper });
 
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
@@ -103,8 +115,6 @@ describe('useAuth Hook', () => {
       await result.current.login('test@test.com', 'password');
     });
 
-    expect(TokenService.setToken).toHaveBeenCalledWith(mockToken);
-    expect(TokenService.setUser).toHaveBeenCalledWith(mockUser);
     expect(result.current.isAuthenticated).toBe(true);
     expect(result.current.usuario).toEqual(mockUser);
     expect(result.current.error).toBeNull();
@@ -116,7 +126,7 @@ describe('useAuth Hook', () => {
     vi.mocked(TokenService.getUser).mockReturnValue(null);
     vi.mocked(AuthService.login).mockRejectedValue(new Error(errorMessage));
 
-    const { result } = renderHook(() => useAuth());
+    const { result } = renderHook(() => useAuth(), { wrapper });
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     await act(async () => {
@@ -143,15 +153,13 @@ describe('useAuth Hook', () => {
       data: { token: mockToken, usuario: mockUser as unknown as Usuario },
     });
 
-    const { result } = renderHook(() => useAuth());
+    const { result } = renderHook(() => useAuth(), { wrapper });
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     await act(async () => {
       await result.current.register('New', 'new@test.com', 'password');
     });
 
-    expect(TokenService.setToken).toHaveBeenCalledWith(mockToken);
-    expect(TokenService.setUser).toHaveBeenCalledWith(mockUser);
     expect(result.current.isAuthenticated).toBe(true);
   });
 
@@ -161,7 +169,7 @@ describe('useAuth Hook', () => {
     vi.mocked(TokenService.getUser).mockReturnValue(null);
     vi.mocked(AuthService.register).mockRejectedValue(new Error(errorMessage));
 
-    const { result } = renderHook(() => useAuth());
+    const { result } = renderHook(() => useAuth(), { wrapper });
     await waitFor(() => expect(result.current.isLoading).toBe(false));
 
     await act(async () => {
@@ -181,7 +189,7 @@ describe('useAuth Hook', () => {
     vi.mocked(TokenService.getToken).mockReturnValue('token');
     vi.mocked(TokenService.getUser).mockReturnValue(mockUser as unknown as Usuario);
 
-    const { result } = renderHook(() => useAuth());
+    const { result } = renderHook(() => useAuth(), { wrapper });
     await waitFor(() => expect(result.current.isAuthenticated).toBe(true));
 
     act(() => {

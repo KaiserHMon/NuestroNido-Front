@@ -91,7 +91,7 @@ export function EditarPerfilDialog({
         <MiembroAvatar
           nombre={miembro.nombre}
           color={miembro.color}
-          imageUrl={miembro.nivel?.imageUrl}
+          imageUrl={miembro.nivel?.image_url}
           size="lg"
         />
       </div>

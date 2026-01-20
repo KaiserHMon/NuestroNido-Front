@@ -30,7 +30,7 @@ export function MiembroCard({
           <MiembroAvatar
             nombre={miembro.nombre}
             color={miembro.color}
-            imageUrl={miembro.nivel?.imageUrl}
+            imageUrl={miembro.nivel?.image_url}
             size="lg"
           />
           <div className="flex flex-col items-end gap-1 flex-shrink-0">
@@ -42,6 +42,7 @@ export function MiembroCard({
                   onClick={() => onEliminar(miembro)}
                   className="h-6 w-6 p-0 hover:bg-destructive/10 text-destructive"
                   title="Salir de la familia"
+                  aria-label="Salir de la familia"
                 >
                   <Trash2 className="w-3 h-3" />
                 </Button>
@@ -51,6 +52,7 @@ export function MiembroCard({
                   onClick={() => onEditar(miembro)}
                   className="h-6 w-6 p-0 hover:bg-primary/10 text-primary"
                   title="Editar perfil"
+                  aria-label="Editar perfil"
                 >
                   <Edit2 className="w-3 h-3" />
                 </Button>
@@ -63,6 +65,7 @@ export function MiembroCard({
                 onClick={() => onEliminar(miembro)}
                 className="h-6 w-6 p-0 hover:bg-destructive/10 text-destructive"
                 title="Eliminar miembro"
+                aria-label={`Eliminar a ${miembro.nombre}`}
               >
                 <Trash2 className="w-3 h-3" />
               </Button>

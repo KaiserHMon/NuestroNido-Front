@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
-import { Tarea } from '@/lib/types';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import { Tarea, Miembro } from '@/lib/types';
 import { TareasTab } from '@/components/tareas-tab';
 import { FechaExpandidaModal } from '@/components/fecha-expandida-modal';
 import { CrearTareaDialog } from '@/components/dialogs/crear-tarea-dialog';
@@ -72,23 +72,21 @@ export function CalendarioSection() {
   const [loading, setLoading] = useState(false);
   const [tareaAEditar, setTareaAEditar] = useState<Tarea | undefined>(undefined);
   const [tareaAEliminar, setTareaAEliminar] = useState<string | null>(null);
-  
-  const familiaRef = useRef(familia);
-  useEffect(() => {
-    familiaRef.current = familia;
+
+  const miembrosMap = useMemo(() => {
+    if (!familia) return new Map<string, Miembro>();
+    return new Map(familia.miembros.map((m) => [m.id, m]));
   }, [familia]);
 
   const fetchTareas = useCallback(async () => {
-    const currentFamilia = familiaRef.current;
-    if (!currentFamilia) return;
+    if (!familia) return;
     try {
       setLoading(true);
       const data = await TaskService.getTasks() as unknown as ApiTask[];
 
       const mappedTareas: Tarea[] = data.map((t) => {
-        const creatorMember =
-          currentFamilia.miembros.find((m) => m.id === t.assigned_to_user_id) ||
-          currentFamilia.miembros.find((m) => m.id === t.assigned_user?.id); // or fallback
+        const creatorMember = miembrosMap.get(t.assigned_to_user_id || '') || 
+                             miembrosMap.get(t.assigned_user?.id || '');
 
         const color = creatorMember
           ? creatorMember.color
@@ -104,19 +102,18 @@ export function CalendarioSection() {
         return {
           id: t.id,
           titulo: t.title,
-          tipoFecha: 'fecha', // Defaulting as API structure for recurrence is different
+          tipoFecha: 'fecha', 
           fecha: t.due_date
             ? format(new Date(t.due_date), 'yyyy-MM-dd')
             : t.created_at
               ? format(new Date(t.created_at), 'yyyy-MM-dd')
               : undefined,
-          // Mapping recurrence
-          frecuencia: t.recurrence_type === 'unique' ? 'unica' : 'semanal', // Simplification
+          frecuencia: t.recurrence_type === 'unique' ? 'unica' : 'semanal',
           creadorId: t.assigned_to_user_id || '',
           colorCreador: color,
           completada: t.status === 'completed',
           familiaId: t.family_id,
-          diasSemana: t.week_days ? [t.week_days] : undefined, // week_days is string in schema?
+          diasSemana: t.week_days ? [t.week_days] : undefined,
         };
       });
 
@@ -127,15 +124,15 @@ export function CalendarioSection() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [familia?.id, miembrosMap]);
 
   useEffect(() => {
     fetchTareas();
-  }, [fetchTareas, familia?.id]);
+  }, [fetchTareas]);
 
-  const isTareaOnDay = (tarea: Tarea, dia: Date) => {
+  const isTareaOnDay = useCallback((tarea: Tarea, dia: Date) => {
     const diaISO = format(dia, 'yyyy-MM-dd');
-    const diaSemana = dia.getDay().toString(); // 0 (Domingo) - 6 (Sábado)
+    const diaSemana = dia.getDay().toString();
 
     if (tarea.tipoFecha === 'dias' && tarea.diasSemana) {
       return tarea.diasSemana.includes(diaSemana);
@@ -152,24 +149,41 @@ export function CalendarioSection() {
       }
       return tarea.fecha === diaISO;
     }
-    // Fallback if we use created_at as date
-    if (tarea.fecha) return tarea.fecha === diaISO;
     return false;
-  };
+  }, []);
 
-  const getColoresParaDia = (dia: Date): ColorDot[] => {
-    const tareasDelDia = tareas.filter((tarea) => isTareaOnDay(tarea, dia));
+  const primerDiaMes = useMemo(() => startOfMonth(mesActual), [mesActual]);
+  const ultimoDiaMes = useMemo(() => endOfMonth(mesActual), [mesActual]);
+  const diasDelMes = useMemo(() => eachDayOfInterval({
+    start: primerDiaMes,
+    end: ultimoDiaMes,
+  }), [primerDiaMes, ultimoDiaMes]);
+
+  // Index tasks by date for O(1) day lookups
+  const tareasPorDia = useMemo(() => {
+    const map = new Map<string, Tarea[]>();
+    diasDelMes.forEach(dia => {
+      const key = format(dia, 'yyyy-MM-dd');
+      const filtered = tareas.filter(t => isTareaOnDay(t, dia));
+      if (filtered.length > 0) map.set(key, filtered);
+    });
+    return map;
+  }, [tareas, diasDelMes, isTareaOnDay]);
+
+  const getColoresParaDia = useCallback((dia: Date): ColorDot[] => {
+    const key = format(dia, 'yyyy-MM-dd');
+    const tareasDelDia = tareasPorDia.get(key) || [];
 
     const colores = new Map<string, ColorDot>();
     tareasDelDia.forEach((tarea) => {
-      const key = tarea.colorCreador.bg;
-      if (!colores.has(key)) {
-        colores.set(key, tarea.colorCreador);
+      const bg = tarea.colorCreador.bg;
+      if (!colores.has(bg)) {
+        colores.set(bg, tarea.colorCreador);
       }
     });
 
     return Array.from(colores.values());
-  };
+  }, [tareasPorDia]);
 
   const avanzarMes = () => setMesActual(addMonths(mesActual, 1));
   const retrocederMes = () => setMesActual(subMonths(mesActual, 1));
@@ -264,13 +278,6 @@ export function CalendarioSection() {
     }
   };
 
-  const primerDiaMes = startOfMonth(mesActual);
-  const ultimoDiaMes = endOfMonth(mesActual);
-  const diasDelMes = eachDayOfInterval({
-    start: primerDiaMes,
-    end: ultimoDiaMes,
-  });
-
   if (loading && tareas.length === 0) {
     return <SectionSkeleton />;
   }
@@ -305,7 +312,7 @@ export function CalendarioSection() {
           <Card className="bg-card border border-border">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
-                <Button variant="ghost" size="sm" onClick={retrocederMes} className="h-8 w-8 p-0">
+                <Button variant="ghost" size="sm" onClick={retrocederMes} className="h-8 w-8 p-0" aria-label="Mes anterior">
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
 
@@ -313,7 +320,7 @@ export function CalendarioSection() {
                   {format(mesActual, "MMMM 'de' yyyy", { locale: es })}
                 </CardTitle>
 
-                <Button variant="ghost" size="sm" onClick={avanzarMes} className="h-8 w-8 p-0">
+                <Button variant="ghost" size="sm" onClick={avanzarMes} className="h-8 w-8 p-0" aria-label="Mes siguiente">
                   <ChevronRight className="w-4 h-4" />
                 </Button>
               </div>
@@ -358,11 +365,15 @@ export function CalendarioSection() {
                   const coloresDelDia = getColoresParaDia(dia);
                   const esHoy = isSameDay(dia, new Date());
                   const esSeleccionada = fechaSeleccionada && isSameDay(dia, fechaSeleccionada);
+                  const label = `${format(dia, "d 'de' MMMM", { locale: es })}, ${
+                    coloresDelDia.length
+                  } ${coloresDelDia.length === 1 ? 'tarea' : 'tareas'}`;
 
                   return (
                     <button
                       key={dia.toISOString()}
                       onClick={() => setFechaSeleccionada(dia)}
+                      aria-label={label}
                       className={`h-24 sm:h-28 rounded-sm border transition-all relative flex flex-col items-start justify-start p-1.5
                         ${
                           esSeleccionada
@@ -373,12 +384,12 @@ export function CalendarioSection() {
                         }
                       `}
                     >
-                      <div className="text-center w-full text-xs font-bold text-foreground leading-tight">
+                      <div className="text-center w-full text-xs font-bold text-foreground leading-tight" aria-hidden="true">
                         {format(dia, 'd')}
                       </div>
 
-                      {coloresDelDia.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-1 w-full justify-start">
+                      {coloresDelDia.length > 0 ? (
+                        <div className="flex flex-wrap gap-1 mt-1 w-full justify-start" aria-hidden="true">
                           {coloresDelDia.slice(0, 4).map((color, idx) => (
                             <div
                               key={`${color.bg}-${idx}`}
@@ -387,13 +398,13 @@ export function CalendarioSection() {
                               title={`Tarea de ${color.nombre}`}
                             />
                           ))}
-                          {coloresDelDia.length > 4 && (
+                          {coloresDelDia.length > 4 ? (
                             <span className="text-[10px] text-muted-foreground leading-none self-center">
                               +
                             </span>
-                          )}
+                          ) : null}
                         </div>
-                      )}
+                      ) : null}
                     </button>
                   );
                 })}

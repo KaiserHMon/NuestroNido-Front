@@ -1,10 +1,11 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { Usuario, AuthContextType, Familia } from '@/lib/types';
+import { Usuario, AuthContextType, Familia, Level } from '@/lib/types';
 import { AuthService } from '@/services/auth-service';
 import { TokenService } from '@/services/token-service';
 import { FamilyService } from '@/services/family-service';
+import { LevelService } from '@/services/level-service';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -12,8 +13,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [usuario, setUsuario] = useState<Usuario | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [familia, setFamilia] = useState<Familia | null>(null);
+  const [levels, setLevels] = useState<Level[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    LevelService.getLevels().then(data => {
+      const sorted = [...data].sort((a, b) => a.level_number - b.level_number);
+      setLevels(sorted);
+    }).catch(console.error);
+  }, []);
 
   const checkSession = useCallback(async () => {
     try {
@@ -149,6 +158,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated,
         isLoading,
         familia,
+        levels,
         login,
         register,
         logout,

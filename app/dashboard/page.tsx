@@ -6,39 +6,40 @@ import { Users, Calendar, ShoppingCart, StickyNote, ArrowRight } from 'lucide-re
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
 
+const shortcuts = [
+  {
+    title: 'Miembros',
+    description: 'Observa a los miembros de tu familia y su ranking en el hogar.',
+    icon: Users,
+    href: '/dashboard/miembros',
+    color: 'bg-primary text-primary-foreground',
+  },
+  {
+    icon: Calendar,
+    title: 'Calendario de Tareas',
+    description: 'Planifica tareas, turnos y eventos familiares en un solo calendario.',
+    href: '/dashboard/tareas',
+    color: 'bg-primary text-primary-foreground',
+    borderColor: 'border-blue-200 dark:border-blue-800',
+  },
+  {
+    title: 'Lista de Compras',
+    description: 'Organiza lo pendiente y mantén la casa siempre al día.',
+    icon: ShoppingCart,
+    href: '/dashboard/lista',
+    color: 'bg-primary text-primary-foreground',
+  },
+  {
+    title: 'Notas',
+    description: 'Comparte recordatorios, mensajes y acuerdos familiares.',
+    icon: StickyNote,
+    href: '/dashboard/notas',
+    color: 'bg-primary text-primary-foreground',
+  },
+];
+
 export default function DashboardPage() {
   const { usuario } = useAuth();
-  const shortcuts = [
-    {
-      title: 'Miembros',
-      description: 'Observa a los miembros de tu familia y su ranking en el hogar.',
-      icon: Users,
-      href: '/dashboard/miembros',
-      color: 'bg-primary text-primary-foreground',
-    },
-    {
-      icon: Calendar,
-      title: 'Calendario de Tareas',
-      description: 'Planifica tareas, turnos y eventos familiares en un solo calendario.',
-      href: '/dashboard/tareas',
-      color: 'bg-primary text-primary-foreground',
-      borderColor: 'border-blue-200 dark:border-blue-800',
-  },
-    {
-      title: 'Lista de Compras',
-      description: 'Organiza lo pendiente y mantén la casa siempre al día.',
-      icon: ShoppingCart,
-      href: '/dashboard/lista',
-      color: 'bg-primary text-primary-foreground',
-    },
-    {
-      title: 'Notas',
-      description: 'Comparte recordatorios, mensajes y acuerdos familiares.',
-      icon: StickyNote,
-      href: '/dashboard/notas',
-      color: 'bg-primary text-primary-foreground',
-    },
-  ];
 
   return (
     <DashboardLayout activeSection="overview">
@@ -54,7 +55,11 @@ export default function DashboardPage() {
           {shortcuts.map((shortcut) => {
             const Icon = shortcut.icon;
             return (
-              <Link key={shortcut.href} href={shortcut.href}>
+              <Link
+                key={shortcut.href}
+                href={shortcut.href}
+                aria-label={`${shortcut.title}: ${shortcut.description}`}
+              >
                 <Card className="cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02] h-full">
                   <CardHeader className="pb-3">
                     <div

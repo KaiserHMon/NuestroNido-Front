@@ -43,7 +43,7 @@ export function FamiliaActions({
         familia={familia}
         onSuccess={onFamiliaActualizada}
         trigger={
-          <Button variant="ghost" size="sm" className={buttonClass} title="Editar nombre">
+          <Button variant="ghost" size="sm" className={buttonClass} title="Editar nombre" aria-label="Editar nombre">
             <Edit2 className={`${editIconClass} ${editIconColor}`} />
           </Button>
         }
@@ -52,7 +52,7 @@ export function FamiliaActions({
       <EliminarFamiliaDialog
         familia={familia}
         trigger={
-          <Button variant="ghost" size="sm" className={buttonClass} title="Eliminar familia">
+          <Button variant="ghost" size="sm" className={buttonClass} title="Eliminar familia" aria-label="Eliminar familia">
             <Trash2 className={`${deleteIconClass} ${deleteIconColor}`} />
           </Button>
         }

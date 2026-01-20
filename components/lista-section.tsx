@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, ChangeEvent } from 'react';
+import { useState, useEffect, useCallback, ChangeEvent, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,6 +28,20 @@ import { useFamilia } from '@/hooks/use-familia';
 import { toast } from 'sonner';
 import { SectionSkeleton } from '@/components/ui/section-skeleton';
 
+const getCategoryIcon = (categoryName: string) => {
+  const lower = categoryName.toLowerCase();
+  if (lower.includes('aliment') || lower.includes('comida')) return ShoppingBasket;
+  if (lower.includes('farmacia') || lower.includes('medicin')) return Pill;
+  if (lower.includes('ferreter') || lower.includes('herramient')) return Wrench;
+  if (lower.includes('limpieza') || lower.includes('aseo')) return Sparkles;
+  if (lower.includes('hogar') || lower.includes('casa')) return Home;
+  return ShoppingCart;
+};
+
+const getCategoriaLabel = (categoriaValue: string) => {
+  return categoriaValue.charAt(0).toUpperCase() + categoriaValue.slice(1);
+};
+
 export function ListaSection() {
   const { familia } = useFamilia();
   const [items, setItems] = useState<ListItem[]>([]);
@@ -39,19 +53,9 @@ export function ListaSection() {
 
   const [nuevoItem, setNuevoItem] = useState({
     nombre: '',
-    categoria: '',
-    cantidad: '1',
+    category: '',
+    quantity: '1',
   });
-
-  const getCategoryIcon = (categoryName: string) => {
-    const lower = categoryName.toLowerCase();
-    if (lower.includes('aliment') || lower.includes('comida')) return ShoppingBasket;
-    if (lower.includes('farmacia') || lower.includes('medicin')) return Pill;
-    if (lower.includes('ferreter') || lower.includes('herramient')) return Wrench;
-    if (lower.includes('limpieza') || lower.includes('aseo')) return Sparkles;
-    if (lower.includes('hogar') || lower.includes('casa')) return Home;
-    return ShoppingCart;
-  };
 
   const fetchItems = useCallback(async () => {
     if (!familia) return;
@@ -63,19 +67,38 @@ export function ListaSection() {
       ]);
       setItems(data);
       setCategories(cats);
-      if (cats.length > 0 && !nuevoItem.categoria) {
-          setNuevoItem(prev => ({ ...prev, categoria: cats[0] }));
-      }
     } catch (error) {
       console.error('Error fetching list data:', error);
     } finally {
       setLoading(false);
     }
-  }, [familia]); // Removed nuevoItem.categoria dependency to avoid loop, handled inside logic
+  }, [familia]);
 
   useEffect(() => {
     fetchItems();
   }, [fetchItems]);
+
+  const itemsFiltrados = useMemo(() => 
+    categoriaActiva === 'todas'
+      ? items
+      : items.filter((item) => item.category === categoriaActiva),
+    [items, categoriaActiva]
+  );
+
+  const itemsPendientes = useMemo(() => 
+    itemsFiltrados.filter((item) => !item.purchased),
+    [itemsFiltrados]
+  );
+
+  const itemsComprados = useMemo(() => 
+    itemsFiltrados.filter((item) => item.purchased),
+    [itemsFiltrados]
+  );
+
+  const itemsGlobalesPendientesCount = useMemo(() => 
+    items.filter((i) => !i.purchased).length,
+    [items]
+  );
 
   const agregarItem = useCallback(async () => {
     if (!familia) return;
@@ -84,20 +107,21 @@ export function ListaSection() {
       .replace(/\s{2,}/g, ' ')
       .trim()
       .slice(0, 100);
-    const cantidadLimpia = parseInt(nuevoItem.cantidad.trim().slice(0, 50)) || 1;
+    const categoryToUse = nuevoItem.category || categories[0] || '';
+    const cantidadLimpia = parseInt(nuevoItem.quantity.trim().slice(0, 50)) || 1;
 
-    if (nombreLimpio && nuevoItem.categoria) {
+    if (nombreLimpio && categoryToUse) {
       try {
         const createdItem = await ListService.create({
           title: nombreLimpio,
           family_id: familia.id,
-          category: nuevoItem.categoria,
+          category: categoryToUse,
           quantity: cantidadLimpia,
           purchased: false,
         });
 
         setItems((prev) => [...prev, createdItem]);
-        setNuevoItem({ nombre: '', categoria: categories[0] || '', cantidad: '1' });
+        setNuevoItem({ nombre: '', category: categories[0] || '', quantity: '1' });
         setDialogOpen(false);
         setLastActionMsg('Item agregado a la lista');
         setTimeout(() => setLastActionMsg(''), 1500);
@@ -160,21 +184,9 @@ export function ListaSection() {
     }
   }, [items]);
 
-  const getCategoriaLabel = (categoriaValue: string) => {
-      return categoriaValue.charAt(0).toUpperCase() + categoriaValue.slice(1);
-  };
-
-  const itemsFiltrados =
-    categoriaActiva === 'todas'
-      ? items
-      : items.filter((item) => item.category === categoriaActiva);
-
-  const itemsPendientes = itemsFiltrados.filter((item) => !item.purchased);
-  const itemsComprados = itemsFiltrados.filter((item) => item.purchased);
-
-  const contarPorCategoria = (categoria: string) => {
+  const contarPorCategoria = useCallback((categoria: string) => {
     return items.filter((item) => item.category === categoria && !item.purchased).length;
-  };
+  }, [items]);
 
   if (loading && items.length === 0) {
       return <SectionSkeleton />;
@@ -183,7 +195,6 @@ export function ListaSection() {
   return (
     <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-        {/* ... Header ... */}
         <div>
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground">Lista de Compras</h2>
           <p className="text-sm sm:text-base text-muted-foreground mt-1">
@@ -191,7 +202,7 @@ export function ListaSection() {
           </p>
         </div>
         <div className="flex gap-2 flex-wrap">
-          {itemsComprados.length > 0 && (
+          {itemsComprados.length > 0 ? (
             <Button
               variant="outline"
               onClick={limpiarComprados}
@@ -201,7 +212,7 @@ export function ListaSection() {
             >
               Limpiar Comprados
             </Button>
-          )}
+          ) : null}
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
               <Button className="gap-2 text-xs sm:text-sm h-9 sm:h-10">
@@ -229,8 +240,8 @@ export function ListaSection() {
                 <div className="space-y-2">
                   <Label htmlFor="categoria">Categoría</Label>
                   <Select
-                    value={nuevoItem.categoria}
-                    onValueChange={(value) => setNuevoItem({ ...nuevoItem, categoria: value })}
+                    value={nuevoItem.category}
+                    onValueChange={(value) => setNuevoItem({ ...nuevoItem, category: value })}
                   >
                     <SelectTrigger id="categoria">
                       <SelectValue placeholder="Selecciona una categoría" />
@@ -257,9 +268,9 @@ export function ListaSection() {
                     id="cantidad"
                     placeholder="Ej: 1"
                     type="number"
-                    value={nuevoItem.cantidad}
+                    value={nuevoItem.quantity}
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setNuevoItem((prev) => ({ ...prev, cantidad: e.target.value.slice(0, 50) }))
+                      setNuevoItem((prev) => ({ ...prev, quantity: e.target.value.slice(0, 50) }))
                     }
                     aria-label="Cantidad del producto"
                     maxLength={50}
@@ -280,14 +291,14 @@ export function ListaSection() {
           <TabsTrigger value="todas" className="text-xs sm:text-sm px-2 sm:px-3 py-2">
             <span className="hidden sm:inline">Todas</span>
             <span className="sm:hidden">Todo</span>
-            {items.filter((i) => !i.purchased).length > 0 && (
+            {itemsGlobalesPendientesCount > 0 ? (
               <Badge
                 variant="secondary"
                 className="ml-1 sm:ml-2 text-[10px] sm:text-xs px-1 sm:px-1.5"
               >
-                {items.filter((i) => !i.purchased).length}
+                {itemsGlobalesPendientesCount}
               </Badge>
-            )}
+            ) : null}
           </TabsTrigger>
           {categories.map((cat) => {
             const Icon = getCategoryIcon(cat);
@@ -296,18 +307,19 @@ export function ListaSection() {
               <TabsTrigger
                 key={cat}
                 value={cat}
+                aria-label={getCategoriaLabel(cat)}
                 className="gap-0.5 sm:gap-1 text-xs sm:text-sm px-1 sm:px-3 py-2"
               >
                 <Icon className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
                 <span className="hidden lg:inline">{getCategoriaLabel(cat)}</span>
-                {count > 0 && (
+                {count > 0 ? (
                   <Badge
                     variant="secondary"
                     className="ml-0.5 sm:ml-1 text-[10px] sm:text-xs px-1 sm:px-1.5"
                   >
                     {count}
                   </Badge>
-                )}
+                ) : null}
               </TabsTrigger>
             );
           })}
@@ -462,7 +474,6 @@ export function ListaSection() {
           )}
         </TabsContent>
       </Tabs>
-      {/* Región para lectores de pantalla que anuncia acciones (agregado/eliminado) */}
       <span className="sr-only" aria-live="polite" aria-atomic="true">
         {lastActionMsg}
       </span>

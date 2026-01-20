@@ -17,7 +17,6 @@ function AuthCallbackContent() {
       try {
         let token = searchParams.get('token');
         const code = searchParams.get('code');
-        const refreshToken = searchParams.get('refresh_token');
 
         if (!token && code) {
            // Exchange code for token via backend
@@ -66,6 +65,8 @@ function AuthCallbackContent() {
              usuario = {
               id: userId,
               nombre: 'Usuario', 
+              experience_points: 0,
+              nivel: undefined,
               createdAt: new Date(),
               updatedAt: new Date(),
             };

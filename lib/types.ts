@@ -3,17 +3,22 @@
  */
 
 // ============ AUTENTICACIÓN ============
+export interface Level {
+  id?: string;
+  name: string;
+  level_number: number;
+  required_progress: number;
+  image_url?: string;
+}
+
 export interface Usuario {
   id: string;
   nombre: string;
   email?: string;
   familiaId?: string;
   color?: ColorMiembro;
-  puntos?: number;
-  nivel?: {
-    nombre: string;
-    imageUrl?: string;
-  };
+  experience_points: number;
+  nivel?: Level;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -127,11 +132,8 @@ export interface Miembro {
   id: string;
   nombre: string;
   color: ColorMiembro;
-  puntos: number;
-  nivel?: {
-    nombre: string;
-    imageUrl?: string;
-  };
+  experience_points: number;
+  nivel?: Level;
   rolId: 'creador' | 'miembro' | 'member';
   familiaId: string;
   createdAt: Date;
@@ -223,12 +225,9 @@ export interface LeaderboardEntry {
     color: ColorMiembro;
     imageUrl?: string;
   };
-  puntos: number;
-  nivel: {
-    numero: number;
-    nombre: string;
-    puntosParaSiguiente: number;
-  };
+  experience_points: number;
+  nivel: Level;
+  nextLevel?: Level; // To help calculate progress
   distintivo?: 'oro' | 'plata' | 'bronce';
 }
 
@@ -261,6 +260,7 @@ export interface AuthContextType {
   usuario: Usuario | null;
   familia: Familia | null;
   token: string | null;
+  levels: Level[];
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;

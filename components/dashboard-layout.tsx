@@ -9,18 +9,12 @@ import { FamiliaActions } from '@/components/familia/familia-actions';
 import { InvitarMiembrosDialog } from '@/components/dialogs/invitar-miembros-dialog';
 import { useAuth } from '@/hooks/use-auth';
 import { useFamilia } from '@/hooks/use-familia';
+import { LevelUpListener } from '@/components/level-up-listener';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
   activeSection?: 'miembros' | 'calendario' | 'lista' | 'notas' | 'overview';
 }
-
-const DASHBOARD_ROUTES = [
-  '/dashboard/miembros',
-  '/dashboard/tareas',
-  '/dashboard/lista',
-  '/dashboard/notas',
-];
 
 export function DashboardLayout({ children, activeSection = 'overview' }: DashboardLayoutProps) {
   const router = useRouter();
@@ -36,12 +30,6 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
       router.push('/login');
     }
   }, [isAuthenticated, authLoading, router]);
-
-  useEffect(() => {
-    DASHBOARD_ROUTES.forEach((route) => {
-      router.prefetch(route);
-    });
-  }, [router]);
 
   const handleLogout = () => {
     logout();
@@ -87,6 +75,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
                   size="sm"
                   className="h-8 w-8 sm:h-10 sm:w-10 p-0 hover:bg-primary/10 text-muted-foreground hover:text-primary"
                   title="Ir al inicio"
+                  aria-label="Ir al inicio"
                 >
                   <Home className="w-4 h-4 sm:w-5 sm:h-5" />
                 </Button>
@@ -98,6 +87,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
                 onClick={handleLogout}
                 className="h-8 w-8 sm:h-10 sm:w-10 p-0 hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
                 title="Cerrar sesión"
+                aria-label="Cerrar sesión"
               >
                 <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
               </Button>
@@ -106,78 +96,83 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
         </div>
       </header>
 
-      <nav className="bg-primary backdrop-blur-sm border-b border-primary sticky top-[57px] sm:top-[65px] z-10">
+      <nav className="bg-primary backdrop-blur-sm border-b border-primary sticky top-[57px] sm:top-[65px] z-10" aria-label="Navegación principal">
         <div className="container mx-auto px-3 sm:px-4">
           <div className="flex gap-1 sm:gap-2 overflow-x-auto py-2 sm:py-3 scrollbar-hide items-center">
-            <Link href="/dashboard" prefetch={true}>
-              <Button
-                variant="ghost"
-                className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
-                  activeSection === 'overview'
-                    ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
-                    : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
-                }`}
-              >
+            <Button
+              asChild
+              variant="ghost"
+              className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
+                activeSection === 'overview'
+                  ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
+                  : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
+              }`}
+            >
+              <Link href="/dashboard" prefetch={true} aria-current={activeSection === 'overview' ? 'page' : undefined}>
                 <Bird className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span className="hidden xs:inline">Inicio</span>
-              </Button>
-            </Link>
+              </Link>
+            </Button>
 
-            <Link href="/dashboard/miembros" prefetch={true}>
-              <Button
-                variant="ghost"
-                className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
-                  activeSection === 'miembros'
-                    ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
-                    : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
-                }`}
-              >
+            <Button
+              asChild
+              variant="ghost"
+              className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
+                activeSection === 'miembros'
+                  ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
+                  : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
+              }`}
+            >
+              <Link href="/dashboard/miembros" prefetch={true} aria-current={activeSection === 'miembros' ? 'page' : undefined}>
                 <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span className="hidden xs:inline">Miembros</span>
-              </Button>
-            </Link>
+              </Link>
+            </Button>
 
-            <Link href="/dashboard/tareas" prefetch={true}>
-              <Button
-                variant="ghost"
-                className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
-                  activeSection === 'calendario'
-                    ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
-                    : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
-                }`}
-              >
+            <Button
+              asChild
+              variant="ghost"
+              className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
+                activeSection === 'calendario'
+                  ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
+                  : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
+              }`}
+            >
+              <Link href="/dashboard/tareas" prefetch={true} aria-current={activeSection === 'calendario' ? 'page' : undefined}>
                 <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span className="hidden xs:inline">Calendario de Tareas</span>
-              </Button>
-            </Link>
+              </Link>
+            </Button>
 
-            <Link href="/dashboard/lista" prefetch={true}>
-              <Button
-                variant="ghost"
-                className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
-                  activeSection === 'lista'
-                    ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
-                    : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
-                }`}
-              >
+            <Button
+              asChild
+              variant="ghost"
+              className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
+                activeSection === 'lista'
+                  ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
+                  : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
+              }`}
+            >
+              <Link href="/dashboard/lista" prefetch={true} aria-current={activeSection === 'lista' ? 'page' : undefined}>
                 <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span className="hidden xs:inline">Lista</span>
-              </Button>
-            </Link>
+              </Link>
+            </Button>
 
-            <Link href="/dashboard/notas" prefetch={true}>
-              <Button
-                variant="ghost"
-                className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
-                  activeSection === 'notas'
-                    ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
-                    : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
-                }`}
-              >
+            <Button
+              asChild
+              variant="ghost"
+              className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
+                activeSection === 'notas'
+                  ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
+                  : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
+              }`}
+            >
+              <Link href="/dashboard/notas" prefetch={true} aria-current={activeSection === 'notas' ? 'page' : undefined}>
                 <StickyNote className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 <span className="hidden xs:inline">Notas</span>
-              </Button>
-            </Link>
+              </Link>
+            </Button>
 
             <div className="w-px h-6 bg-primary-foreground/20 mx-1"></div>
 
@@ -204,6 +199,8 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
           onOpenChange={setInvitarDialogOpen}
         />
       )}
+      
+      <LevelUpListener />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { Nota } from '@/lib/types';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import { Nota, Miembro } from '@/lib/types';
 import { NotaCard } from '@/components/nota-card';
 import { NotaFilter } from '@/components/nota-filter';
 import { CrearNotaDialog } from '@/components/dialogs/crear-nota-dialog';
@@ -36,6 +36,12 @@ export function NotasSection() {
   const [loading, setLoading] = useState(false);
   const [isNuevaNotaOpen, setIsNuevaNotaOpen] = useState(false);
 
+  // Index members by ID for faster lookups
+  const miembrosMap = useMemo(() => {
+    if (!familia) return new Map<string, Miembro>();
+    return new Map(familia.miembros.map((m) => [m.id, m]));
+  }, [familia]);
+
   const fetchNotas = useCallback(async () => {
     if (!familia) return;
     try {
@@ -43,7 +49,7 @@ export function NotasSection() {
       const data = await NoteService.getNotes() as unknown as ApiNote[];
 
       const mappedNotas: Nota[] = data.map((apiNote) => {
-        const creatorMember = familia.miembros.find((m) => m.id === apiNote.user_id);
+        const creatorMember = miembrosMap.get(apiNote.user_id);
         const color = creatorMember
           ? creatorMember.color
           : {
@@ -73,7 +79,7 @@ export function NotasSection() {
     } finally {
       setLoading(false);
     }
-  }, [familia]);
+  }, [familia, miembrosMap]);
 
   useEffect(() => {
     fetchNotas();
@@ -90,7 +96,7 @@ export function NotasSection() {
         user_id: usuario.id,
       }) as unknown as ApiNote;
 
-      const creatorMember = familia.miembros.find((m) => m.id === newNote.user_id);
+      const creatorMember = miembrosMap.get(newNote.user_id);
       const color = creatorMember
         ? creatorMember.color
         : {
@@ -132,12 +138,15 @@ export function NotasSection() {
       }
   };
 
-  // Filter by creator (user_id) instead of assignees
-  const notasFiltradas = (
-    filtrosActivos.length === 0
+  const notasFiltradas = useMemo(() => {
+    const filtered = filtrosActivos.length === 0
       ? notas
-      : notas.filter((nota) => filtrosActivos.some((filtroId) => nota.user_id === filtroId))
-  ).sort((a, b) => new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime());
+      : notas.filter((nota) => nota.user_id && filtrosActivos.includes(nota.user_id));
+    
+    return [...filtered].sort((a, b) => 
+      new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime()
+    );
+  }, [notas, filtrosActivos]);
 
   if (loading && notas.length === 0) {
     return <SectionSkeleton />;
@@ -153,13 +162,13 @@ export function NotasSection() {
         </Button>
       </div>
 
-      {familia && familia.miembros.length > 0 && (
+      {familia && familia.miembros.length > 0 ? (
         <NotaFilter
           miembros={familia.miembros}
           filtrosActivos={filtrosActivos}
           onFilterChange={setFiltrosActivos}
         />
-      )}
+      ) : null}
 
       {notasFiltradas.length === 0 ? (
         <Empty>
@@ -179,7 +188,7 @@ export function NotasSection() {
           </div>
           <div className="space-y-3">
             {notasFiltradas.map((nota) => {
-              const creador = familia?.miembros.find((m) => m.id === nota.user_id);
+              const creador = miembrosMap.get(nota.user_id || '');
               return (
                 <NotaCard
                   key={nota.id}

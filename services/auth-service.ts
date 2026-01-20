@@ -53,6 +53,7 @@ export const AuthService = {
         usuario = {
           id: userId,
           nombre: email.split('@')[0],
+          experience_points: 0,
           createdAt: new Date(),
           updatedAt: new Date(),
         };

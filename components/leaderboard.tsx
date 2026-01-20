@@ -1,9 +1,11 @@
 'use client';
 
-import { Miembro, LeaderboardEntry } from '@/lib/types';
+import { Miembro } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { MiembroAvatar } from '@/components/ui/miembro-avatar';
 import { Medal } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
+import { Progress } from '@/components/ui/progress';
 
 interface LeaderboardProps {
   miembros: Miembro[];
@@ -23,11 +25,25 @@ const getDistintivo = (posicion: number) => {
 };
 
 export function Leaderboard({ miembros }: LeaderboardProps) {
-  // Ordenar miembros por puntos descendente
-  const miembrosOrdenados = [...miembros].sort((a, b) => b.puntos - a.puntos);
+  const { levels } = useAuth();
+  
+  // Ordenar miembros por experiencia descendente
+  const miembrosOrdenados = [...miembros].sort((a, b) => (b.experience_points || 0) - (a.experience_points || 0));
 
-  const entries: LeaderboardEntry[] = miembrosOrdenados.map((m, index) => {
+  const entries = miembrosOrdenados.map((m, index) => {
     const distintivo = getDistintivo(index + 1);
+    
+    const currentXP = m.experience_points || 0;
+    const currentLevelNum = m.nivel?.level_number || 1;
+    // Assuming levels are sorted or we find the specific one. 
+    // Optimization: we could sort levels once. But explicit find is safe.
+    const nextLevel = levels.find(l => l.level_number === currentLevelNum + 1);
+    
+    // If no next level, we are at max.
+    const nextLevelXP = nextLevel?.required_progress || currentXP; 
+    const isMaxLevel = !nextLevel;
+    
+    const progressPercent = isMaxLevel ? 100 : (nextLevelXP > 0 ? Math.min(100, (currentXP / nextLevelXP) * 100) : 0);
 
     return {
       puesto: index + 1,
@@ -35,15 +51,15 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
         id: m.id,
         nombre: m.nombre,
         color: m.color,
-        imageUrl: m.nivel?.imageUrl,
+        imageUrl: m.nivel?.image_url,
       },
-      puntos: m.puntos,
-      nivel: {
-        numero: 0, // Not available in simple member view
-        nombre: m.nivel?.nombre || 'Huevo',
-        puntosParaSiguiente: 0, // Not available
-      },
+      experience_points: currentXP,
+      nivel: m.nivel || { name: 'Huevo', level_number: 1, required_progress: 0 }, // Fallback
       distintivo: distintivo ? (distintivo.label as 'oro' | 'plata' | 'bronce') : undefined,
+      // Extra UI helpers
+      nextLevelXP,
+      progressPercent,
+      isMaxLevel
     };
   });
 
@@ -55,7 +71,7 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
           Ranking Familiar
         </CardTitle>
         <CardDescription className="text-muted-foreground">
-          Posiciones basadas en puntos acumulados
+          Posiciones basadas en experiencia acumulada
         </CardDescription>
       </CardHeader>
 
@@ -68,7 +84,7 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
                 <tr className="border-b border-border">
                   <th className="text-left py-2 px-2 text-muted-foreground font-medium">Pos</th>
                   <th className="text-left py-2 px-2 text-muted-foreground font-medium">Miembro</th>
-                  <th className="text-left py-2 px-2 text-muted-foreground font-medium">Puntos</th>
+                  <th className="text-left py-2 px-2 text-muted-foreground font-medium w-1/3">Progreso (XP)</th>
                   <th className="text-left py-2 px-2 text-muted-foreground font-medium">Nivel</th>
                 </tr>
               </thead>
@@ -105,8 +121,16 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
                         <span className="text-foreground font-medium">{entry.miembro.nombre}</span>
                       </div>
                     </td>
-                    <td className="py-3 px-2 text-foreground font-medium">{entry.puntos}</td>
-                    <td className="py-3 px-2 text-muted-foreground">{entry.nivel.nombre}</td>
+                    <td className="py-3 px-2">
+                      <div className="space-y-1 max-w-[200px]">
+                         <div className="flex justify-between text-xs">
+                           <span className="font-medium">{entry.experience_points} XP</span>
+                           {!entry.isMaxLevel && <span className="text-muted-foreground">/ {entry.nextLevelXP}</span>}
+                         </div>
+                         <Progress value={entry.progressPercent} className="h-1.5" />
+                      </div>
+                    </td>
+                    <td className="py-3 px-2 text-muted-foreground">{entry.nivel.name}</td>
                   </tr>
                 ))}
               </tbody>
@@ -141,13 +165,17 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
                     />
                     <div className="flex-1">
                       <p className="font-medium text-foreground">{entry.miembro.nombre}</p>
-                      <p className="text-xs text-muted-foreground">{entry.nivel.nombre}</p>
+                      <p className="text-xs text-muted-foreground">{entry.nivel.name}</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="font-bold text-foreground">{entry.puntos}</p>
-                    <p className="text-xs text-muted-foreground">puntos</p>
-                  </div>
+                </div>
+                
+                <div className="mt-2 space-y-1">
+                   <div className="flex justify-between text-xs">
+                     <span className="font-medium">{entry.experience_points} XP</span>
+                     {!entry.isMaxLevel && <span className="text-muted-foreground">/ {entry.nextLevelXP}</span>}
+                   </div>
+                   <Progress value={entry.progressPercent} className="h-1.5" />
                 </div>
               </div>
             ))}
