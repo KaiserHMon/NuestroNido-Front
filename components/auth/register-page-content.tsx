@@ -1,11 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Bird } from 'lucide-react';
+import { Bird, ArrowRight } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useAuth } from '@/hooks/use-auth';
 import { useFamilia } from '@/hooks/use-familia';
+import { FamilyService } from '@/services/family-service';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Lazy load form
 const RegisterForm = dynamic(
@@ -32,11 +34,20 @@ export function RegisterPageContent() {
   const searchParams = useSearchParams();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { familia, isLoading: familiaLoading } = useFamilia();
+  const [inviteInfo, setInviteInfo] = useState<{ family_name: string; inviter_name: string | null } | null>(null);
 
   useEffect(() => {
     const code = searchParams.get('code');
+    const invite = searchParams.get('invite');
     if (code) {
       sessionStorage.setItem('pendingInvitationCode', code);
+    }
+    if (invite) {
+      sessionStorage.setItem('pendingInviteToken', invite);
+      // Try to fetch info to show a friendly message
+      FamilyService.getInvitationInfo(invite)
+        .then(setInviteInfo)
+        .catch(err => console.error('Could not fetch invite info', err));
     }
   }, [searchParams]);
 
@@ -69,6 +80,16 @@ export function RegisterPageContent() {
             Gestiona tu hogar de manera fácil y divertida
           </p>
         </div>
+
+        {inviteInfo && (
+          <Alert className="mb-6 bg-primary/5 border-primary/20">
+            <Bird className="h-4 w-4 text-primary" />
+            <AlertDescription className="text-sm text-foreground">
+              Te estás registrando para unirte a la familia <strong>{inviteInfo.family_name}</strong>
+              {inviteInfo.inviter_name && <span> invitada por {inviteInfo.inviter_name}</span>}.
+            </AlertDescription>
+          </Alert>
+        )}
 
         <div className="bg-card rounded-lg shadow-md border border-border p-5">
           <RegisterForm onSuccess={() => router.push('/home')} />

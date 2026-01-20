@@ -35,7 +35,8 @@ function mapApiFamilyToFamilia(apiFamily: ApiFamily, members: Miembro[] = []): F
   return {
     id: apiFamily.id,
     nombre: apiFamily.name,
-    codigoInvitacion: apiFamily.invitation_code,
+    // Fallback to various potential property names for invitation code
+    codigoInvitacion: apiFamily.invitation_code || (apiFamily as any).invitationCode || (apiFamily as any).code || '',
     creadorId: apiFamily.creator_id,
     miembros: members,
     activa: true, // Defaulting to true as not in API response?
@@ -177,6 +178,41 @@ export const FamilyService = {
     return fetchClient(`/api/family-members/${memberId}`, {
       method: 'DELETE',
     });
+  },
+
+  // --- NUEVOS MÉTODOS DE INVITACIÓN ---
+
+  async createInvitationCode(maxUses: number = 5, expiresInHours: number = 24): Promise<{ code: string; expires_at: string }> {
+    return fetchClient<{ code: string; expires_at: string }>('/api/families/invitations/code', {
+      method: 'POST',
+      body: { max_uses: maxUses, expires_in_hours: expiresInHours },
+    });
+  },
+
+  async createInvitationLink(): Promise<{ link: string; expires_at: string }> {
+    return fetchClient<{ link: string; expires_at: string }>('/api/families/invitations/link', {
+      method: 'POST',
+    });
+  },
+
+  async getInvitationInfo(token: string): Promise<{ family_id: string; family_name: string; inviter_name: string | null }> {
+    // This endpoint is public, so requiresAuth might need to be false if supported by fetchClient,
+    // or we assume it works even if token is missing/null in storage.
+    // Based on fetchClient implementation, it adds token if present.
+    // We should allow calling this without auth.
+    return fetchClient<{ family_id: string; family_name: string; inviter_name: string | null }>(`/api/families/invitations/info?token=${token}`, {
+       requiresAuth: false
+    });
+  },
+
+  async joinByLink(token: string): Promise<Familia> {
+    const apiFamily = await fetchClient<ApiFamily>('/api/families/join/link', {
+      method: 'POST',
+      body: { token },
+    });
+    // After joining, we need to refresh members too
+    const members = await this.getMembers();
+    return mapApiFamilyToFamilia(apiFamily, members);
   },
 
   // Mock validation since no endpoint exists

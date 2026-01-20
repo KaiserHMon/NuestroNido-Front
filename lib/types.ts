@@ -268,6 +268,7 @@ export interface AuthContextType {
   logout: () => void;
   crearFamilia: (nombre: string) => Promise<void>;
   unirseAFamilia: (codigo: string) => Promise<void>;
+  unirsePorLink: (token: string) => Promise<void>;
   actualizarFamilia: (familiaId: string, nombre: string) => Promise<void>;
   eliminarFamilia: (familiaId: string) => Promise<void>;
   refreshFamily: () => Promise<void>;

@@ -23,7 +23,8 @@ export const ListService = {
   },
 
   async getCategories(): Promise<string[]> {
-    return fetchClient<string[]>('/api/lists/categories');
+    const categories = await fetchClient<string[]>('/api/lists/categories');
+    return categories.filter(cat => cat !== 'Otros');
   },
 
   async create(item: {

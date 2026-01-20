@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, Check, X, ShoppingBasket, Pill, Home, Wrench, Sparkles, ShoppingCart } from 'lucide-react';
+import { Plus, Check, X, ShoppingBasket, Pill, Home, Wrench, Sparkles, ShoppingCart, Dog } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -35,6 +35,7 @@ const getCategoryIcon = (categoryName: string) => {
   if (lower.includes('ferreter') || lower.includes('herramient')) return Wrench;
   if (lower.includes('limpieza') || lower.includes('aseo')) return Sparkles;
   if (lower.includes('hogar') || lower.includes('casa')) return Home;
+  if (lower.includes('mascota') || lower.includes('perro') || lower.includes('gato')) return Dog;
   return ShoppingCart;
 };
 

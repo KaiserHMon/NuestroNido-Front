@@ -126,6 +126,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
      }
   }, [usuario]);
 
+  const unirsePorLink = useCallback(async (token: string) => {
+    const newFam = await FamilyService.joinByLink(token);
+    setFamilia(newFam);
+    if (usuario) {
+      const updatedUser = { ...usuario, familiaId: newFam.id };
+      setUsuario(updatedUser);
+      TokenService.setUser(updatedUser);
+    }
+  }, [usuario]);
+
   const actualizarFamilia = useCallback(async (familiaId: string, nombre: string) => {
     const updatedFam = await FamilyService.update(familiaId, nombre);
     setFamilia(updatedFam);
@@ -164,6 +174,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logout,
         crearFamilia,
         unirseAFamilia,
+        unirsePorLink,
         actualizarFamilia,
         eliminarFamilia,
         refreshFamily

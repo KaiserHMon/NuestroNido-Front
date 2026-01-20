@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 
 export default function HomePage() {
   const router = useRouter();
-  const { isAuthenticated, usuario, isLoading: authLoading, unirseAFamilia } = useAuth();
+  const { isAuthenticated, usuario, isLoading: authLoading, unirseAFamilia, unirsePorLink } = useAuth();
   const { familia, isLoading: familiaLoading } = useFamilia();
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isCheckingFamily, setIsCheckingFamily] = useState(true);
@@ -35,7 +35,15 @@ export default function HomePage() {
         return;
       }
 
-      // Check for pending invitation
+      // Check for pending invitation by link (Token)
+      const pendingToken = sessionStorage.getItem('pendingInviteToken');
+      if (pendingToken) {
+        sessionStorage.removeItem('pendingInviteToken'); // Remove to prevent loop, InvitePage will handle param
+        router.push(`/invite/${pendingToken}`);
+        return;
+      }
+
+      // Check for pending invitation by code
       const pendingCode = sessionStorage.getItem('pendingInvitationCode');
       if (pendingCode) {
         try {

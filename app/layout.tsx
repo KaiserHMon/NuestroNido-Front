@@ -48,13 +48,21 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: 'NuestroNido Team' }],
   creator: 'NuestroNido',
-  metadataBase: new URL('https://nuestronido.vercel.app'), // Placeholder, ajusta según dominio real
+  metadataBase: new URL('https://nuestronido.vercel.app'),
   openGraph: {
-    title: 'NuestroNido - Organización Familiar',
+    title: 'NuestroNido - Organización Familiar y Armonía',
     description:
-      'Coordina tareas, listas y notas con tu familia. ¡Haz del orden un juego divertido y mantén tu hogar en armonía!',
+      'Coordina tareas, listas y notas con tu familia de forma divertida. ¡Haz del orden un juego y mantén tu hogar en armonía!',
     url: 'https://nuestronido.vercel.app',
     siteName: 'NuestroNido',
+    images: [
+      {
+        url: '/og-image.png', // Referencia a una imagen (deberías subir una de 1200x630)
+        width: 1200,
+        height: 630,
+        alt: 'NuestroNido - Gestión Familiar',
+      },
+    ],
     locale: 'es_ES',
     type: 'website',
   },
@@ -63,6 +71,7 @@ export const metadata: Metadata = {
     title: 'NuestroNido - Tu hogar organizado',
     description:
       'Coordina tareas, listas y notas con tu familia de forma divertida. ¡Únete a NuestroNido!',
+    images: ['/og-image.png'],
     creator: '@nuestronido',
   },
   icons: {
