@@ -2,8 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trash2, Edit2 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Trash2, Edit2, LogOut } from 'lucide-react';
 import { MiembroAvatar } from '@/components/ui/miembro-avatar';
 import { Miembro } from '@/lib/types';
 
@@ -23,81 +22,65 @@ export function MiembroCard({
   onEditar,
 }: MiembroCardProps) {
   return (
-    <Card className="border border-border bg-card overflow-hidden h-full transition-all hover:shadow-sm">
-      <CardContent className="p-4 flex flex-col items-center justify-center text-center space-y-3 h-full relative min-h-[140px]">
-        {/* Botones de acción en la esquina superior derecha */}
-        <div className="absolute top-2 right-2 flex flex-col gap-1">
+    <Card className="border border-border bg-card overflow-hidden transition-all hover:shadow-sm">
+      <CardContent className="p-5 flex flex-row items-center gap-4 relative min-h-[100px]">
+        {/* Avatar centrado a la izquierda */}
+        <MiembroAvatar
+          nombre={miembro.nombre}
+          color={miembro.color}
+          imageUrl={miembro.nivel?.image_url}
+          size="lg"
+          className="w-14 h-14 text-lg shrink-0"
+        />
+
+        {/* Info: Nombre y Título (Nivel) */}
+        <div className="flex flex-col min-w-0 pr-16">
+          <h4 className="font-bold text-foreground text-base truncate" title={miembro.nombre}>
+            {miembro.nombre}
+          </h4>
+          <span className="text-sm text-muted-foreground truncate">
+            {miembro.nivel?.name || 'Miembro'}
+          </span>
+        </div>
+
+        {/* Botones de acción arriba a la derecha */}
+        <div className="absolute top-3 right-3 flex items-center gap-1">
           {esMiembro && (
             <>
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 onClick={() => onEditar(miembro)}
-                className="h-7 w-7 p-0 hover:bg-primary/10 text-primary"
+                className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
                 title="Editar perfil"
                 aria-label="Editar perfil"
               >
-                <Edit2 className="w-3.5 h-3.5" />
+                <Edit2 className="w-4 h-4" />
               </Button>
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 onClick={() => onEliminar(miembro)}
-                className="h-7 w-7 p-0 hover:bg-destructive/10 text-destructive"
+                className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                 title="Salir de la familia"
                 aria-label="Salir de la familia"
               >
-                <Trash2 className="w-3.5 h-3.5" />
+                <LogOut className="w-4 h-4" />
               </Button>
             </>
           )}
           {esCreador && !esMiembro && (
             <Button
               variant="ghost"
-              size="sm"
+              size="icon"
               onClick={() => onEliminar(miembro)}
-              className="h-7 w-7 p-0 hover:bg-destructive/10 text-destructive"
+              className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
               title="Eliminar miembro"
               aria-label={`Eliminar a ${miembro.nombre}`}
             >
-              <Trash2 className="w-3.5 h-3.5" />
+              <Trash2 className="w-4 h-4" />
             </Button>
           )}
-        </div>
-
-        {/* Avatar centrado */}
-        <MiembroAvatar
-          nombre={miembro.nombre}
-          color={miembro.color}
-          imageUrl={miembro.nivel?.image_url}
-          size="lg"
-          className="w-14 h-14 text-lg"
-        />
-
-        {/* Nombre y rol */}
-        <div className="space-y-1.5 w-full overflow-hidden">
-          <div className="flex items-center justify-center gap-2">
-            <h4 className="font-bold text-foreground text-sm sm:text-base truncate px-1">
-              {miembro.nombre}
-            </h4>
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-1">
-            {esMiembro && (
-              <Badge className="text-[10px] px-1.5 h-4 bg-primary/20 text-primary border border-primary/30 hover:bg-primary/20">
-                Tú
-              </Badge>
-            )}
-            {miembro.rolId === 'creador' && (
-              <Badge className="text-[10px] px-1.5 h-4 bg-primary text-primary-foreground hover:bg-primary">
-                Creador
-              </Badge>
-            )}
-            {!esMiembro && miembro.rolId !== 'creador' && (
-              <Badge variant="outline" className="text-[10px] px-1.5 h-4 text-muted-foreground border-muted-foreground/30">
-                Miembro
-              </Badge>
-            )}
-          </div>
         </div>
       </CardContent>
     </Card>

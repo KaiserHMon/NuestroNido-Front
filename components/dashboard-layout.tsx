@@ -69,6 +69,15 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
             </div>
 
             <div className="flex items-center gap-2">
+              {esCreador && (
+                <FamiliaActions
+                  familia={familia}
+                  esCreador={esCreador}
+                  onFamiliaActualizada={handleFamiliaActualizada}
+                  variant="header"
+                />
+              )}
+
               <Link href="/">
                 <Button
                   variant="ghost"
@@ -175,17 +184,6 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
             </Button>
 
             <div className="w-px h-6 bg-primary-foreground/20 mx-1"></div>
-
-            {esCreador && (
-              <div className="ml-auto">
-                <FamiliaActions
-                  familia={familia}
-                  esCreador={esCreador}
-                  onFamiliaActualizada={handleFamiliaActualizada}
-                  variant="nav"
-                />
-              </div>
-            )}
           </div>
         </div>
       </nav>

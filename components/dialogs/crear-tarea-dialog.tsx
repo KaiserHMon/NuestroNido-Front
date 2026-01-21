@@ -262,6 +262,8 @@ export function CrearTareaDialog({
                           selected={field.value}
                           onSelect={field.onChange}
                           initialFocus
+                          locale={es}
+                          fixedWeeks
                         />
                       </PopoverContent>
                     </Popover>
