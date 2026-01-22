@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Bird, ShieldCheck, AlertCircle } from 'lucide-react';
 import { FamilyService } from '@/services/family-service';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 interface InvitationPreviewProps {
   token: string;

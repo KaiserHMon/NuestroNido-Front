@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 
 export default function HomePage() {
   const router = useRouter();
-  const { isAuthenticated, usuario, isLoading: authLoading, unirseAFamilia, unirsePorLink } = useAuth();
+  const { isAuthenticated, usuario, isLoading: authLoading, unirseAFamilia } = useAuth();
   const { familia, isLoading: familiaLoading } = useFamilia();
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isCheckingFamily, setIsCheckingFamily] = useState(true);

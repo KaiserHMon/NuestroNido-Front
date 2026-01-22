@@ -16,7 +16,7 @@ interface InvitarMiembrosDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function InvitarMiembrosDialog({ familia, open, onOpenChange }: InvitarMiembrosDialogProps) {
+export function InvitarMiembrosDialog({ open, onOpenChange }: InvitarMiembrosDialogProps) {
   const [codigoCopiado, setCodigoCopiado] = useState(false);
   const [linkCopiado, setLinkCopiado] = useState(false);
   const [codigoInvitacion, setCodigoInvitacion] = useState('');

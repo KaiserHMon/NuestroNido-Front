@@ -44,14 +44,14 @@ export function MiembroCard({
         </div>
 
         {/* Botones de acción arriba a la derecha */}
-        <div className="absolute top-3 right-3 flex items-center gap-1">
+        <div className="absolute top-2 right-2 flex items-center gap-1">
           {esMiembro && (
             <>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => onEditar(miembro)}
-                className="h-8 w-8 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                 title="Editar perfil"
                 aria-label="Editar perfil"
               >
@@ -61,7 +61,7 @@ export function MiembroCard({
                 variant="ghost"
                 size="icon"
                 onClick={() => onEliminar(miembro)}
-                className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                 title="Salir de la familia"
                 aria-label="Salir de la familia"
               >

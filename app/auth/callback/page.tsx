@@ -22,11 +22,11 @@ function AuthCallbackContent() {
            // Exchange code for token via backend
            try {
              // According to user, backend returns { data: { access_token: "..." } }
-             const response = await fetchClient<any>(`/api/auth/callback?code=${code}`, {
+             const response = await fetchClient<{ access_token?: string; data?: { access_token: string } }>(`/api/auth/callback?code=${code}`, {
                requiresAuth: false
              });
              console.log("Backend exchange response:", response);
-             token = response.data?.access_token || response.access_token;
+             token = response.data?.access_token || response.access_token || null;
            } catch (err) {
              console.error("Error exchanging code:", err);
              throw new Error("Failed to exchange code for token");

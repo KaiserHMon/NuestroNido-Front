@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { LoginSchema, LoginFormInputs } from '@/lib/validation';
 import { useAuth } from '@/hooks/use-auth';
-import { API_BASE_URL, fetchClient } from '@/lib/api-client';
+import { fetchClient } from '@/lib/api-client';
 
 interface LoginFormProps {
   onSuccess?: () => void;

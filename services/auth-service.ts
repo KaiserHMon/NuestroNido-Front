@@ -109,7 +109,7 @@ export const AuthService = {
       
       if (error instanceof ApiError && error.data && typeof error.data === 'object' && 'detail' in error.data) {
          // FastAPI usually returns { detail: "message" }
-         message = String((error.data as any).detail);
+         message = String((error.data as { detail: unknown }).detail);
       } else if (error instanceof Error) {
          message = error.message;
       }

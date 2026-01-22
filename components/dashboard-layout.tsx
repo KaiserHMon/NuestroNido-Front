@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Calendar, ShoppingCart, Users, StickyNote, Bird, LogOut, Home } from 'lucide-react';
+import { Calendar, ShoppingCart, Users, StickyNote, Bird, LogOut, Home, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { FamiliaActions } from '@/components/familia/familia-actions';
+import { EliminarFamiliaDialog } from '@/components/dialogs/eliminar-familia-dialog';
 import { InvitarMiembrosDialog } from '@/components/dialogs/invitar-miembros-dialog';
 import { useAuth } from '@/hooks/use-auth';
 import { useFamilia } from '@/hooks/use-familia';
@@ -19,11 +19,12 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children, activeSection = 'overview' }: DashboardLayoutProps) {
   const router = useRouter();
   const { logout, usuario, isAuthenticated, isLoading: authLoading } = useAuth();
-  const { familia, isLoading: familiaLoading, cargarFamiliaGuardada } = useFamilia();
+  const { familia, isLoading: familiaLoading } = useFamilia();
   const esCreador = useMemo(() => {
     return familia && usuario ? familia.creadorId === usuario.id : false;
   }, [familia, usuario]);
   const [invitarDialogOpen, setInvitarDialogOpen] = useState(false);
+  const [eliminarFamiliaOpen, setEliminarFamiliaOpen] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -34,10 +35,6 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
   const handleLogout = () => {
     logout();
     router.push('/');
-  };
-
-  const handleFamiliaActualizada = () => {
-    cargarFamiliaGuardada();
   };
 
   if (authLoading || familiaLoading || !familia || !usuario) {
@@ -70,12 +67,16 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
 
             <div className="flex items-center gap-2">
               {esCreador && (
-                <FamiliaActions
-                  familia={familia}
-                  esCreador={esCreador}
-                  onFamiliaActualizada={handleFamiliaActualizada}
-                  variant="header"
-                />
+                 <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 sm:h-10 sm:w-10 p-0 hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
+                    title="Eliminar familia"
+                    aria-label="Eliminar familia"
+                    onClick={() => setEliminarFamiliaOpen(true)}
+                 >
+                   <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                 </Button>
               )}
 
               <Link href="/">
@@ -191,11 +192,19 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
       <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8">{children}</main>
 
       {familia && (
-        <InvitarMiembrosDialog
-          familia={familia}
-          open={invitarDialogOpen}
-          onOpenChange={setInvitarDialogOpen}
-        />
+        <>
+          <InvitarMiembrosDialog
+            familia={familia}
+            open={invitarDialogOpen}
+            onOpenChange={setInvitarDialogOpen}
+          />
+          <EliminarFamiliaDialog
+            familia={familia}
+            open={eliminarFamiliaOpen}
+            onOpenChange={setEliminarFamiliaOpen}
+            trigger={null}
+          />
+        </>
       )}
       
       <LevelUpListener />

@@ -18,7 +18,7 @@ import { SectionSkeleton } from '@/components/ui/section-skeleton';
 import { MiembroCard } from '@/components/miembro-card';
 
 export function MiembrosSection() {
-  const { familia, cargarFamiliaGuardada, eliminarFamilia } = useFamilia();
+  const { familia, cargarFamiliaGuardada } = useFamilia();
   const { usuario } = useAuth();
 
   const esCreador = useMemo(() => {
@@ -46,24 +46,28 @@ export function MiembrosSection() {
     setDialogEditarOpen(true);
   };
 
-  const handleConfirmarEliminacion = async () => {
+  const handleConfirmarEliminacion = async (nuevoCreadorId?: string) => {
     if (!familia || !miembroAEliminar) return;
 
     try {
       if (miembroAEliminar.id === usuario?.id) {
-        await FamilyService.leave();
+        await FamilyService.leave(nuevoCreadorId);
       } else {
         await FamilyService.removeMember(miembroAEliminar.id);
       }
-              cargarFamiliaGuardada();
-              setMiembroAEliminar(null);
-              toast.success('Miembro eliminado');
-          } catch (error) {
-              console.error('Error removing member:', error);
-              toast.error('Error al eliminar miembro');
-          }
-      
+      cargarFamiliaGuardada();
+      setMiembroAEliminar(null);
+      toast.success('Miembro eliminado');
+    } catch (error) {
+      console.error('Error removing member:', error);
+      toast.error('Error al eliminar miembro');
+    }
   };
+  
+  const miembrosCandidatos = useMemo(() => {
+     if (!familia || !usuario) return [];
+     return familia.miembros.filter(m => m.id !== usuario.id);
+  }, [familia, usuario]);
 
   const handleConfirmarEdicion = async (miembroActualizado: Miembro) => {
     if (!familia || !usuario) return;
@@ -84,20 +88,6 @@ export function MiembrosSection() {
                     console.error('Error updating profile:', error);
                     toast.error('Error al actualizar perfil');
                 }
-        
-    }
-  };
-
-  const handleEliminarFamilia = async () => {
-    if (familia) {
-      try {
-                      await eliminarFamilia(familia.id);
-                      // Redirect or state update handled by hook/parent
-                      toast.success('Familia eliminada');
-                  } catch (error) {
-                      console.error('Error deleting family:', error);
-                      toast.error('Error al eliminar familia');
-                  }
         
     }
   };
@@ -148,6 +138,7 @@ export function MiembrosSection() {
         onOpenChange={setDialogEliminarOpen}
         onConfirm={handleConfirmarEliminacion}
         esUsuarioActual={miembroAEliminar?.id === usuario?.id}
+        miembrosCandidatos={miembrosCandidatos}
       />
 
       {/* Dialog de Eliminar Familia (cuando el creador es el último) */}

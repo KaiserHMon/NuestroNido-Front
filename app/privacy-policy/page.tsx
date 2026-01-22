@@ -53,7 +53,7 @@ export default function PrivacyPolicyPage() {
                 <ul className="list-disc list-inside mt-2 ml-2 text-muted-foreground space-y-1">
                   <li>Identificarte como usuario dentro de la aplicación.</li>
                   <li>Permitir que otros miembros de tu familia te reconozcan.</li>
-                  <li>Asignar y gestionar tareas, listas y eventos dentro de tu "Nido" (grupo familiar).</li>
+                  <li>Asignar y gestionar tareas, listas y eventos dentro de tu &quot;Nido&quot; (grupo familiar).</li>
                 </ul>
               </section>
 

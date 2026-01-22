@@ -33,7 +33,7 @@ export function TareasTab({
   onFiltroChange,
   onEditar,
   onEliminar,
-  onToggleCompletada,
+  onToggleCompletada: _onToggleCompletada,
 }: TareasTabProps) {
   const [filtro, setFiltro] = useState<'unicas' | 'recurrentes'>(filtroInicial);
   const [usuarioFiltro, setUsuarioFiltro] = useState<string>('todos');

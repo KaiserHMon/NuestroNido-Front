@@ -36,7 +36,7 @@ function mapApiFamilyToFamilia(apiFamily: ApiFamily, members: Miembro[] = []): F
     id: apiFamily.id,
     nombre: apiFamily.name,
     // Fallback to various potential property names for invitation code
-    codigoInvitacion: apiFamily.invitation_code || (apiFamily as any).invitationCode || (apiFamily as any).code || '',
+    codigoInvitacion: apiFamily.invitation_code || ((apiFamily as unknown as Record<string, unknown>).invitationCode as string) || ((apiFamily as unknown as Record<string, unknown>).code as string) || '',
     creadorId: apiFamily.creator_id,
     miembros: members,
     activa: true, // Defaulting to true as not in API response?
@@ -168,9 +168,10 @@ export const FamilyService = {
     });
   },
 
-  async leave(): Promise<void> {
+  async leave(newOwnerId?: string): Promise<void> {
     return fetchClient('/api/family-members/me', {
       method: 'DELETE',
+      body: newOwnerId ? { new_owner_id: newOwnerId } : undefined,
     });
   },
 

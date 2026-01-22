@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: { token: string } }
         type: 'website',
       },
     };
-  } catch (error) {
+  } catch {
     return {
       title: 'Invitación a NuestroNido',
       description: 'Únete a una familia en NuestroNido para organizar tu hogar.',

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Bird, ArrowRight } from 'lucide-react';
+import { Bird } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useAuth } from '@/hooks/use-auth';
 import { useFamilia } from '@/hooks/use-familia';

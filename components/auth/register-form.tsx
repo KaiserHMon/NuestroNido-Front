@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox as _Checkbox } from '@/components/ui/checkbox';
 import { RegisterSchema, RegisterFormInputs } from '@/lib/validation';
 import { useAuth } from '@/hooks/use-auth';
-import { API_BASE_URL, fetchClient } from '@/lib/api-client';
+import { fetchClient } from '@/lib/api-client';
 
 interface RegisterFormProps {
   onSuccess?: () => void;

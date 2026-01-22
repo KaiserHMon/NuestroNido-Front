@@ -124,7 +124,7 @@ export function CalendarioSection() {
     } finally {
       setLoading(false);
     }
-  }, [familia?.id, miembrosMap]);
+  }, [familia, miembrosMap]);
 
   useEffect(() => {
     fetchTareas();
@@ -452,7 +452,7 @@ export function CalendarioSection() {
                 tipoFecha: tareaAEditar.tipoFecha || 'fecha',
                 fecha: tareaAEditar.fecha ? new Date(tareaAEditar.fecha + 'T12:00:00') : undefined,
                 diasSemana: tareaAEditar.diasSemana,
-                recurrencia: (tareaAEditar.frecuencia || 'unica') as any,
+                recurrencia: (tareaAEditar.frecuencia || 'unica') as 'unica' | 'mensual' | 'anual',
                 asignadoA: tareaAEditar.creadorId,
               }
             : undefined
