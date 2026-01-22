@@ -28,19 +28,34 @@ export function InvitarMiembrosDialog({ open, onOpenChange }: InvitarMiembrosDia
       const cargarInvitaciones = async () => {
         setLoading(true);
         try {
-          const [codeData, linkData] = await Promise.all([
+          const [codeResult, linkResult] = await Promise.allSettled([
             FamilyService.createInvitationCode(5, 48),
             FamilyService.createInvitationLink()
           ]);
-          setCodigoInvitacion(codeData.code);
-          
-          // El API devuelve el link completo. Si necesitamos que apunte al dominio actual:
-          const url = new URL(linkData.link);
-          const currentOrigin = typeof window !== 'undefined' ? window.location.origin : '';
-          const localLink = `${currentOrigin}/invite${url.pathname.replace('/invite', '')}`;
-          setLinkInvitacion(localLink);
+
+          if (codeResult.status === 'fulfilled') {
+            setCodigoInvitacion(codeResult.value.code);
+          } else {
+            console.error('Error generando código:', codeResult.reason);
+          }
+
+          if (linkResult.status === 'fulfilled') {
+            const linkData = linkResult.value;
+            // El API devuelve el link completo. Si necesitamos que apunte al dominio actual:
+            try {
+              const url = new URL(linkData.link);
+              const currentOrigin = typeof window !== 'undefined' ? window.location.origin : '';
+              const localLink = `${currentOrigin}/invite${url.pathname.replace('/invite', '')}`;
+              setLinkInvitacion(localLink);
+            } catch (e) {
+              console.error('Error procesando link:', e);
+              setLinkInvitacion(linkData.link);
+            }
+          } else {
+            console.error('Error generando link:', linkResult.reason);
+          }
         } catch (error) {
-          console.error('Error al generar invitaciones:', error);
+          console.error('Error inesperado al generar invitaciones:', error);
         } finally {
           setLoading(false);
         }
