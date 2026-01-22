@@ -12,6 +12,8 @@ import { UserService } from './user-service';
 interface TokenResponse {
   access_token: string;
   token_type: string;
+  refresh_token: string;
+  expires_in: number;
 }
 
 export const AuthService = {
@@ -28,6 +30,10 @@ export const AuthService = {
 
       const token = tokenData.access_token;
       TokenService.setToken(token);
+      
+      if (tokenData.refresh_token) {
+        TokenService.setRefreshToken(tokenData.refresh_token);
+      }
 
       const decoded = parseJwt(token);
       if (!decoded || !decoded.sub) {

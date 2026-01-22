@@ -7,7 +7,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { MiembroAvatar } from '@/components/ui/miembro-avatar';
 import { BaseDialog } from './base-dialog';
 
 const EditarPerfilSchema = z.object({
@@ -87,28 +86,21 @@ export function EditarPerfilDialog({
       onSubmit={handleSubmit(onSubmit)}
       submitButtonLabel="Guardar Cambios"
     >
-      <div className="flex justify-center py-4">
-        <MiembroAvatar
-          nombre={miembro.nombre}
-          color={miembro.color}
-          imageUrl={miembro.nivel?.image_url}
-          size="lg"
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="nombre" className="text-foreground font-medium">
-          Nombre
-        </Label>
-        <Input
-          id="nombre"
-          type="text"
-          placeholder="Tu nombre"
-          className="bg-background border-input text-foreground placeholder:text-muted-foreground"
-          {...register('nombre')}
-          disabled={isSubmitting}
-        />
-        {errors.nombre && <p className="text-sm text-destructive">{errors.nombre.message}</p>}
+      <div className="space-y-4 py-4">
+        <div className="space-y-2">
+          <Label htmlFor="nombre" className="text-foreground font-medium">
+            Nombre
+          </Label>
+          <Input
+            id="nombre"
+            type="text"
+            placeholder="Tu nombre"
+            className="bg-background border-input text-foreground placeholder:text-muted-foreground"
+            {...register('nombre')}
+            disabled={isSubmitting}
+          />
+          {errors.nombre && <p className="text-sm text-destructive">{errors.nombre.message}</p>}
+        </div>
       </div>
     </BaseDialog>
   );

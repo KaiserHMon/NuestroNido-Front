@@ -47,8 +47,52 @@ export async function fetchClient<T>(endpoint: string, options: FetchOptions = {
   const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
   if (response.status === 401 && requiresAuth) {
-    TokenService.removeToken();
-    // Optional: Redirect to login or dispatch event
+    const refreshToken = TokenService.getRefreshToken();
+    
+    if (refreshToken) {
+      try {
+        // Intentar refrescar el token
+        const refreshResponse = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ refresh_token: refreshToken }),
+        });
+
+        if (refreshResponse.ok) {
+          const data = await refreshResponse.json();
+          
+          // Guardar nuevos tokens
+          TokenService.setToken(data.access_token);
+          if (data.refresh_token) {
+            TokenService.setRefreshToken(data.refresh_token);
+          }
+
+          // Reintentar la petición original con el nuevo token
+          if (config.headers) {
+             (config.headers as Record<string, string>)['Authorization'] = `Bearer ${data.access_token}`;
+          }
+          
+          const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, config);
+          
+          // Si el retry también falla, lanzar error
+          if (!retryResponse.ok) {
+             const retryData = await retryResponse.json().catch(() => ({}));
+             throw new ApiError(retryResponse.status, retryResponse.statusText, retryData);
+          }
+
+          return retryResponse.json() as T;
+        }
+      } catch (error) {
+        console.error('Error refreshing token:', error);
+      }
+    }
+
+    // Si no hay refresh token o falla el refresco: logout
+    TokenService.clearSession();
+    // No redirigimos automáticamente aquí para permitir que la UI reaccione al estado de auth
+    // o podríamos despachar un evento personalizado si fuera necesario.
   }
 
   const responseData = await response.json().catch(() => ({}));

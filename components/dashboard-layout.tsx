@@ -28,7 +28,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
-      router.push('/login');
+      router.push('/');
     }
   }, [isAuthenticated, authLoading, router]);
 
@@ -66,19 +66,6 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
             </div>
 
             <div className="flex items-center gap-2">
-              {esCreador && (
-                 <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 sm:h-10 sm:w-10 p-0 hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
-                    title="Eliminar familia"
-                    aria-label="Eliminar familia"
-                    onClick={() => setEliminarFamiliaOpen(true)}
-                 >
-                   <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                 </Button>
-              )}
-
               <Link href="/">
                 <Button
                   variant="ghost"
@@ -108,83 +95,98 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
 
       <nav className="bg-primary backdrop-blur-sm border-b border-primary sticky top-[57px] sm:top-[65px] z-10" aria-label="Navegación principal">
         <div className="container mx-auto px-3 sm:px-4">
-          <div className="flex gap-1 sm:gap-2 overflow-x-auto py-2 sm:py-3 scrollbar-hide items-center">
-            <Button
-              asChild
-              variant="ghost"
-              className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
-                activeSection === 'overview'
-                  ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
-                  : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
-              }`}
-            >
-              <Link href="/dashboard" prefetch={true} aria-current={activeSection === 'overview' ? 'page' : undefined}>
-                <Bird className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span className="hidden xs:inline">Inicio</span>
-              </Link>
-            </Button>
+          <div className="flex items-center justify-between">
+            <div className="flex gap-1 sm:gap-2 overflow-x-auto py-2 sm:py-3 scrollbar-hide items-center">
+              <Button
+                asChild
+                variant="ghost"
+                className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
+                  activeSection === 'overview'
+                    ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
+                    : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
+                }`}
+              >
+                <Link href="/dashboard" prefetch={true} aria-current={activeSection === 'overview' ? 'page' : undefined}>
+                  <Bird className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="hidden xs:inline">Inicio</span>
+                </Link>
+              </Button>
 
-            <Button
-              asChild
-              variant="ghost"
-              className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
-                activeSection === 'miembros'
-                  ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
-                  : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
-              }`}
-            >
-              <Link href="/dashboard/miembros" prefetch={true} aria-current={activeSection === 'miembros' ? 'page' : undefined}>
-                <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span className="hidden xs:inline">Miembros</span>
-              </Link>
-            </Button>
+              <Button
+                asChild
+                variant="ghost"
+                className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
+                  activeSection === 'miembros'
+                    ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
+                    : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
+                }`}
+              >
+                <Link href="/dashboard/miembros" prefetch={true} aria-current={activeSection === 'miembros' ? 'page' : undefined}>
+                  <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="hidden xs:inline">Miembros</span>
+                </Link>
+              </Button>
 
-            <Button
-              asChild
-              variant="ghost"
-              className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
-                activeSection === 'calendario'
-                  ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
-                  : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
-              }`}
-            >
-              <Link href="/dashboard/tareas" prefetch={true} aria-current={activeSection === 'calendario' ? 'page' : undefined}>
-                <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span className="hidden xs:inline">Calendario de Tareas</span>
-              </Link>
-            </Button>
+              <Button
+                asChild
+                variant="ghost"
+                className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
+                  activeSection === 'calendario'
+                    ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
+                    : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
+                }`}
+              >
+                <Link href="/dashboard/tareas" prefetch={true} aria-current={activeSection === 'calendario' ? 'page' : undefined}>
+                  <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="hidden xs:inline">Calendario de Tareas</span>
+                </Link>
+              </Button>
 
-            <Button
-              asChild
-              variant="ghost"
-              className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
-                activeSection === 'lista'
-                  ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
-                  : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
-              }`}
-            >
-              <Link href="/dashboard/lista" prefetch={true} aria-current={activeSection === 'lista' ? 'page' : undefined}>
-                <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span className="hidden xs:inline">Lista</span>
-              </Link>
-            </Button>
+              <Button
+                asChild
+                variant="ghost"
+                className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
+                  activeSection === 'lista'
+                    ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
+                    : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
+                }`}
+              >
+                <Link href="/dashboard/lista" prefetch={true} aria-current={activeSection === 'lista' ? 'page' : undefined}>
+                  <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="hidden xs:inline">Lista</span>
+                </Link>
+              </Button>
 
-            <Button
-              asChild
-              variant="ghost"
-              className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
-                activeSection === 'notas'
-                  ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
-                  : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
-              }`}
-            >
-              <Link href="/dashboard/notas" prefetch={true} aria-current={activeSection === 'notas' ? 'page' : undefined}>
-                <StickyNote className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                <span className="hidden xs:inline">Notas</span>
-              </Link>
-            </Button>
+              <Button
+                asChild
+                variant="ghost"
+                className={`flex items-center gap-1.5 sm:gap-2 whitespace-nowrap text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 ${
+                  activeSection === 'notas'
+                    ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground'
+                    : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
+                }`}
+              >
+                <Link href="/dashboard/notas" prefetch={true} aria-current={activeSection === 'notas' ? 'page' : undefined}>
+                  <StickyNote className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span className="hidden xs:inline">Notas</span>
+                </Link>
+              </Button>
 
-            <div className="w-px h-6 bg-primary-foreground/20 mx-1"></div>
+              <div className="w-px h-6 bg-primary-foreground/20 mx-1"></div>
+            </div>
+
+            {esCreador && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 sm:h-10 sm:w-10 p-0 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shrink-0"
+                title="Eliminar familia"
+                aria-label="Eliminar familia"
+                onClick={() => setEliminarFamiliaOpen(true)}
+              >
+                <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
+              </Button>
+            )}
           </div>
         </div>
       </nav>

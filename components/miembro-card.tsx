@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Trash2, Edit2, LogOut } from 'lucide-react';
 import { MiembroAvatar } from '@/components/ui/miembro-avatar';
 import { Miembro } from '@/lib/types';
+import { Badge } from '@/components/ui/badge';
 
 interface MiembroCardProps {
   miembro: Miembro;
@@ -21,6 +22,8 @@ export function MiembroCard({
   onEliminar,
   onEditar,
 }: MiembroCardProps) {
+  const esMiembroCreador = miembro.rolId === 'creador';
+
   return (
     <Card className="border border-border bg-card overflow-hidden transition-all hover:shadow-sm">
       <CardContent className="p-5 flex flex-row items-center gap-4 relative min-h-[100px]">
@@ -35,9 +38,16 @@ export function MiembroCard({
 
         {/* Info: Nombre y Título (Nivel) */}
         <div className="flex flex-col min-w-0 pr-16">
-          <h4 className="font-bold text-foreground text-base truncate" title={miembro.nombre}>
-            {miembro.nombre}
-          </h4>
+          <div className="flex items-center gap-2">
+            <h4 className="font-bold text-foreground text-base truncate" title={miembro.nombre}>
+              {miembro.nombre}
+            </h4>
+            {esMiembroCreador && (
+              <Badge variant="secondary" className="h-5 px-1.5 bg-primary/10 text-primary border-none text-[10px] font-bold uppercase tracking-wider">
+                Creador
+              </Badge>
+            )}
+          </div>
           <span className="text-sm text-muted-foreground truncate">
             {miembro.nivel?.name || 'Miembro'}
           </span>

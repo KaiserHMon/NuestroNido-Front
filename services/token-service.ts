@@ -10,6 +10,7 @@
 import { Usuario } from '@/lib/types';
 
 const TOKEN_KEY = 'auth_token';
+const REFRESH_TOKEN_KEY = 'refresh_token';
 const USER_KEY = 'usuario';
 const FAMILY_KEY = 'familia';
 
@@ -27,6 +28,21 @@ export const TokenService = {
   removeToken(): void {
     if (typeof window === 'undefined') return;
     localStorage.removeItem(TOKEN_KEY);
+  },
+
+  getRefreshToken(): string | null {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem(REFRESH_TOKEN_KEY);
+  },
+
+  setRefreshToken(token: string): void {
+    if (typeof window === 'undefined') return;
+    localStorage.setItem(REFRESH_TOKEN_KEY, token);
+  },
+
+  removeRefreshToken(): void {
+    if (typeof window === 'undefined') return;
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
   },
 
   getUser(): Usuario | null {
@@ -53,6 +69,7 @@ export const TokenService = {
   clearSession(): void {
     if (typeof window === 'undefined') return;
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     localStorage.removeItem(FAMILY_KEY);
   },

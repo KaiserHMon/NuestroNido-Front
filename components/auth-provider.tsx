@@ -104,6 +104,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToken(null);
     setFamilia(null);
     setIsAuthenticated(false);
+    // No redirigimos aquí directamente para mantener el Provider puro, 
+    // la redirección se maneja en los hooks o layouts.
   }, []);
 
   const crearFamilia = useCallback(async (nombre: string) => {
