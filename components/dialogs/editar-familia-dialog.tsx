@@ -15,10 +15,23 @@ interface EditarFamiliaDialogProps {
   familia: Familia;
   onSuccess?: () => void;
   trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function EditarFamiliaDialog({ familia, onSuccess, trigger }: EditarFamiliaDialogProps) {
-  const [open, setOpen] = useState(false);
+export function EditarFamiliaDialog({ 
+  familia, 
+  onSuccess, 
+  trigger,
+  open: externalOpen,
+  onOpenChange: externalOnOpenChange
+}: EditarFamiliaDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  
+  const isControlled = externalOpen !== undefined;
+  const open = isControlled ? externalOpen : internalOpen;
+  const setOpen = isControlled ? externalOnOpenChange! : setInternalOpen;
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { actualizarNombre, error } = useFamilia();
 
