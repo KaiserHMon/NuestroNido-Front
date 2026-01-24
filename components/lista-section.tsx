@@ -216,7 +216,7 @@ export function ListaSection() {
           ) : null}
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="gap-2 text-xs sm:text-sm h-9 sm:h-10">
+              <Button className="gap-2 text-xs sm:text-sm h-9 sm:h-10 bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground shadow-md shadow-primary/30 transition-all duration-300 active:scale-95">
                 <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
                 Agregar Item
               </Button>
@@ -326,7 +326,7 @@ export function ListaSection() {
           })}
         </TabsList>
 
-        <TabsContent value={categoriaActiva} className="mt-4 sm:mt-6">
+        <TabsContent value={categoriaActiva} className="mt-4 sm:mt-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
           {itemsFiltrados.length === 0 ? (
             <Card>
               <CardContent className="pt-6">

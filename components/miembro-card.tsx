@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trash2, Edit2, LogOut } from 'lucide-react';
+import { Trash2, Edit2, LogOut, Crown } from 'lucide-react';
 import { MiembroAvatar } from '@/components/ui/miembro-avatar';
 import { Miembro } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +11,7 @@ interface MiembroCardProps {
   miembro: Miembro;
   esMiembro: boolean; // Si es el usuario actual
   esCreador: boolean; // Si el usuario actual es el creador de la familia
+  isFirst?: boolean; // Si es el primero en el leaderboard
   onEliminar: (miembro: Miembro) => void;
   onEditar: (miembro: Miembro) => void;
 }
@@ -19,6 +20,7 @@ export function MiembroCard({
   miembro,
   esMiembro,
   esCreador,
+  isFirst,
   onEliminar,
   onEditar,
 }: MiembroCardProps) {
@@ -29,6 +31,11 @@ export function MiembroCard({
       <CardContent className="p-5 py-6 flex flex-row items-center gap-5 relative min-h-[100px]">
         {/* Avatar centrado a la izquierda - Opción A: Protagonista */}
         <div className="shrink-0 relative">
+          {isFirst && (
+            <div className="absolute -top-3 -left-2 z-10 transform -rotate-12 drop-shadow-md">
+              <Crown className="w-6 h-6 text-yellow-400 fill-yellow-400" />
+            </div>
+          )}
           <MiembroAvatar
             nombre={miembro.nombre}
             color={miembro.color}

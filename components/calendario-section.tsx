@@ -287,7 +287,7 @@ export function CalendarioSection() {
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-foreground">Calendario de Tareas</h2>
         <Button
-          className="bg-primary hover:bg-primary/90"
+          className="bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
           onClick={() => {
             setTareaAEditar(undefined);
             setIsNuevaTareaOpen(true);
@@ -308,7 +308,7 @@ export function CalendarioSection() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="calendario" className="space-y-4">
+        <TabsContent value="calendario" className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
           <Card className="bg-card border border-border">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
@@ -413,7 +413,7 @@ export function CalendarioSection() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="mis-tareas" className="space-y-4">
+        <TabsContent value="mis-tareas" className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
           <Card className="bg-card border border-border">
             <CardContent className="p-4">
                             <TareasTab 

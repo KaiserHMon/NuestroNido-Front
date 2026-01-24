@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Calendar, ShoppingCart, Users, StickyNote, Bird, LogOut, Home, Trash2, Edit2 } from 'lucide-react';
+import { Calendar, ShoppingCart, Users, StickyNote, Bird, LogOut, Home, Trash2, Settings } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { EliminarFamiliaDialog } from '@/components/dialogs/eliminar-familia-dialog';
@@ -68,6 +68,31 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
             </div>
 
             <div className="flex items-center gap-2">
+              {esCreador && (
+                <>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 sm:h-10 sm:w-10 p-0 hover:bg-primary/10 text-muted-foreground hover:text-primary"
+                    title="Configuración de familia"
+                    aria-label="Configuración de familia"
+                    onClick={() => setEditarFamiliaOpen(true)}
+                  >
+                    <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 sm:h-10 sm:w-10 p-0 hover:bg-destructive/10 text-muted-foreground hover:text-destructive"
+                    title="Eliminar familia"
+                    aria-label="Eliminar familia"
+                    onClick={() => setEliminarFamiliaOpen(true)}
+                  >
+                    <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </Button>
+                </>
+              )}
+
               <Link href="/">
                 <Button
                   variant="ghost"
@@ -176,31 +201,6 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
 
               <div className="w-px h-6 bg-primary-foreground/20 mx-1"></div>
             </div>
-
-            {esCreador && (
-              <div className="flex items-center gap-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 sm:h-10 sm:w-10 p-0 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shrink-0"
-                  title="Editar familia"
-                  aria-label="Editar familia"
-                  onClick={() => setEditarFamiliaOpen(true)}
-                >
-                  <Edit2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 sm:h-10 sm:w-10 p-0 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shrink-0"
-                  title="Eliminar familia"
-                  aria-label="Eliminar familia"
-                  onClick={() => setEliminarFamiliaOpen(true)}
-                >
-                  <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                </Button>
-              </div>
-            )}
           </div>
         </div>
       </nav>

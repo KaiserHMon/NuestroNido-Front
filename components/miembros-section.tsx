@@ -69,6 +69,11 @@ export function MiembrosSection() {
      return familia.miembros.filter(m => m.id !== usuario.id);
   }, [familia, usuario]);
 
+  const topMemberId = useMemo(() => {
+    if (!familia || familia.miembros.length === 0) return null;
+    return [...familia.miembros].sort((a, b) => b.experience_points - a.experience_points)[0].id;
+  }, [familia]);
+
   const handleConfirmarEdicion = async (miembroActualizado: Miembro) => {
     if (!familia || !usuario) return;
 
@@ -104,7 +109,10 @@ export function MiembrosSection() {
           <h3 className="text-lg font-semibold text-foreground">
             Miembros ({familia.miembros.length})
           </h3>
-          <Button onClick={() => setInvitarDialogOpen(true)} className="gap-2">
+          <Button 
+            onClick={() => setInvitarDialogOpen(true)} 
+            className="gap-2 bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
+          >
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">Invitar a Familiar</span>
             <span className="sm:hidden">Invitar</span>
@@ -120,6 +128,7 @@ export function MiembrosSection() {
                 miembro={miembro}
                 esMiembro={esMiembro}
                 esCreador={esCreador}
+                isFirst={miembro.id === topMemberId}
                 onEliminar={handleEliminarMiembro}
                 onEditar={handleEditarPerfil}
               />
