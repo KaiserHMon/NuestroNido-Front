@@ -39,10 +39,15 @@ export function EliminarMiembroDialog({
 
   useEffect(() => {
     if (open) {
-      setNuevoCreadorId('');
+      // Pre-seleccionar el miembro más antiguo (el primero de la lista ordenada)
+      if (miembrosCandidatos.length > 0) {
+        setNuevoCreadorId(miembrosCandidatos[0].id);
+      } else {
+        setNuevoCreadorId('');
+      }
       setError(null);
     }
-  }, [open]);
+  }, [open, miembrosCandidatos]);
 
   const handleConfirm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

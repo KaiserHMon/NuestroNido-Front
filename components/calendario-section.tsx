@@ -436,6 +436,7 @@ export function CalendarioSection() {
         miembros={familia?.miembros || []}
         onClose={() => setFechaSeleccionada(null)}
         onToggleCompletada={handleToggleCompletada}
+        currentUserId={usuario?.id}
       />
 
       <CrearTareaDialog

@@ -13,6 +13,7 @@ interface FechaExpandidaModalProps {
   onClose: () => void;
   miembros?: Miembro[];
   onToggleCompletada?: (tareaId: string, completada: boolean) => void;
+  currentUserId?: string;
 }
 
 export function FechaExpandidaModal({
@@ -21,6 +22,7 @@ export function FechaExpandidaModal({
   onClose,
   miembros = [],
   onToggleCompletada,
+  currentUserId,
 }: FechaExpandidaModalProps) {
   if (!fecha) return null;
 
@@ -28,6 +30,7 @@ export function FechaExpandidaModal({
   const tareasDelDia = tareas;
 
   const getNombreMiembro = (creadorId: string) => {
+    if (!creadorId) return 'Sin asignar';
     const miembro = miembros.find((m) => m.id === creadorId);
     return miembro?.nombre || 'Desconocido';
   };
@@ -56,7 +59,10 @@ export function FechaExpandidaModal({
             </div>
           ) : (
             <div className="space-y-2 max-h-96 overflow-y-auto">
-              {tareasDelDia.map((tarea) => (
+              {tareasDelDia.map((tarea) => {
+                 const isAssignedToMe = currentUserId && tarea.creadorId === currentUserId;
+                 
+                 return (
                 <div
                   key={tarea.id}
                   className={`p-3 rounded-lg border border-border bg-card/50 space-y-2 ${
@@ -65,7 +71,7 @@ export function FechaExpandidaModal({
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-start gap-3 flex-1">
-                      {isToday && (
+                      {isToday && isAssignedToMe && (
                         <Checkbox
                           checked={tarea.completada}
                           onCheckedChange={(c) => onToggleCompletada?.(tarea.id, !!c)}
@@ -89,7 +95,7 @@ export function FechaExpandidaModal({
                             {tarea.titulo}
                           </h4>
                           <p className="text-xs text-muted-foreground">
-                            Por:{' '}
+                            Asignado a:{' '}
                             <span className="font-medium">{getNombreMiembro(tarea.creadorId)}</span>
                           </p>
                         </div>
@@ -131,7 +137,8 @@ export function FechaExpandidaModal({
                     )}
                   </div>
                 </div>
-              ))}
+              );
+              })}
             </div>
           )}
         </div>

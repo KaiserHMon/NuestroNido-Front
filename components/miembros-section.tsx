@@ -13,6 +13,8 @@ import { useFamilia } from '@/hooks/use-familia';
 import { useAuth } from '@/hooks/use-auth';
 import { FamilyService } from '@/services/family-service';
 import { UserService } from '@/services/user-service';
+import { TaskService } from '@/services/task-service';
+import { NoteService } from '@/services/note-service';
 import { toast } from 'sonner';
 import { SectionSkeleton } from '@/components/ui/section-skeleton';
 import { MiembroCard } from '@/components/miembro-card';
@@ -66,7 +68,9 @@ export function MiembrosSection() {
   
   const miembrosCandidatos = useMemo(() => {
      if (!familia || !usuario) return [];
-     return familia.miembros.filter(m => m.id !== usuario.id);
+     return familia.miembros
+       .filter(m => m.id !== usuario.id)
+       .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
   }, [familia, usuario]);
 
   const topMemberId = useMemo(() => {
