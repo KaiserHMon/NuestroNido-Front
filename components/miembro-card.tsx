@@ -25,43 +25,45 @@ export function MiembroCard({
   const esMiembroCreador = miembro.rolId === 'creador';
 
   return (
-    <Card className="border border-border bg-card overflow-hidden transition-all hover:shadow-sm">
-      <CardContent className="p-5 flex flex-row items-center gap-4 relative min-h-[100px]">
-        {/* Avatar centrado a la izquierda */}
-        <MiembroAvatar
-          nombre={miembro.nombre}
-          color={miembro.color}
-          imageUrl={miembro.nivel?.image_url}
-          size="lg"
-          className="w-14 h-14 text-lg shrink-0"
-        />
+    <Card className="rounded-[20px] shadow-[0_10px_30px_rgba(0,0,0,0.06)] border-none bg-card overflow-hidden transition-all hover:shadow-md group">
+      <CardContent className="p-5 py-6 flex flex-row items-center gap-5 relative min-h-[100px]">
+        {/* Avatar centrado a la izquierda - Opción A: Protagonista */}
+        <div className="shrink-0 relative">
+          <MiembroAvatar
+            nombre={miembro.nombre}
+            color={miembro.color}
+            imageUrl={miembro.nivel?.image_url}
+            size="lg"
+            className="w-[60px] h-[60px] text-xl border-2 border-[#FF6B6B] shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
+          />
+        </div>
 
         {/* Info: Nombre y Título (Nivel) */}
-        <div className="flex flex-col min-w-0 pr-16">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col min-w-0 pr-16 flex-1 justify-center">
+          <div className="flex items-center gap-2 mb-0.5">
             <h4 className="font-bold text-foreground text-base truncate" title={miembro.nombre}>
               {miembro.nombre}
             </h4>
             {esMiembroCreador && (
-              <Badge variant="secondary" className="h-5 px-1.5 bg-primary/10 text-primary border-none text-[10px] font-bold uppercase tracking-wider">
-                Creador
+              <Badge variant="secondary" className="bg-[#FFE3E3] text-[#FF5A5A] hover:bg-[#FFE3E3] rounded-full px-2 py-0.5 text-[11px] font-bold tracking-normal border-none shadow-none h-auto">
+                CREADOR
               </Badge>
             )}
           </div>
-          <span className="text-sm text-muted-foreground truncate">
+          <span className="text-sm text-muted-foreground truncate font-medium opacity-80">
             {miembro.nivel?.name || 'Miembro'}
           </span>
         </div>
 
-        {/* Botones de acción arriba a la derecha */}
-        <div className="absolute top-2 right-2 flex items-center gap-1">
+        {/* Botones de acción alineados verticalmente al centro */}
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
           {esMiembro && (
             <>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => onEditar(miembro)}
-                className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                className="h-8 w-8 text-muted-foreground/60 hover:text-[#FF5A5A] hover:bg-transparent"
                 title="Editar perfil"
                 aria-label="Editar perfil"
               >
@@ -71,7 +73,7 @@ export function MiembroCard({
                 variant="ghost"
                 size="icon"
                 onClick={() => onEliminar(miembro)}
-                className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                className="h-8 w-8 text-muted-foreground/60 hover:text-[#FF5A5A] hover:bg-transparent"
                 title="Salir de la familia"
                 aria-label="Salir de la familia"
               >
@@ -84,7 +86,7 @@ export function MiembroCard({
               variant="ghost"
               size="icon"
               onClick={() => onEliminar(miembro)}
-              className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+              className="h-8 w-8 text-muted-foreground/60 hover:text-[#FF5A5A] hover:bg-transparent"
               title="Eliminar miembro"
               aria-label={`Eliminar a ${miembro.nombre}`}
             >

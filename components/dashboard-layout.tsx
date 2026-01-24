@@ -2,10 +2,11 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Calendar, ShoppingCart, Users, StickyNote, Bird, LogOut, Home, Trash2 } from 'lucide-react';
+import { Calendar, ShoppingCart, Users, StickyNote, Bird, LogOut, Home, Trash2, Edit2 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { EliminarFamiliaDialog } from '@/components/dialogs/eliminar-familia-dialog';
+import { EditarFamiliaDialog } from '@/components/dialogs/editar-familia-dialog';
 import { InvitarMiembrosDialog } from '@/components/dialogs/invitar-miembros-dialog';
 import { useAuth } from '@/hooks/use-auth';
 import { useFamilia } from '@/hooks/use-familia';
@@ -25,6 +26,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
   }, [familia, usuario]);
   const [invitarDialogOpen, setInvitarDialogOpen] = useState(false);
   const [eliminarFamiliaOpen, setEliminarFamiliaOpen] = useState(false);
+  const [editarFamiliaOpen, setEditarFamiliaOpen] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -176,16 +178,28 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
             </div>
 
             {esCreador && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 w-8 sm:h-10 sm:w-10 p-0 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shrink-0"
-                title="Eliminar familia"
-                aria-label="Eliminar familia"
-                onClick={() => setEliminarFamiliaOpen(true)}
-              >
-                <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
-              </Button>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 sm:h-10 sm:w-10 p-0 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shrink-0"
+                  title="Editar familia"
+                  aria-label="Editar familia"
+                  onClick={() => setEditarFamiliaOpen(true)}
+                >
+                  <Edit2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 sm:h-10 sm:w-10 p-0 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground shrink-0"
+                  title="Eliminar familia"
+                  aria-label="Eliminar familia"
+                  onClick={() => setEliminarFamiliaOpen(true)}
+                >
+                  <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
+                </Button>
+              </div>
             )}
           </div>
         </div>
@@ -199,6 +213,12 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
             familia={familia}
             open={invitarDialogOpen}
             onOpenChange={setInvitarDialogOpen}
+          />
+          <EditarFamiliaDialog
+            familia={familia}
+            open={editarFamiliaOpen}
+            onOpenChange={setEditarFamiliaOpen}
+            trigger={null}
           />
           <EliminarFamiliaDialog
             familia={familia}
