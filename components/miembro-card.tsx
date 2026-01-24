@@ -32,7 +32,7 @@ export function MiembroCard({
         {/* Avatar centrado a la izquierda - Opción A: Protagonista */}
         <div className="shrink-0 relative">
           {isFirst && (
-            <div className="absolute -top-3 -left-2 z-10 transform -rotate-12 drop-shadow-md">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10 drop-shadow-md">
               <Crown className="w-6 h-6 text-yellow-400 fill-yellow-400" />
             </div>
           )}
