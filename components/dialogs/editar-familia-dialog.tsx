@@ -75,10 +75,12 @@ export function EditarFamiliaDialog({
       title="Editar Nombre de la Familia"
       description="Cambia el nombre de tu familia. Este cambio será visible para todos los miembros."
       trigger={
-        trigger || (
+        trigger === undefined ? (
           <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
             ✏️
           </Button>
+        ) : (
+          trigger
         )
       }
       isSubmitting={isSubmitting}

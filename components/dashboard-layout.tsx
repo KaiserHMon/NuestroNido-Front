@@ -178,7 +178,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
             </div>
 
             {esCreador && (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 shrink-0">
                 <Button
                   variant="ghost"
                   size="sm"
