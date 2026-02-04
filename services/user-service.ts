@@ -18,7 +18,7 @@ interface ApiUserResponse {
 
 export const UserService = {
   async getUser(userId: string): Promise<Usuario> {
-    const response = await fetchClient<ApiUserResponse>(`/api/users/${userId}`);
+    const response = await fetchClient<ApiUserResponse>(`/api/v1/users/${userId}`);
     
     let colorData: { id?: string; name?: string; bg?: string } = { name: 'Gris', bg: '#9CA3AF', id: 'default' };
     if (typeof response.color === 'string') {
@@ -58,7 +58,7 @@ export const UserService = {
   },
 
   async updateUser(userId: string, data: { name: string }): Promise<Usuario> {
-    const response = await fetchClient<ApiUserResponse>(`/api/users/${userId}`, {
+    const response = await fetchClient<ApiUserResponse>(`/api/v1/users/${userId}`, {
       method: 'PUT',
       body: data,
     });
@@ -102,7 +102,7 @@ export const UserService = {
   },
 
   async deleteUser(userId: string): Promise<void> {
-    await fetchClient(`/api/users/${userId}`, {
+    await fetchClient(`/api/v1/users/${userId}`, {
       method: 'DELETE',
     });
   },

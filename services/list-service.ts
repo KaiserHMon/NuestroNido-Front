@@ -19,11 +19,11 @@ export interface ListItem {
 export const ListService = {
   async getItems(category?: string): Promise<ListItem[]> {
     const queryString = category ? `?category=${encodeURIComponent(category)}` : '';
-    return fetchClient<ListItem[]>(`/api/lists/items${queryString}`);
+    return fetchClient<ListItem[]>(`/api/v1/lists/items${queryString}`);
   },
 
   async getCategories(): Promise<string[]> {
-    const categories = await fetchClient<string[]>('/api/lists/categories');
+    const categories = await fetchClient<string[]>('/api/v1/lists/categories');
     return categories.filter(cat => cat !== 'Otros');
   },
 
@@ -34,21 +34,21 @@ export const ListService = {
     quantity?: number;
     purchased?: boolean;
   }): Promise<ListItem> {
-    return fetchClient<ListItem>('/api/lists/items', {
+    return fetchClient<ListItem>('/api/v1/lists/items', {
       method: 'POST',
       body: item,
     });
   },
 
   async update(itemId: string, updates: Partial<ListItem>): Promise<ListItem> {
-    return fetchClient<ListItem>(`/api/lists/items/${itemId}`, {
+    return fetchClient<ListItem>(`/api/v1/lists/items/${itemId}`, {
       method: 'PUT',
       body: updates,
     });
   },
 
   async delete(itemId: string): Promise<void> {
-    return fetchClient(`/api/lists/items/${itemId}`, {
+    return fetchClient(`/api/v1/lists/items/${itemId}`, {
       method: 'DELETE',
     });
   },

@@ -8,7 +8,7 @@ export const TaskService = {
 
     // Using string concat for query params as fetchClient helper doesn't auto-handle object params yet
     const queryString = params.toString() ? `?${params.toString()}` : '';
-    return fetchClient<Tarea[]>(`/api/tasks/${queryString}`);
+    return fetchClient<Tarea[]>(`/api/v1/tasks/${queryString}`);
   },
 
   async create(task: {
@@ -20,21 +20,21 @@ export const TaskService = {
     status?: string;
     due_date?: string | null;
   }): Promise<Tarea> {
-    return fetchClient<Tarea>('/api/tasks/', {
+    return fetchClient<Tarea>('/api/v1/tasks/', {
       method: 'POST',
       body: task,
     });
   },
 
   async update(taskId: string, updates: Record<string, unknown>): Promise<Tarea> {
-    return fetchClient<Tarea>(`/api/tasks/${taskId}`, {
+    return fetchClient<Tarea>(`/api/v1/tasks/${taskId}`, {
       method: 'PUT',
       body: updates,
     });
   },
 
   async delete(taskId: string): Promise<void> {
-    return fetchClient(`/api/tasks/${taskId}`, {
+    return fetchClient(`/api/v1/tasks/${taskId}`, {
       method: 'DELETE',
     });
   },

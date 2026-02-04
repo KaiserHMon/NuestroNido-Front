@@ -50,7 +50,7 @@ export const FamilyService = {
     try {
       // Parallelize family and members fetch to eliminate waterfall
       const [apiFamily, members] = await Promise.all([
-        fetchClient<ApiFamily>('/api/families/me'),
+        fetchClient<ApiFamily>('/api/v1/families/me'),
         this.getMembers(),
       ]);
 
@@ -64,7 +64,7 @@ export const FamilyService = {
   },
 
   async getMembers(): Promise<Miembro[]> {
-    const response = await fetchClient<ApiMember[]>('/api/family-members/');
+    const response = await fetchClient<ApiMember[]>('/api/v1/family-members/');
 
     return response.map((apiMember) => {
       const user = apiMember.user || {};
@@ -131,7 +131,7 @@ export const FamilyService = {
 
   async create(nombre: string): Promise<Familia> {
     const [apiFamily, members] = await Promise.all([
-      fetchClient<ApiFamily>('/api/families/', {
+      fetchClient<ApiFamily>('/api/v1/families/', {
         method: 'POST',
         body: { name: nombre },
       }),
@@ -142,7 +142,7 @@ export const FamilyService = {
 
   async joinByCode(code: string): Promise<Familia> {
     const [apiFamily, members] = await Promise.all([
-      fetchClient<ApiFamily>('/api/families/join/code', {
+      fetchClient<ApiFamily>('/api/v1/families/join/code', {
         method: 'POST',
         body: { code },
       }),
@@ -153,7 +153,7 @@ export const FamilyService = {
 
   async update(familyId: string, nombre: string): Promise<Familia> {
     const [apiFamily, members] = await Promise.all([
-      fetchClient<ApiFamily>(`/api/families/${familyId}`, {
+      fetchClient<ApiFamily>(`/api/v1/families/${familyId}`, {
         method: 'PUT',
         body: { name: nombre },
       }),
@@ -163,20 +163,20 @@ export const FamilyService = {
   },
 
   async delete(familyId: string): Promise<void> {
-    return fetchClient(`/api/families/${familyId}`, {
+    return fetchClient(`/api/v1/families/${familyId}`, {
       method: 'DELETE',
     });
   },
 
   async leave(newOwnerId?: string): Promise<void> {
-    return fetchClient('/api/family-members/me', {
+    return fetchClient('/api/v1/family-members/me', {
       method: 'DELETE',
       body: newOwnerId ? { new_owner_id: newOwnerId } : undefined,
     });
   },
 
   async removeMember(memberId: string): Promise<void> {
-    return fetchClient(`/api/family-members/${memberId}`, {
+    return fetchClient(`/api/v1/family-members/${memberId}`, {
       method: 'DELETE',
     });
   },
@@ -184,14 +184,14 @@ export const FamilyService = {
   // --- NUEVOS MÉTODOS DE INVITACIÓN ---
 
   async createInvitationCode(maxUses: number = 5, expiresInHours: number = 24): Promise<{ code: string; expires_at: string }> {
-    return fetchClient<{ code: string; expires_at: string }>('/api/families/invitations/code', {
+    return fetchClient<{ code: string; expires_at: string }>('/api/v1/families/invitations/code', {
       method: 'POST',
       body: { max_uses: maxUses, expires_in_hours: expiresInHours },
     });
   },
 
   async createInvitationLink(): Promise<{ link: string; expires_at: string }> {
-    return fetchClient<{ link: string; expires_at: string }>('/api/families/invitations/link', {
+    return fetchClient<{ link: string; expires_at: string }>('/api/v1/families/invitations/link', {
       method: 'POST',
     });
   },
@@ -201,13 +201,13 @@ export const FamilyService = {
     // or we assume it works even if token is missing/null in storage.
     // Based on fetchClient implementation, it adds token if present.
     // We should allow calling this without auth.
-    return fetchClient<{ family_id: string; family_name: string; inviter_name: string | null }>(`/api/families/invitations/info?token=${token}`, {
+    return fetchClient<{ family_id: string; family_name: string; inviter_name: string | null }>(`/api/v1/families/invitations/info?token=${token}`, {
        requiresAuth: false
     });
   },
 
   async joinByLink(token: string): Promise<Familia> {
-    const apiFamily = await fetchClient<ApiFamily>('/api/families/join/link', {
+    const apiFamily = await fetchClient<ApiFamily>('/api/v1/families/join/link', {
       method: 'POST',
       body: { token },
     });

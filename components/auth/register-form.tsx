@@ -25,7 +25,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
   const handleGoogleLogin = async () => {
     try {
-      const response = await fetchClient<{ url: string }>('/api/auth/login/google', {
+      const response = await fetchClient<{ url: string }>('/api/v1/auth/login/google', {
         requiresAuth: false,
       });
       if (response.url) {

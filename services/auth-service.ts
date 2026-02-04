@@ -22,7 +22,7 @@ export const AuthService = {
     password: string
   ): Promise<ApiResponse<{ token: string; usuario: Usuario }>> {
     try {
-      const tokenData = await fetchClient<TokenResponse>('/api/auth/login', {
+      const tokenData = await fetchClient<TokenResponse>('/api/v1/auth/login', {
         method: 'POST',
         body: { email, password },
         requiresAuth: false,
@@ -45,7 +45,7 @@ export const AuthService = {
       // Fetch user details and family details in parallel
       const [user, familyResponse] = await Promise.allSettled([
         UserService.getUser(userId),
-        fetchClient<Familia>('/api/families/me'),
+        fetchClient<Familia>('/api/v1/families/me'),
       ]);
 
       let usuario: Usuario;
@@ -97,7 +97,7 @@ export const AuthService = {
   ): Promise<ApiResponse<{ token: string; usuario: Usuario }>> {
     try {
       // 1. Signup
-      await fetchClient('/api/auth/signup', {
+      await fetchClient('/api/v1/auth/signup', {
         method: 'POST',
         body: {
           email,

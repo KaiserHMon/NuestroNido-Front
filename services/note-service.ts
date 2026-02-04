@@ -3,7 +3,7 @@ import { Nota } from '@/lib/types';
 
 export const NoteService = {
   async getNotes(): Promise<Nota[]> {
-    return fetchClient<Nota[]>('/api/notes/');
+    return fetchClient<Nota[]>('/api/v1/notes/');
   },
 
   async create(note: {
@@ -12,21 +12,21 @@ export const NoteService = {
     user_id: string;
     content?: string;
   }): Promise<Nota> {
-    return fetchClient<Nota>('/api/notes/', {
+    return fetchClient<Nota>('/api/v1/notes/', {
       method: 'POST',
       body: note,
     });
   },
 
   async update(noteId: string, updates: Partial<Nota>): Promise<Nota> {
-    return fetchClient<Nota>(`/api/notes/${noteId}`, {
+    return fetchClient<Nota>(`/api/v1/notes/${noteId}`, {
       method: 'PUT',
       body: updates,
     });
   },
 
   async delete(noteId: string): Promise<void> {
-    return fetchClient(`/api/notes/${noteId}`, {
+    return fetchClient(`/api/v1/notes/${noteId}`, {
       method: 'DELETE',
     });
   },

@@ -22,7 +22,7 @@ function AuthCallbackContent() {
            // Exchange code for token via backend
            try {
              // According to user, backend returns { data: { access_token: "..." } }
-             const response = await fetchClient<{ access_token?: string; data?: { access_token: string } }>(`/api/auth/callback?code=${code}`, {
+             const response = await fetchClient<{ access_token?: string; data?: { access_token: string } }>(`/api/v1/auth/callback?code=${code}`, {
                requiresAuth: false
              });
              console.log("Backend exchange response:", response);
@@ -53,7 +53,7 @@ function AuthCallbackContent() {
         // Fetch user details and family details
         const [userResponse, familyResponse] = await Promise.allSettled([
           UserService.getUser(userId),
-          fetchClient<Familia>('/api/families/me'),
+          fetchClient<Familia>('/api/v1/families/me'),
         ]);
 
         let usuario: Usuario;

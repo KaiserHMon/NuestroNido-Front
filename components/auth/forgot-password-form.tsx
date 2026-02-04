@@ -40,7 +40,7 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
     setIsSubmitting(true);
     setError(null);
     try {
-      const response = await fetch('/api/auth/forgot-password', {
+      const response = await fetch('/api/v1/auth/forgot-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -52,7 +52,7 @@ export async function fetchClient<T>(endpoint: string, options: FetchOptions = {
     if (refreshToken) {
       try {
         // Intentar refrescar el token
-        const refreshResponse = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+        const refreshResponse = await fetch(`${API_BASE_URL}/api/v1/auth/refresh`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

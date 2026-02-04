@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('Basic flow: Login and Dashboard navigation', async ({ page }) => {
   // Mock API calls to avoid hitting real backend (which might be sleeping or require auth)
-  await page.route('**/api/families/me', async (route) => {
+  await page.route('**/api/v1/families/me', async (route) => {
     await route.fulfill({
       status: 401,
       contentType: 'application/json',
