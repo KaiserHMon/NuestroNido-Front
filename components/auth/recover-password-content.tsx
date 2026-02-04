@@ -16,7 +16,7 @@ export function RecoverPasswordContent() {
             <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
               <Bird className="w-6 h-6 text-primary-foreground" />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">NuestroNido</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground font-heading">NuestroNido</h1>
           </div>
           <p className="text-muted-foreground text-sm sm:text-base">Restablecer Contraseña</p>
         </div>

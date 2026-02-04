@@ -75,7 +75,7 @@ export function AuthPageContent() {
             <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
               <Bird className="w-5 h-5 text-primary-foreground" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground">NuestroNido</h1>
+            <h1 className="text-2xl font-bold text-foreground font-heading">NuestroNido</h1>
           </div>
           <p className="text-muted-foreground text-xs sm:text-sm">
             Gestiona tu hogar de manera fácil y divertida

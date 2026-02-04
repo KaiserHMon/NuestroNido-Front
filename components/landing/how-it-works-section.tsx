@@ -6,7 +6,7 @@ const steps = [
   {
     number: "1",
     title: "Crea tu Nido",
-    description: "Regístrate y crea tu grupo familiar en segundos. Tú serás el creador del nido.",
+    description: "Regístrate y crea tu grupo familiar en segundos.",
   },
   {
     number: "2",
@@ -16,7 +16,7 @@ const steps = [
   {
     number: "3",
     title: "Organízate y colabora",
-    description: "Asigna tareas, comparte listas, gana puntos y mantén a toda la familia sincronizada.",
+    description: "Asigna tareas, comparte listas y mantén a toda la familia sincronizada.",
   },
 ];
 
@@ -31,11 +31,11 @@ const containerVariants: Variants = {
 };
 
 const itemVariants: Variants = {
-  hidden: { opacity: 0, x: -30 },
+  hidden: { opacity: 0, x: -40 },
   visible: {
     opacity: 1,
     x: 0,
-    transition: { duration: 0.6, ease: "easeOut" },
+    transition: { duration: 0.8, ease: "easeOut" },
   },
 };
 
@@ -47,8 +47,8 @@ export function HowItWorksSection() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ duration: 0.8 }}
           >
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-heading text-primary mb-3 sm:mb-4">
               Cómo funciona
@@ -63,11 +63,17 @@ export function HowItWorksSection() {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: false, margin: "-50px", amount: 0.2 }}
           className="relative space-y-8 sm:space-y-12"
         >
           {/* Timeline Connector Line */}
-          <div className="absolute left-[1.25rem] sm:left-[1.5rem] top-4 bottom-4 w-0.5 bg-gradient-to-b from-primary/20 via-primary/50 to-primary/20 -z-10 hidden sm:block" />
+          <motion.div 
+            initial={{ scaleY: 0 }}
+            whileInView={{ scaleY: 1 }}
+            viewport={{ once: false }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+            className="absolute left-[1.25rem] sm:left-[1.5rem] top-4 bottom-4 w-0.5 bg-gradient-to-b from-primary/20 via-primary to-primary/20 -z-10 hidden sm:block origin-top" 
+          />
 
           {steps.map((step, index) => (
             <motion.div key={index} variants={itemVariants} className="flex gap-4 sm:gap-8 items-start relative">

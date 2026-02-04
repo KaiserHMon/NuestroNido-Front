@@ -26,7 +26,7 @@ export function LandingHeader() {
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-full flex items-center justify-center">
                 <Bird className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
               </div>
-              <span className="text-base sm:text-lg font-bold text-foreground">NuestroNido</span>
+              <span className="text-base sm:text-lg font-bold text-foreground font-heading">NuestroNido</span>
             </div>
           </div>
         </div>
@@ -45,7 +45,7 @@ export function LandingHeader() {
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-full flex items-center justify-center">
               <Bird className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
             </div>
-            <span className="text-base sm:text-lg font-bold text-foreground">NuestroNido</span>
+            <span className="text-base sm:text-lg font-bold text-foreground font-heading">NuestroNido</span>
           </Link>
 
           <div className="flex items-center gap-2">

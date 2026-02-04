@@ -8,12 +8,12 @@ const features = [
   {
     icon: Calendar,
     title: "Calendario de Tareas",
-    description: "Organiza las tareas del hogar y visualízalas en un calendario intuitivo.",
+    description: "Organiza las tareas del hogar en un calendario simple e intuitivo.",
   },
   {
     icon: ShoppingCart,
     title: "Listas Compartidas",
-    description: "Crea listas de compras por categorías para mantener la casa abastecida.",
+    description: "Crea listas de compras por categorías y mantén la casa siempre abastecida.",
   },
   {
     icon: StickyNote,
@@ -23,7 +23,7 @@ const features = [
   {
     icon: Trophy,
     title: "Gamificación",
-    description: "Motiva la colaboración en las tareas del hogar con puntos y rankings.",
+    description: "Motiva la colaboración con puntos y rankings familiares.",
   },
 ];
 
@@ -38,11 +38,11 @@ const containerVariants: Variants = {
 };
 
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: "easeOut" },
+    transition: { duration: 0.8, ease: [0.21, 0.45, 0.32, 0.9] },
   },
 };
 
@@ -54,8 +54,8 @@ export function FeaturesSection() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
+            viewport={{ once: false, amount: 0.3 }}
+            transition={{ duration: 0.8 }}
           >
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-heading text-primary mb-3 sm:mb-4">
               Todo lo que tu familia necesita
@@ -70,7 +70,7 @@ export function FeaturesSection() {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: false, margin: "-50px", amount: 0.2 }}
           className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
         >
           {features.map((feature, index) => (
