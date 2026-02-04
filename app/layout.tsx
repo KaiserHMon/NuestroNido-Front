@@ -1,6 +1,6 @@
 import type React from 'react';
 import type { Metadata, Viewport } from 'next';
-import { Geist, Geist_Mono, Poppins } from 'next/font/google';
+import { Geist, Geist_Mono, Poppins, DM_Serif_Text } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/next';
 import Script from 'next/script';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -22,6 +22,13 @@ const poppins = Poppins({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-poppins',
+  display: 'swap',
+});
+const dmSerifText = DM_Serif_Text({
+  subsets: ['latin'],
+  weight: ['400'],
+  style: ['italic'],
+  variable: '--font-dm-serif',
   display: 'swap',
 });
 
@@ -94,7 +101,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className={`${_geist.variable} ${_geistMono.variable} ${poppins.variable} font-sans antialiased`}>
+      <body className={`${_geist.variable} ${_geistMono.variable} ${poppins.variable} ${dmSerifText.variable} font-sans antialiased`}>
         <AuthProvider>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
             {children}

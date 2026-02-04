@@ -46,8 +46,8 @@ function LandingPageContent() {
                 <br className="hidden sm:block" /> sin fricción ni discusiones.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-start items-center sm:items-start">
-                <div className="flex flex-col items-center sm:items-start w-full sm:w-auto">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-start items-center">
+                <div className="flex flex-col items-center w-full sm:w-auto">
                   <Link href="/register" className="w-full sm:w-auto">
                     <Button
                       size="lg"
@@ -116,7 +116,7 @@ function LandingPageContent() {
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                   <Bird className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <span className="font-bold text-foreground text-lg font-heading">NuestroNido</span>
+                <span className="text-foreground text-lg font-serif-custom italic">NuestroNido</span>
               </div>
 
               <div className="flex flex-wrap justify-center gap-x-8 gap-y-3">

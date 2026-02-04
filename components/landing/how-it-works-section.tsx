@@ -66,15 +66,6 @@ export function HowItWorksSection() {
           viewport={{ once: false, margin: "-50px", amount: 0.2 }}
           className="relative space-y-8 sm:space-y-12"
         >
-          {/* Timeline Connector Line */}
-          <motion.div 
-            initial={{ scaleY: 0 }}
-            whileInView={{ scaleY: 1 }}
-            viewport={{ once: false }}
-            transition={{ duration: 1.5, ease: "easeInOut" }}
-            className="absolute left-[1.25rem] sm:left-[1.5rem] top-4 bottom-4 w-0.5 bg-gradient-to-b from-primary/20 via-primary to-primary/20 -z-10 hidden sm:block origin-top" 
-          />
-
           {steps.map((step, index) => (
             <motion.div key={index} variants={itemVariants} className="flex gap-4 sm:gap-8 items-start relative">
               <div className="relative">
