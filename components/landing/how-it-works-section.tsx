@@ -41,7 +41,7 @@ const itemVariants: Variants = {
 
 export function HowItWorksSection() {
   return (
-    <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-20 bg-gradient-to-br from-card via-card/95 to-card/80 border border-card overflow-hidden">
+    <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-20 bg-card/80 backdrop-blur-sm border border-card overflow-hidden">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12 sm:mb-16 px-2">
           <motion.div
