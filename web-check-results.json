@@ -1,0 +1,611 @@
+{
+  "ssl": {
+    "subject": {
+      "CN": "*.vercel.app"
+    },
+    "issuer": {
+      "C": "US",
+      "O": "Google Trust Services",
+      "CN": "WR1"
+    },
+    "subjectaltname": "DNS:*.vercel.app, DNS:vercel.app",
+    "infoAccess": {
+      "OCSP - URI": [
+        "http://o.pki.goog/s/wr1/8sc"
+      ],
+      "CA Issuers - URI": [
+        "http://i.pki.goog/wr1.crt"
+      ]
+    },
+    "ca": false,
+    "modulus": "970DD7F0339CFD5F22617E30F279E54A3138D892CE4C84491B61F9948885C760AB9AAE300B94BBB0B52925EAD012CDA37FE2E98291B407BFFC134E3D0B33B51C45C40822495CD8C33F84244A3E4EC9D0570EDBB3F3E976D1AF3C6196EA7102EA922B506584FAA2757EA822654F8F134E73A72AA19F99C4611EE9991FF44137D7119460C743C62F55AA34DD04D63EA2EB2553CCD892B51AFE4DA559559AD3A810916E9DA7C45C87DCEF76AE423FCEC167E4965C056E10D724EA81BB75B1A31E2C61C6DA9DEC00E5076F3210AE18EC61491BC052C71C7099F4F0EFCE2376E5A79B61703B540A0E437A5191910BD5C2361DB0FFF785368511C05694AEFBE62703F7",
+    "bits": 2048,
+    "exponent": "0x10001",
+    "pubkey": {
+      "type": "Buffer",
+      "data": [
+        48,
+        130,
+        1,
+        34,
+        48,
+        13,
+        6,
+        9,
+        42,
+        134,
+        72,
+        134,
+        247,
+        13,
+        1,
+        1,
+        1,
+        5,
+        0,
+        3,
+        130,
+        1,
+        15,
+        0,
+        48,
+        130,
+        1,
+        10,
+        2,
+        130,
+        1,
+        1,
+        0,
+        151,
+        13,
+        215,
+        240,
+        51,
+        156,
+        253,
+        95,
+        34,
+        97,
+        126,
+        48,
+        242,
+        121,
+        229,
+        74,
+        49,
+        56,
+        216,
+        146,
+        206,
+        76,
+        132,
+        73,
+        27,
+        97,
+        249,
+        148,
+        136,
+        133,
+        199,
+        96,
+        171,
+        154,
+        174,
+        48,
+        11,
+        148,
+        187,
+        176,
+        181,
+        41,
+        37,
+        234,
+        208,
+        18,
+        205,
+        163,
+        127,
+        226,
+        233,
+        130,
+        145,
+        180,
+        7,
+        191,
+        252,
+        19,
+        78,
+        61,
+        11,
+        51,
+        181,
+        28,
+        69,
+        196,
+        8,
+        34,
+        73,
+        92,
+        216,
+        195,
+        63,
+        132,
+        36,
+        74,
+        62,
+        78,
+        201,
+        208,
+        87,
+        14,
+        219,
+        179,
+        243,
+        233,
+        118,
+        209,
+        175,
+        60,
+        97,
+        150,
+        234,
+        113,
+        2,
+        234,
+        146,
+        43,
+        80,
+        101,
+        132,
+        250,
+        162,
+        117,
+        126,
+        168,
+        34,
+        101,
+        79,
+        143,
+        19,
+        78,
+        115,
+        167,
+        42,
+        161,
+        159,
+        153,
+        196,
+        97,
+        30,
+        233,
+        153,
+        31,
+        244,
+        65,
+        55,
+        215,
+        17,
+        148,
+        96,
+        199,
+        67,
+        198,
+        47,
+        85,
+        170,
+        52,
+        221,
+        4,
+        214,
+        62,
+        162,
+        235,
+        37,
+        83,
+        204,
+        216,
+        146,
+        181,
+        26,
+        254,
+        77,
+        165,
+        89,
+        85,
+        154,
+        211,
+        168,
+        16,
+        145,
+        110,
+        157,
+        167,
+        196,
+        92,
+        135,
+        220,
+        239,
+        118,
+        174,
+        66,
+        63,
+        206,
+        193,
+        103,
+        228,
+        150,
+        92,
+        5,
+        110,
+        16,
+        215,
+        36,
+        234,
+        129,
+        187,
+        117,
+        177,
+        163,
+        30,
+        44,
+        97,
+        198,
+        218,
+        157,
+        236,
+        0,
+        229,
+        7,
+        111,
+        50,
+        16,
+        174,
+        24,
+        236,
+        97,
+        73,
+        27,
+        192,
+        82,
+        199,
+        28,
+        112,
+        153,
+        244,
+        240,
+        239,
+        206,
+        35,
+        118,
+        229,
+        167,
+        155,
+        97,
+        112,
+        59,
+        84,
+        10,
+        14,
+        67,
+        122,
+        81,
+        145,
+        145,
+        11,
+        213,
+        194,
+        54,
+        29,
+        176,
+        255,
+        247,
+        133,
+        54,
+        133,
+        17,
+        192,
+        86,
+        148,
+        174,
+        251,
+        230,
+        39,
+        3,
+        247,
+        2,
+        3,
+        1,
+        0,
+        1
+      ]
+    },
+    "valid_from": "Dec 26 17:44:01 2025 GMT",
+    "valid_to": "Mar 26 17:44:00 2026 GMT",
+    "fingerprint": "F0:13:B9:71:48:C8:B9:A2:32:B5:3A:66:4B:52:54:A3:2F:FB:D4:9A",
+    "fingerprint256": "D8:79:21:64:77:21:A9:4C:0B:30:50:5C:32:33:69:3C:1D:4A:EE:9C:4C:4D:9A:34:EB:3D:4C:86:86:B8:05:08",
+    "fingerprint512": "75:0D:81:82:65:D3:DF:9B:EB:AE:4F:BE:EC:BC:2E:07:C4:C7:6E:AD:78:9F:14:0D:20:4C:36:46:A5:B9:28:29:C7:8C:25:A7:4C:5E:4C:1F:C3:DC:C3:8D:FA:34:07:61:83:33:3B:32:31:F2:9A:F2:A4:31:80:9C:E2:22:34:E5",
+    "ext_key_usage": [
+      "1.3.6.1.5.5.7.3.1"
+    ],
+    "serialNumber": "F2C7E4489D4167F60D26A3972F74A621"
+  },
+  "domain": {
+    "internicData": {
+      "error": "No matches found for domain in internic database"
+    },
+    "whoisData": null
+  },
+  "headers": {
+    "access-control-allow-origin": "*",
+    "age": "476837",
+    "cache-control": "public, max-age=0, must-revalidate",
+    "content-disposition": "inline",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Wed, 04 Feb 2026 02:13:16 GMT",
+    "etag": "W/\"a04793e6c3c13ff09f4d6719546df68b\"",
+    "server": "Vercel",
+    "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+    "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "x-matched-path": "/",
+    "x-nextjs-prerender": "1",
+    "x-nextjs-stale-time": "300",
+    "x-vercel-cache": "HIT",
+    "x-vercel-enable-rewrite-caching": "1",
+    "x-vercel-id": "gru1:lhr1::bjrxl-1770171195955-fd3c583c363b",
+    "transfer-encoding": "chunked"
+  },
+  "dns": {
+    "A": {
+      "address": "64.29.17.67",
+      "family": 4
+    },
+    "AAAA": [
+      "64.29.17.67",
+      "216.198.79.67"
+    ],
+    "MX": [],
+    "TXT": [],
+    "NS": [],
+    "CNAME": [],
+    "SOA": [],
+    "SRV": [],
+    "PTR": []
+  },
+  "http-security": {
+    "strictTransportPolicy": true,
+    "xFrameOptions": false,
+    "xContentTypeOptions": false,
+    "xXSSProtection": false,
+    "contentSecurityPolicy": false
+  },
+  "social-tags": {
+    "title": "NuestroNido - Organización Familiar y Armonía",
+    "description": "Un hogar más organizado, conectado y en armonía. Gestiona tareas, listas de compras y notas familiares en un solo lugar con gamificación divertida.",
+    "keywords": "organización familiar,calendario compartido,listas de compras,tareas del hogar,app familiar,gamificación,gestión del hogar,nuestro nido",
+    "ogTitle": "NuestroNido - Organización Familiar y Armonía",
+    "ogType": "website",
+    "ogImage": "https://nuestronido.vercel.app/og-image.png",
+    "ogUrl": "https://nuestronido.vercel.app",
+    "ogDescription": "Coordina tareas, listas y notas con tu familia de forma divertida. ¡Haz del orden un juego y mantén tu hogar en armonía!",
+    "ogSiteName": "NuestroNido",
+    "twitterCard": "summary_large_image",
+    "twitterCreator": "@nuestronido",
+    "twitterTitle": "NuestroNido - Tu hogar organizado",
+    "twitterDescription": "Coordina tareas, listas y notas con tu familia de forma divertida. ¡Únete a NuestroNido!",
+    "twitterImage": "https://nuestronido.vercel.app/og-image.png",
+    "themeColor": "#f76e6e",
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1",
+    "author": "NuestroNido Team",
+    "favicon": "/icon.svg"
+  },
+  "security-txt": {
+    "isPresent": false
+  },
+  "firewall": {
+    "hasWaf": false
+  },
+  "dnssec": {
+    "DNSKEY": {
+      "isFound": false,
+      "answer": null,
+      "response": {
+        "Status": 3,
+        "TC": false,
+        "RD": true,
+        "RA": true,
+        "AD": true,
+        "CD": false,
+        "Question": [
+          {
+            "name": "https://nuestronido.vercel.app/.",
+            "type": 48
+          }
+        ],
+        "Authority": [
+          {
+            "name": ".",
+            "type": 6,
+            "TTL": 86229,
+            "data": "a.root-servers.net. nstld.verisign-grs.com. 2026020302 1800 900 604800 86400"
+          }
+        ]
+      }
+    },
+    "DS": {
+      "isFound": false,
+      "answer": null,
+      "response": {
+        "Status": 3,
+        "TC": false,
+        "RD": true,
+        "RA": true,
+        "AD": true,
+        "CD": false,
+        "Question": [
+          {
+            "name": "https://nuestronido.vercel.app/.",
+            "type": 43
+          }
+        ],
+        "Authority": [
+          {
+            "name": ".",
+            "type": 6,
+            "TTL": 86400,
+            "data": "a.root-servers.net. nstld.verisign-grs.com. 2026020302 1800 900 604800 86400"
+          }
+        ],
+        "Comment": "Response from 198.97.190.53."
+      }
+    },
+    "RRSIG": {
+      "isFound": false,
+      "answer": null,
+      "response": {
+        "Status": 3,
+        "TC": false,
+        "RD": true,
+        "RA": true,
+        "AD": true,
+        "CD": false,
+        "Question": [
+          {
+            "name": "https://nuestronido.vercel.app/.",
+            "type": 46
+          }
+        ],
+        "Authority": [
+          {
+            "name": ".",
+            "type": 6,
+            "TTL": 86399,
+            "data": "a.root-servers.net. nstld.verisign-grs.com. 2026020302 1800 900 604800 86400"
+          }
+        ]
+      }
+    }
+  },
+  "hsts": {
+    "message": "Site is compatible with the HSTS preload list!",
+    "compatible": true,
+    "hstsHeader": "max-age=63072000; includeSubDomains; preload"
+  },
+  "threats": {
+    "urlHaus": {
+      "error": "Request to URLHaus failed, Request failed with status code 401"
+    },
+    "phishTank": {
+      "url0": {
+        "url": "https://nuestronido.vercel.app/",
+        "in_database": "false"
+      }
+    },
+    "cloudmersive": {
+      "error": "Request to Cloudmersive failed: Request failed with status code 401"
+    },
+    "safeBrowsing": {
+      "error": "GOOGLE_CLOUD_API_KEY is required for the Google Safe Browsing check"
+    }
+  },
+  "redirects": {
+    "redirects": [
+      "https://nuestronido.vercel.app/"
+    ]
+  },
+  "robots-txt": "{\"error\":\"Error fetching robots.txt: Request failed with status code 404\"}",
+  "status": {
+    "isUp": true,
+    "responseTime": 356.4273810000159,
+    "responseCode": 200
+  },
+  "block-lists": {
+    "blocklists": [
+      {
+        "server": "AdGuard",
+        "serverIp": "176.103.130.130",
+        "isBlocked": false
+      },
+      {
+        "server": "AdGuard Family",
+        "serverIp": "176.103.130.132",
+        "isBlocked": false
+      },
+      {
+        "server": "CleanBrowsing Adult",
+        "serverIp": "185.228.168.10",
+        "isBlocked": false
+      },
+      {
+        "server": "CleanBrowsing Family",
+        "serverIp": "185.228.168.168",
+        "isBlocked": false
+      },
+      {
+        "server": "CleanBrowsing Security",
+        "serverIp": "185.228.168.9",
+        "isBlocked": false
+      },
+      {
+        "server": "CloudFlare",
+        "serverIp": "1.1.1.1",
+        "isBlocked": false
+      },
+      {
+        "server": "CloudFlare Family",
+        "serverIp": "1.1.1.3",
+        "isBlocked": false
+      },
+      {
+        "server": "Comodo Secure",
+        "serverIp": "8.26.56.26",
+        "isBlocked": false
+      },
+      {
+        "server": "Google DNS",
+        "serverIp": "8.8.8.8",
+        "isBlocked": false
+      },
+      {
+        "server": "Neustar Family",
+        "serverIp": "156.154.70.3",
+        "isBlocked": false
+      },
+      {
+        "server": "Neustar Protection",
+        "serverIp": "156.154.70.2",
+        "isBlocked": false
+      },
+      {
+        "server": "Norton Family",
+        "serverIp": "199.85.126.20",
+        "isBlocked": false
+      },
+      {
+        "server": "OpenDNS",
+        "serverIp": "208.67.222.222",
+        "isBlocked": false
+      },
+      {
+        "server": "OpenDNS Family",
+        "serverIp": "208.67.222.123",
+        "isBlocked": false
+      },
+      {
+        "server": "Quad9",
+        "serverIp": "9.9.9.9",
+        "isBlocked": false
+      },
+      {
+        "server": "Yandex Family",
+        "serverIp": "77.88.8.7",
+        "isBlocked": false
+      },
+      {
+        "server": "Yandex Safe",
+        "serverIp": "77.88.8.88",
+        "isBlocked": false
+      }
+    ]
+  }
+}

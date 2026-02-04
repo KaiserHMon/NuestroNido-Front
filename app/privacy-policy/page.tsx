@@ -22,9 +22,6 @@ export default function PrivacyPolicyPage() {
               <h1 className="text-3xl sm:text-4xl font-bold text-primary mb-4">
                 Política de Privacidad
               </h1>
-              <p className="text-muted-foreground">
-                Última actualización: {new Date().toLocaleDateString()}
-              </p>
             </div>
 
             <div className="space-y-8 text-foreground/90">
@@ -77,13 +74,13 @@ export default function PrivacyPolicyPage() {
               </section>
 
               <section>
-                <div className="bg-primary/5 border border-primary/20 rounded-lg p-6">
-                    <h2 className="text-xl font-bold text-primary mb-3">
-                    4. No venta de datos
-                    </h2>
-                    <p className="text-foreground font-medium">
+                <h2 className="text-xl font-bold text-primary mb-3 flex items-center gap-2">
+                  4. No venta de datos
+                </h2>
+                <div className="bg-background/50 p-4 rounded-lg border border-border">
+                  <p className="text-foreground">
                     Queremos ser claros: <span className="underline decoration-primary decoration-2 underline-offset-2">No vendemos, alquilamos ni compartimos tu información personal con terceros</span> para fines publicitarios ni comerciales. Tu privacidad es nuestra prioridad.
-                    </p>
+                  </p>
                 </div>
               </section>
 
