@@ -45,6 +45,25 @@ function mapApiFamilyToFamilia(apiFamily: ApiFamily, members: Miembro[] = []): F
   };
 }
 
+function cleanToken(token: string): string {
+  if (!token) return '';
+  
+  // Si es una URL completa, extraer la parte final después de /invite/
+  if (token.includes('/invite/')) {
+    const parts = token.split('/invite/');
+    return parts[parts.length - 1].split(/[?#]/)[0];
+  }
+  
+  // Si tiene un parámetro token=, extraerlo
+  if (token.includes('token=')) {
+    const match = token.match(/[?&]token=([^&#]+)/);
+    if (match) return match[1];
+  }
+  
+  // Si es solo el código o token, devolverlo limpio de espacios
+  return token.trim();
+}
+
 export const FamilyService = {
   async getMyFamily(): Promise<Familia | null> {
     try {
@@ -141,10 +160,11 @@ export const FamilyService = {
   },
 
   async joinByCode(code: string): Promise<Familia> {
+    const cleaned = cleanToken(code);
     const [apiFamily, members] = await Promise.all([
       fetchClient<ApiFamily>('/api/v1/families/join/code', {
         method: 'POST',
-        body: { code },
+        body: { code: cleaned },
       }),
       this.getMembers(),
     ]);
@@ -197,32 +217,36 @@ export const FamilyService = {
   },
 
   async getInvitationInfo(token: string): Promise<{ family_id: string; family_name: string; inviter_name: string | null }> {
-    // This endpoint is public, so requiresAuth might need to be false if supported by fetchClient,
-    // or we assume it works even if token is missing/null in storage.
-    // Based on fetchClient implementation, it adds token if present.
-    // We should allow calling this without auth.
-    return fetchClient<{ family_id: string; family_name: string; inviter_name: string | null }>(`/api/v1/families/invitations/info?token=${token}`, {
+    const cleaned = cleanToken(token);
+    return fetchClient<{ family_id: string; family_name: string; inviter_name: string | null }>(`/api/v1/families/invitations/info?token=${cleaned}`, {
        requiresAuth: false
     });
   },
 
   async joinByLink(token: string): Promise<Familia> {
+    const cleaned = cleanToken(token);
     const apiFamily = await fetchClient<ApiFamily>('/api/v1/families/join/link', {
       method: 'POST',
-      body: { token },
+      body: { token: cleaned },
     });
     // After joining, we need to refresh members too
     const members = await this.getMembers();
     return mapApiFamilyToFamilia(apiFamily, members);
   },
 
-  // Mock validation since no endpoint exists
   async validateCode(code: string): Promise<ValidarCodigoResponse> {
-    if (code.length !== 8) {
-      return { valido: false, error: 'El código debe tener 8 caracteres' };
+    try {
+      const info = await this.getInvitationInfo(code);
+      return {
+        valido: true,
+        nombreFamilia: info.family_name,
+        // Backend returns family_id and family_name
+      };
+    } catch (error) {
+      return {
+        valido: false,
+        error: (error as Error).message || 'Código inválido'
+      };
     }
-    // We can't verify existence without trying to join (which is a state change).
-    // Returning true potentially, or we could handle this in the UI.
-    return { valido: true };
   }
 };

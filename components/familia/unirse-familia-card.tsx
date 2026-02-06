@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LinkIcon, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
@@ -37,18 +37,23 @@ export function UnirseAFamiliaCard({ onSuccess }: UnirseAFamiliaCardProps) {
 
   const codigo = watch('codigoInvitacion');
 
-  // Validar código en tiempo real
-  const handleCodigoChange = useCallback(async () => {
-    if (codigo && codigo.length >= 6) {
-      try {
-        const resultado = await validarCodigo(codigo);
-        setValidacionCodigo(resultado);
-      } catch {
-        // Ignored
+  // Validar código en tiempo real con debounce
+  useEffect(() => {
+    const validate = async () => {
+      if (codigo && codigo.length >= 6) {
+        try {
+          const resultado = await validarCodigo(codigo);
+          setValidacionCodigo(resultado);
+        } catch {
+          setValidacionCodigo({ valido: false });
+        }
+      } else {
+        setValidacionCodigo(null);
       }
-    } else {
-      setValidacionCodigo(null);
-    }
+    };
+
+    const timer = setTimeout(validate, 500);
+    return () => clearTimeout(timer);
   }, [codigo, validarCodigo]);
 
   const onSubmit = async (data: UnirseAFamiliaFormInputs) => {
@@ -100,10 +105,6 @@ export function UnirseAFamiliaCard({ onSuccess }: UnirseAFamiliaCardProps) {
               className="bg-background border-input text-foreground placeholder:text-muted-foreground uppercase"
               {...register('codigoInvitacion')}
               disabled={isSubmitting}
-              onChange={(e) => {
-                register('codigoInvitacion').onChange(e);
-                handleCodigoChange();
-              }}
             />
             {errors.codigoInvitacion && (
               <p className="text-sm text-destructive">{errors.codigoInvitacion.message}</p>

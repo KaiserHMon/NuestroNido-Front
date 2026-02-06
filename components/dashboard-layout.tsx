@@ -31,8 +31,13 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
       router.push('/');
+      return;
     }
-  }, [isAuthenticated, authLoading, router]);
+
+    if (!authLoading && isAuthenticated && !familiaLoading && !familia) {
+      router.push('/home');
+    }
+  }, [isAuthenticated, authLoading, familiaLoading, familia, router]);
 
   const handleLogout = () => {
     logout();
