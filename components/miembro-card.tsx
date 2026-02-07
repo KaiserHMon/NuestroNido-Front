@@ -41,7 +41,8 @@ export function MiembroCard({
             color={miembro.color}
             imageUrl={miembro.nivel?.image_url}
             size="lg"
-            className="w-[60px] h-[60px] text-xl border-2 border-[#FF6B6B] shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
+            className="w-[60px] h-[60px] text-xl border-2 shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
+            style={{ borderColor: miembro.color.bg }}
           />
         </div>
 

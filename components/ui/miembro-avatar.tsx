@@ -10,6 +10,7 @@ interface MiembroAvatarProps {
   imageUrl?: string;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
+  style?: React.CSSProperties;
 }
 
 export function MiembroAvatar({
@@ -18,6 +19,7 @@ export function MiembroAvatar({
   imageUrl,
   size = 'md',
   className = '',
+  style: externalStyle,
 }: MiembroAvatarProps) {
   const sizeClasses = {
     sm: 'w-8 h-8 text-xs',
@@ -33,16 +35,16 @@ export function MiembroAvatar({
     .slice(0, 2);
 
   // If color object has direct hex values, use them. Otherwise fallback to ID lookup.
-  const style = color.bg
+  const fallbackStyle = color.bg
     ? { backgroundColor: color.bg, color: color.text }
     : getColorInlineStyle(color.id);
 
   return (
-    <Avatar className={`${sizeClasses[size]} ${className}`}>
+    <Avatar className={`${sizeClasses[size]} ${className}`} style={externalStyle}>
       {imageUrl && <AvatarImage src={imageUrl} alt={nombre} />}
       <AvatarFallback
         className="flex h-full w-full items-center justify-center font-bold"
-        style={style}
+        style={fallbackStyle}
         title={nombre}
         aria-label={`Avatar de ${nombre}`}
       >

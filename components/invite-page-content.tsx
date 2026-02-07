@@ -21,16 +21,18 @@ export function InvitePageContent({ token }: InvitePageContentProps) {
   // Si está autenticado, mostramos preview.
 
   useEffect(() => {
+    // Si aún está cargando el estado inicial de auth, no hacemos nada
     if (isLoading) return;
 
+    // Si NO está autenticado, guardamos el token y mandamos al registro
     if (!isAuthenticated) {
       sessionStorage.setItem('pendingInviteToken', token);
       router.push(`/register?invite=${token}`);
       return;
     }
 
+    // Si ya tiene familia, mandamos al dashboard
     if (familia) {
-      toast.info('Ya perteneces a una familia. Debes salir de ella para unirte a otra.');
       router.push('/dashboard');
     }
   }, [isAuthenticated, isLoading, familia, router, token]);
@@ -40,12 +42,15 @@ export function InvitePageContent({ token }: InvitePageContentProps) {
     try {
       await unirsePorLink(token);
       toast.success('¡Te has unido a la familia!');
-      router.push('/dashboard');
+      
+      // Esperar un poco para que los estados se asienten (color, nivel, etc.)
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 1500);
     } catch (error) {
       console.error('Error joining family by link:', error);
       toast.error('El enlace de invitación ha expirado o no es válido.');
       router.push('/home');
-    } finally {
       setIsJoining(false);
     }
   };

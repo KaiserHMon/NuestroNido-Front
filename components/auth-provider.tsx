@@ -6,6 +6,7 @@ import { AuthService } from '@/services/auth-service';
 import { TokenService } from '@/services/token-service';
 import { FamilyService } from '@/services/family-service';
 import { LevelService } from '@/services/level-service';
+import { UserService } from '@/services/user-service';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -119,22 +120,63 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [usuario]);
 
   const unirseAFamilia = useCallback(async (codigo: string) => {
-     const newFam = await FamilyService.joinByCode(codigo);
-     setFamilia(newFam);
-     if (usuario) {
-       const updatedUser = { ...usuario, familiaId: newFam.id };
-       setUsuario(updatedUser);
-       TokenService.setUser(updatedUser);
-     }
+    try {
+      const newFam = await FamilyService.joinByCode(codigo);
+      setFamilia(newFam);
+      if (usuario) {
+        // Refresh full user profile to get potential color/level updates from backend
+        const updatedUser = await UserService.getUser(usuario.id);
+        const userWithFamily = { ...updatedUser, familiaId: newFam.id };
+        setUsuario(userWithFamily);
+        TokenService.setUser(userWithFamily);
+      }
+    } catch (error) {
+      // If error is 400 and message contains "already member", treat as success
+      const errorMsg = error instanceof Error ? error.message : '';
+      if (errorMsg.toLowerCase().includes('already member') || errorMsg.toLowerCase().includes('ya eres miembro')) {
+        const fam = await FamilyService.getMyFamily();
+        if (fam) {
+          setFamilia(fam);
+          if (usuario) {
+            const updatedUser = await UserService.getUser(usuario.id);
+            const userWithFamily = { ...updatedUser, familiaId: fam.id };
+            setUsuario(userWithFamily);
+            TokenService.setUser(userWithFamily);
+          }
+          return;
+        }
+      }
+      throw error;
+    }
   }, [usuario]);
 
   const unirsePorLink = useCallback(async (token: string) => {
-    const newFam = await FamilyService.joinByLink(token);
-    setFamilia(newFam);
-    if (usuario) {
-      const updatedUser = { ...usuario, familiaId: newFam.id };
-      setUsuario(updatedUser);
-      TokenService.setUser(updatedUser);
+    try {
+      const newFam = await FamilyService.joinByLink(token);
+      setFamilia(newFam);
+      if (usuario) {
+        // Refresh full user profile
+        const updatedUser = await UserService.getUser(usuario.id);
+        const userWithFamily = { ...updatedUser, familiaId: newFam.id };
+        setUsuario(userWithFamily);
+        TokenService.setUser(userWithFamily);
+      }
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : '';
+      if (errorMsg.toLowerCase().includes('already member') || errorMsg.toLowerCase().includes('ya eres miembro')) {
+        const fam = await FamilyService.getMyFamily();
+        if (fam) {
+          setFamilia(fam);
+          if (usuario) {
+            const updatedUser = await UserService.getUser(usuario.id);
+            const userWithFamily = { ...updatedUser, familiaId: fam.id };
+            setUsuario(userWithFamily);
+            TokenService.setUser(userWithFamily);
+          }
+          return;
+        }
+      }
+      throw error;
     }
   }, [usuario]);
 

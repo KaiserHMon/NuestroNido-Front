@@ -14,11 +14,11 @@ interface LeaderboardProps {
 const getDistintivo = (posicion: number) => {
   switch (posicion) {
     case 1:
-      return { emoji: '🥇', label: 'Oro' };
+      return { emoji: '🥇', label: 'oro' };
     case 2:
-      return { emoji: '🥈', label: 'Plata' };
+      return { emoji: '🥈', label: 'plata' };
     case 3:
-      return { emoji: '🥉', label: 'Bronce' };
+      return { emoji: '🥉', label: 'bronce' };
     default:
       return null;
   }

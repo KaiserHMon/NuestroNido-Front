@@ -24,12 +24,8 @@ export default function JoinPage() {
       return;
     }
 
-    // If already in a family, check if it's the same one? 
-    // The API join endpoint might handle "already in family" error.
-    // For now, if local state says we have a family, we warn and redirect.
-    // But maybe the user wants to switch families? The UI usually requires leaving first.
+    // If already in a family, redirect silently to dashboard
     if (familia) {
-      toast.info('Ya perteneces a una familia. Debes salir de ella para unirte a otra.');
       router.push('/dashboard');
       return;
     }
@@ -39,12 +35,15 @@ export default function JoinPage() {
       try {
         await unirseAFamilia(code);
         toast.success('¡Te has unido a la familia!');
-        router.push('/dashboard');
+        
+        // Pequeño delay para asegurar que los datos del perfil se carguen correctamente
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 1500);
       } catch (error) {
         console.error('Error joining family:', error);
         toast.error('Error al unirse a la familia. Verifica el código o si ya eres miembro.');
         router.push('/home');
-      } finally {
         setIsJoining(false);
       }
     };
