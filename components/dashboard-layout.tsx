@@ -19,7 +19,7 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children, activeSection = 'overview' }: DashboardLayoutProps) {
   const router = useRouter();
-  const { logout, usuario, isAuthenticated, isLoading: authLoading } = useAuth();
+  const { logout, usuario, isAuthenticated, isLoading: authLoading, refreshFamily } = useAuth();
   const { familia, isLoading: familiaLoading } = useFamilia();
   const esCreador = useMemo(() => {
     return familia && usuario ? familia.creadorId === usuario.id : false;
@@ -27,6 +27,13 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
   const [invitarDialogOpen, setInvitarDialogOpen] = useState(false);
   const [eliminarFamiliaOpen, setEliminarFamiliaOpen] = useState(false);
   const [editarFamiliaOpen, setEditarFamiliaOpen] = useState(false);
+
+  // Refresh family data whenever we navigate between sections
+  useEffect(() => {
+    if (isAuthenticated) {
+      refreshFamily();
+    }
+  }, [activeSection, isAuthenticated, refreshFamily]);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {

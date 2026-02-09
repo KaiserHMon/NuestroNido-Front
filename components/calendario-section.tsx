@@ -99,21 +99,22 @@ export function CalendarioSection() {
               wcagContrast: 4.5,
             };
 
+        // Determine tipoFecha based on presence of due_date vs week_days
+        const tipoFecha = t.week_days ? 'dias' : 'fecha';
+
         return {
           id: t.id,
           titulo: t.title,
-          tipoFecha: 'fecha', 
+          tipoFecha: tipoFecha, 
           fecha: t.due_date
             ? format(new Date(t.due_date), 'yyyy-MM-dd')
-            : t.created_at
-              ? format(new Date(t.created_at), 'yyyy-MM-dd')
-              : undefined,
+            : undefined,
           frecuencia: t.recurrence_type === 'unique' ? 'unica' : 'semanal',
           creadorId: t.assigned_to_user_id || '',
           colorCreador: color,
           completada: t.status === 'completed',
           familiaId: t.family_id,
-          diasSemana: t.week_days ? [t.week_days] : undefined,
+          diasSemana: t.week_days ? t.week_days.split(',') : undefined,
         };
       });
 
@@ -191,9 +192,9 @@ export function CalendarioSection() {
   const handleCrearTarea = async (data: CrearTareaData) => {
     if (!familia || !usuario) return;
 
-    let fechaStr = null;
-    if (data.fecha) {
-      fechaStr = format(data.fecha, 'yyyy-MM-dd');
+    let due_date = null;
+    if (data.tipoFecha === 'fecha' && data.fecha) {
+      due_date = data.fecha.toISOString();
     }
 
     try {
@@ -201,10 +202,10 @@ export function CalendarioSection() {
         title: data.titulo,
         family_id: familia.id,
         assigned_to_user_id: data.asignadoA || usuario.id,
-        recurrence_type: data.recurrencia === 'unica' ? 'unique' : 'recurring',
-        week_days: data.diasSemana ? data.diasSemana[0] : undefined, // Schema says string
+        recurrence_type: data.tipoFecha === 'dias' || data.recurrencia !== 'unica' ? 'recurring' : 'unique',
+        week_days: data.tipoFecha === 'dias' && data.diasSemana ? data.diasSemana.join(',') : undefined,
         status: 'pending',
-        due_date: data.recurrencia === 'unica' ? fechaStr : null,
+        due_date: due_date,
       });
       fetchTareas();
       setIsNuevaTareaOpen(false);
@@ -218,19 +219,19 @@ export function CalendarioSection() {
   const handleGuardarEdicion = async (data: CrearTareaData) => {
     if (!tareaAEditar || !familia) return;
 
-    let fechaStr = null;
-    if (data.fecha) {
-      fechaStr = format(data.fecha, 'yyyy-MM-dd');
+    let due_date = null;
+    if (data.tipoFecha === 'fecha' && data.fecha) {
+      due_date = data.fecha.toISOString();
     }
 
     try {
       await TaskService.update(tareaAEditar.id, {
         title: data.titulo,
         assigned_to_user_id: data.asignadoA,
-        recurrence_type: data.recurrencia === 'unica' ? 'unique' : 'recurring',
-        week_days: data.diasSemana ? data.diasSemana[0] : undefined, // Schema says string
-        status: tareaAEditar.completada ? 'completed' : 'pending', // Preserve status
-        due_date: data.recurrencia === 'unica' ? fechaStr : null,
+        recurrence_type: data.tipoFecha === 'dias' || data.recurrencia !== 'unica' ? 'recurring' : 'unique',
+        week_days: data.tipoFecha === 'dias' && data.diasSemana ? data.diasSemana.join(',') : undefined,
+        status: tareaAEditar.completada ? 'completed' : 'pending',
+        due_date: due_date,
       });
       fetchTareas();
       setTareaAEditar(undefined);
@@ -365,6 +366,7 @@ export function CalendarioSection() {
                   const coloresDelDia = getColoresParaDia(dia);
                   const esHoy = isSameDay(dia, new Date());
                   const esSeleccionada = fechaSeleccionada && isSameDay(dia, fechaSeleccionada);
+                  const tieneEventos = coloresDelDia.length > 0;
                   const label = `${format(dia, "d 'de' MMMM", { locale: es })}, ${
                     coloresDelDia.length
                   } ${coloresDelDia.length === 1 ? 'tarea' : 'tareas'}`;
@@ -374,37 +376,47 @@ export function CalendarioSection() {
                       key={dia.toISOString()}
                       onClick={() => setFechaSeleccionada(dia)}
                       aria-label={label}
-                      className={`h-24 sm:h-28 rounded-sm border transition-all relative flex flex-col items-start justify-start p-1.5
+                      className={`
+                        min-h-[48px] sm:h-28 rounded-md transition-all relative flex flex-col items-center sm:items-start justify-center sm:justify-start p-1 sm:p-2 border
                         ${
                           esSeleccionada
-                            ? 'border-primary bg-primary/10 scale-105'
+                            ? 'border-primary ring-1 ring-primary bg-primary/10 scale-[1.02] z-10'
                             : esHoy
-                              ? 'border-primary/50 bg-primary/5'
-                              : 'border-border hover:border-primary/30 hover:bg-muted/50'
+                              ? 'border-primary/40 bg-primary/5'
+                              : 'border-transparent sm:border-border hover:bg-muted/50'
                         }
+                        ${tieneEventos && !esSeleccionada ? 'sm:bg-primary/5' : ''}
                       `}
                     >
-                      <div className="text-center w-full text-xs font-bold text-foreground leading-tight" aria-hidden="true">
+                      <div 
+                        className={`
+                          text-sm sm:text-xs font-bold leading-none mb-1
+                          ${esHoy ? 'text-primary' : 'text-foreground'}
+                          ${esSeleccionada ? 'text-primary' : ''}
+                        `} 
+                        aria-hidden="true"
+                      >
                         {format(dia, 'd')}
                       </div>
 
-                      {coloresDelDia.length > 0 ? (
-                        <div className="flex flex-wrap gap-1 mt-1 w-full justify-start" aria-hidden="true">
+                      {tieneEventos ? (
+                        <div className="flex flex-wrap gap-0.5 sm:gap-1 mt-auto sm:mt-1 w-full justify-center sm:justify-start overflow-hidden" aria-hidden="true">
                           {coloresDelDia.slice(0, 4).map((color, idx) => (
                             <div
                               key={`${color.bg}-${idx}`}
-                              className="w-3 h-3 rounded-full flex-shrink-0"
+                              className="w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 rounded-full flex-shrink-0"
                               style={{ backgroundColor: color.bg }}
-                              title={`Tarea de ${color.nombre}`}
                             />
                           ))}
                           {coloresDelDia.length > 4 ? (
-                            <span className="text-[10px] text-muted-foreground leading-none self-center">
+                            <span className="text-[8px] sm:text-[10px] text-muted-foreground leading-none self-center font-bold">
                               +
                             </span>
                           ) : null}
                         </div>
-                      ) : null}
+                      ) : (
+                        <div className="h-1.5 sm:h-2.5" aria-hidden="true" />
+                      )}
                     </button>
                   );
                 })}
