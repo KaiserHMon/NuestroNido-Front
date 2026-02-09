@@ -47,10 +47,14 @@ export function TareasTab({
     return tareas
       .filter((tarea) => {
         // Filtro por tipo (Unica vs Recurrente)
+        // Ahora 'unicas' son solo las de fecha específica que no se repiten
+        // 'recurrentes' son las de días de semana o las que tienen frecuencia mensual/anual
+        const esRecurrente = tarea.tipoFecha === 'dias' || (tarea.frecuencia !== 'unica' && tarea.frecuencia !== undefined);
+        
         if (filtro === 'unicas') {
-          if (tarea.frecuencia !== 'unica') return false;
+          if (esRecurrente) return false;
         } else {
-          if (tarea.frecuencia === 'unica') return false;
+          if (!esRecurrente) return false;
         }
 
         // Filtro por usuario asignado
@@ -183,7 +187,17 @@ export function TareasTab({
                               : 'Sin fecha'}
                           </span>
                         ) : (
-                          <div className="flex gap-1">
+                          <div className="flex gap-1 items-center">
+                            {tarea.tipoFecha === 'dias' && tarea.frecuencia === 'unica' && (
+                              <Badge variant="secondary" className="text-[10px] px-1 py-0 h-5">
+                                Semanal
+                              </Badge>
+                            )}
+                            {tarea.frecuencia && tarea.frecuencia !== 'unica' && (
+                              <Badge variant="secondary" className="text-[10px] px-1 py-0 h-5 capitalize">
+                                {tarea.frecuencia}
+                              </Badge>
+                            )}
                             {tarea.diasSemana ? (
                               tarea.diasSemana.map((d) => (
                                 <Badge

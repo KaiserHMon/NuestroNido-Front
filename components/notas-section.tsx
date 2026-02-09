@@ -13,11 +13,21 @@ import { useAuth } from '@/hooks/use-auth';
 import { useFamilia } from '@/hooks/use-familia';
 import { toast } from 'sonner';
 import { SectionSkeleton } from '@/components/ui/section-skeleton';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface ApiNote {
   id: string;
-  title: string;
-  content: string;
+  titulo: string;
+  contenido: string;
   user_id: string;
   family_id: string;
   created_at: string;
@@ -35,6 +45,8 @@ export function NotasSection() {
   const [filtrosActivos, setFiltrosActivos] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [isNuevaNotaOpen, setIsNuevaNotaOpen] = useState(false);
+  const [notaAEliminar, setNotaAEliminar] = useState<string | null>(null);
+  const [notaAEditar, setNotaAEditar] = useState<Nota | undefined>(undefined);
 
   // Index members by ID for faster lookups
   const miembrosMap = useMemo(() => {
@@ -63,8 +75,8 @@ export function NotasSection() {
 
         return {
           id: apiNote.id,
-          titulo: apiNote.title,
-          contenido: apiNote.content || '',
+          titulo: apiNote.titulo,
+          contenido: apiNote.contenido || '',
           colorCreador: color,
           fechaCreacion: apiNote.created_at,
           familiaId: apiNote.family_id,
@@ -90,8 +102,8 @@ export function NotasSection() {
 
     try {
       const newNote = await NoteService.create({
-        title: data.titulo,
-        content: data.contenido,
+        titulo: data.titulo,
+        contenido: data.contenido,
         family_id: familia.id,
         user_id: usuario.id,
       }) as unknown as ApiNote;
@@ -110,8 +122,8 @@ export function NotasSection() {
 
       const mappedNote: Nota = {
         id: newNote.id,
-        titulo: newNote.title,
-        contenido: newNote.content || '',
+        titulo: newNote.titulo,
+        contenido: newNote.contenido || '',
         colorCreador: color,
         fechaCreacion: newNote.created_at,
         familiaId: newNote.family_id,
@@ -127,6 +139,35 @@ export function NotasSection() {
     }
   };
 
+  const handleEditNota = async (data: NoteFormData) => {
+    if (!familia || !usuario || !notaAEditar) return;
+
+    try {
+      const updatedNote = await NoteService.update(notaAEditar.id, {
+        titulo: data.titulo,
+        contenido: data.contenido,
+      }) as unknown as ApiNote;
+
+      setNotas((prev) =>
+        prev.map((n) =>
+          n.id === updatedNote.id
+            ? {
+                ...n,
+                titulo: updatedNote.titulo,
+                contenido: updatedNote.contenido || '',
+              }
+            : n
+        )
+      );
+      setNotaAEditar(undefined);
+      setIsNuevaNotaOpen(false); // Close dialog if open
+      toast.success('Nota actualizada');
+    } catch (error) {
+      console.error('Error updating note:', error);
+      toast.error('Error al actualizar la nota');
+    }
+  };
+
   const handleDeleteNota = async (noteId: string) => {
     try {
           await NoteService.delete(noteId);
@@ -136,6 +177,13 @@ export function NotasSection() {
           console.error('Error deleting note:', error);
           toast.error('Error al eliminar la nota');
       }
+  };
+
+  const onConfirmDelete = async () => {
+    if (notaAEliminar) {
+      await handleDeleteNota(notaAEliminar);
+      setNotaAEliminar(null); // Close dialog
+    }
   };
 
   const notasFiltradas = useMemo(() => {
@@ -156,7 +204,10 @@ export function NotasSection() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-foreground">Notas</h2>
-        <Button className="bg-primary hover:bg-primary/90" onClick={() => setIsNuevaNotaOpen(true)}>
+        <Button className="bg-primary hover:bg-primary/90" onClick={() => {
+          setNotaAEditar(undefined);
+          setIsNuevaNotaOpen(true);
+        }}>
           <Plus className="w-4 h-4 mr-2" />
           Nueva Nota
         </Button>
@@ -194,7 +245,9 @@ export function NotasSection() {
                   key={nota.id}
                   nota={nota}
                   creador={creador}
-                  onDelete={() => handleDeleteNota(nota.id)}
+                  onDelete={() => setNotaAEliminar(nota.id)}
+                  onEdit={() => setNotaAEditar(nota)}
+                  currentUserId={usuario?.id}
                 />
               );
             })}
@@ -203,10 +256,41 @@ export function NotasSection() {
       )}
 
       <CrearNotaDialog
-        open={isNuevaNotaOpen}
-        onOpenChange={setIsNuevaNotaOpen}
-        onSubmit={handleCrearNota}
+        open={isNuevaNotaOpen || !!notaAEditar}
+        onOpenChange={(open) => {
+          if (!open) setNotaAEditar(undefined);
+          setIsNuevaNotaOpen(open);
+        }}
+        onSubmit={notaAEditar ? handleEditNota : handleCrearNota}
+        notaAEditar={
+          notaAEditar
+            ? {
+                titulo: notaAEditar.titulo || '',
+                contenido: notaAEditar.contenido,
+              }
+            : undefined
+        }
       />
+
+      <AlertDialog open={!!notaAEliminar} onOpenChange={() => setNotaAEliminar(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. La nota será eliminada permanentemente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={onConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

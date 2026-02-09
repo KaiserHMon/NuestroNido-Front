@@ -112,6 +112,11 @@ export function FechaExpandidaModal({
 
                   {/* Detalles */}
                   <div className="flex items-center gap-2 flex-wrap text-xs px-10">
+                    {tarea.tipoFecha === 'dias' && tarea.frecuencia === 'unica' && (
+                      <Badge variant="secondary" className="capitalize">
+                        Semanal
+                      </Badge>
+                    )}
                     {tarea.frecuencia && tarea.frecuencia !== 'unica' && (
                       <Badge variant="secondary" className="capitalize">
                         {tarea.frecuencia}

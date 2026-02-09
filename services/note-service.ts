@@ -7,10 +7,10 @@ export const NoteService = {
   },
 
   async create(note: {
-    title: string;
+    titulo: string;
     family_id: string;
     user_id: string;
-    content?: string;
+    contenido?: string;
   }): Promise<Nota> {
     return fetchClient<Nota>('/api/v1/notes/', {
       method: 'POST',

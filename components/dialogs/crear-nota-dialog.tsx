@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -36,9 +36,10 @@ interface CrearNotaDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (data: CrearNotaFormValues) => void;
+  notaAEditar?: CrearNotaFormValues;
 }
 
-export function CrearNotaDialog({ open, onOpenChange, onSubmit }: CrearNotaDialogProps) {
+export function CrearNotaDialog({ open, onOpenChange, onSubmit, notaAEditar }: CrearNotaDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<CrearNotaFormValues>({
@@ -49,28 +50,50 @@ export function CrearNotaDialog({ open, onOpenChange, onSubmit }: CrearNotaDialo
     },
   });
 
+  // Effect to reset form when dialog opens or notaAEditar changes
+  useEffect(() => {
+    if (open) {
+      if (notaAEditar) {
+        form.reset({
+          titulo: notaAEditar.titulo,
+          contenido: notaAEditar.contenido,
+        });
+      } else {
+        form.reset({
+          titulo: '',
+          contenido: '',
+        });
+      }
+    }
+  }, [open, notaAEditar, form]);
+
   const handleSubmit = async (data: CrearNotaFormValues) => {
     setIsSubmitting(true);
     try {
       await onSubmit(data);
-      form.reset();
+      if (!notaAEditar) { // Only reset form if creating a new note
+        form.reset();
+      }
       onOpenChange(false);
       // Success toast handled by parent
     } catch (error) {
-      console.error('Error creating note:', error);
-      toast.error('Error al crear la nota');
+      console.error('Error saving note:', error);
+      toast.error('Error al guardar la nota');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const dialogTitle = notaAEditar ? 'Editar Nota' : 'Nueva Nota';
+  const submitButtonText = notaAEditar ? 'Guardar Cambios' : 'Crear Nota';
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Nueva Nota</DialogTitle>
+          <DialogTitle>{dialogTitle}</DialogTitle>
           <DialogDescription className="sr-only">
-            Formulario para crear una nueva nota familiar
+            Formulario para {notaAEditar ? 'editar la' : 'crear una nueva'} nota familiar
           </DialogDescription>
         </DialogHeader>
 
@@ -113,7 +136,7 @@ export function CrearNotaDialog({ open, onOpenChange, onSubmit }: CrearNotaDialo
                 Cancelar
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Creando...' : 'Crear Nota'}
+                {isSubmitting ? 'Guardando...' : submitButtonText}
               </Button>
             </DialogFooter>
           </form>

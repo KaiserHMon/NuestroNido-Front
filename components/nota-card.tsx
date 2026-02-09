@@ -12,10 +12,12 @@ interface NotaCardProps {
   creador?: Miembro;
   onEdit?: (nota: Nota) => void;
   onDelete?: (notaId: string) => void;
+  currentUserId?: string;
 }
 
-export function NotaCard({ nota, creador, onEdit, onDelete }: NotaCardProps) {
+export function NotaCard({ nota, creador, onEdit, onDelete, currentUserId }: NotaCardProps) {
   const fechaFormato = format(new Date(nota.fechaCreacion), "d 'de' MMMM", { locale: es });
+  const isCreator = currentUserId === nota.user_id;
 
   return (
     <Card
@@ -36,7 +38,7 @@ export function NotaCard({ nota, creador, onEdit, onDelete }: NotaCardProps) {
 
           {/* Actions */}
           <div className="flex gap-1 flex-shrink-0">
-            {onEdit && (
+            {isCreator && onEdit && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -47,7 +49,7 @@ export function NotaCard({ nota, creador, onEdit, onDelete }: NotaCardProps) {
                 <Edit2 className="w-4 h-4 text-primary" />
               </Button>
             )}
-            {onDelete && (
+            {isCreator && onDelete && (
               <Button
                 variant="ghost"
                 size="sm"
