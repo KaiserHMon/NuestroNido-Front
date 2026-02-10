@@ -176,9 +176,9 @@ export function TareasTab({
                         {tarea.titulo}
                       </h4>
 
-                      <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                         {filtro === 'unicas' ? (
-                          <span>
+                          <span className="flex items-center">
                             {tarea.fecha
                               ? format(new Date(tarea.fecha), "d 'de' MMMM", {
                                   locale: es,
@@ -186,28 +186,26 @@ export function TareasTab({
                               : 'Sin fecha'}
                           </span>
                         ) : (
-                          <div className="flex gap-1 items-center">
-                            {tarea.tipoFecha === 'dias' && tarea.frecuencia === 'unica' && (
-                              <Badge variant="secondary" className="text-[10px] px-1 py-0 h-5">
-                                Semanal
+                          <div className="flex flex-wrap gap-1.5 items-center">
+                            {tarea.frecuencia && (
+                              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-5 capitalize font-medium">
+                                {tarea.frecuencia === 'unica' ? 'Puntual' : tarea.frecuencia}
                               </Badge>
                             )}
-                            {tarea.frecuencia && tarea.frecuencia !== 'unica' && (
-                              <Badge variant="secondary" className="text-[10px] px-1 py-0 h-5 capitalize">
-                                {tarea.frecuencia}
-                              </Badge>
-                            )}
-                            {tarea.diasSemana ? (
-                              tarea.diasSemana.map((d) => (
-                                <Badge
-                                  key={d}
-                                  variant="outline"
-                                  className="text-[10px] px-1 py-0 h-5"
-                                >
-                                  {['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'][parseInt(d)]}
-                                </Badge>
-                              ))
-                            ) : (
+                            <div className="flex gap-1">
+                              {tarea.diasSemana && (
+                                tarea.diasSemana.map((d) => (
+                                  <Badge
+                                    key={d}
+                                    variant="outline"
+                                    className="text-[10px] px-1 py-0 h-5 font-normal border-muted-foreground/30"
+                                  >
+                                    {['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'][parseInt(d)]}
+                                  </Badge>
+                                ))
+                              )}
+                            </div>
+                            {!tarea.diasSemana && !tarea.frecuencia && (
                               <span>Recurrente</span>
                             )}
                           </div>

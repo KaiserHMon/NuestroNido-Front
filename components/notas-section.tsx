@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { Nota } from '@/lib/types';
 import { NotaCard } from '@/components/nota-card';
 import { NotaFilter } from '@/components/nota-filter';
+import { NotaExpandidaModal } from '@/components/nota-expandida-modal';
 import { CrearNotaDialog } from '@/components/dialogs/crear-nota-dialog';
 import { Button } from '@/components/ui/button';
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from '@/components/ui/empty';
@@ -38,6 +39,7 @@ export function NotasSection() {
   const [isNuevaNotaOpen, setIsNuevaNotaOpen] = useState(false);
   const [notaAEliminar, setNotaAEliminar] = useState<string | null>(null);
   const [notaAEditar, setNotaAEditar] = useState<Nota | undefined>(undefined);
+  const [notaAExpandir, setNotaAExpandir] = useState<Nota | null>(null);
 
   const fetchNotas = useCallback(async () => {
     if (!familia) return;
@@ -183,12 +185,22 @@ export function NotasSection() {
                 nota={nota}
                 onDelete={() => setNotaAEliminar(nota.id)}
                 onEdit={() => setNotaAEditar(nota)}
+                onClick={() => setNotaAExpandir(nota)}
                 currentUserId={usuario?.id}
               />
             ))}
           </div>
         </div>
       )}
+
+      <NotaExpandidaModal
+        nota={notaAExpandir}
+        open={!!notaAExpandir}
+        onOpenChange={(open) => !open && setNotaAExpandir(null)}
+        onEdit={setNotaAEditar}
+        onDelete={setNotaAEliminar}
+        currentUserId={usuario?.id}
+      />
 
       <CrearNotaDialog
         open={isNuevaNotaOpen || !!notaAEditar}

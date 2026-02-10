@@ -319,34 +319,41 @@ export function CrearTareaDialog({
             )}
 
             {/* Recurrencia */}
-            {tipoFecha === 'dias' && (
-              <FormField
-                control={form.control}
-                name="recurrencia"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Vigencia de la Tarea</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                      value={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecciona" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="unica">Solo esta semana</SelectItem>
-                        <SelectItem value="mensual">Solo este mes</SelectItem>
-                        <SelectItem value="anual">Todo este año</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
+            <FormField
+              control={form.control}
+              name="recurrencia"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{tipoFecha === 'fecha' ? 'Repetir' : 'Vigencia de la Tarea'}</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    value={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {tipoFecha === 'fecha' ? (
+                        <>
+                          <SelectItem value="unica">Una sola vez</SelectItem>
+                          <SelectItem value="mensual">Todos los meses</SelectItem>
+                        </>
+                      ) : (
+                        <>
+                          <SelectItem value="unica">Solo esta semana</SelectItem>
+                          <SelectItem value="mensual">Solo este mes</SelectItem>
+                          <SelectItem value="anual">Todo este año</SelectItem>
+                        </>
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

@@ -105,7 +105,7 @@ export default function HomePage() {
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-full flex items-center justify-center">
                 <Bird className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
               </div>
-              <h1 className="text-lg sm:text-xl font-bold text-foreground font-heading">NuestroNido</h1>
+              <h1 className="text-xl sm:text-2xl text-foreground font-serif-custom italic">NuestroNido</h1>
             </div>
 
             <div className="flex items-center gap-2">

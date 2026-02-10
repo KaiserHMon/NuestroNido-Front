@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Bird } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/use-auth';
 import { LandingHeader } from '@/components/landing-header';
 import { SupportDialog } from '@/components/dialogs/support-dialog';
 import { AnimatedHeroText } from '@/components/animated-hero-text';
@@ -16,6 +17,7 @@ function LandingPageContent() {
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { isAuthenticated, usuario, familia } = useAuth();
 
   useEffect(() => {
     const code = searchParams.get('code');
@@ -28,6 +30,8 @@ function LandingPageContent() {
       router.push(newUrl);
     }
   }, [searchParams, router]);
+
+  const dashboardRoute = (usuario?.familiaId || familia) ? '/dashboard' : '/home';
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-cover bg-center" style={{ backgroundImage: "url('/bg.svg')" }}>
@@ -48,18 +52,32 @@ function LandingPageContent() {
               
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-start items-center">
                 <div className="flex flex-col items-center w-full sm:w-auto">
-                  <Link href="/register" className="w-full sm:w-auto">
-                    <Button
-                      size="lg"
-                      className="w-full sm:w-auto bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-8 sm:px-10 shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
-                    >
-                      Crear mi Nido
-                      <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-                    </Button>
-                  </Link>
-                  <p className="text-xs sm:text-sm text-foreground/60 mt-3 font-medium">
-                    Gratis - Sin tarjeta
-                  </p>
+                  {isAuthenticated ? (
+                    <Link href={dashboardRoute} className="w-full sm:w-auto">
+                      <Button
+                        size="lg"
+                        className="w-full sm:w-auto bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-8 sm:px-10 shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
+                      >
+                        Ir a mi Nido
+                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Link href="/register" className="w-full sm:w-auto">
+                      <Button
+                        size="lg"
+                        className="w-full sm:w-auto bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-8 sm:px-10 shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
+                      >
+                        Crear mi Nido
+                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
+                      </Button>
+                    </Link>
+                  )}
+                  {!isAuthenticated && (
+                    <p className="text-xs sm:text-sm text-foreground/60 mt-3 font-medium">
+                      Gratis - Sin tarjeta
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -92,18 +110,32 @@ function LandingPageContent() {
               Únete a las familias que ya están disfrutando de un hogar con más armonía.
             </p>
             <div className="flex flex-col items-center">
-              <Link href="/register" className="w-full sm:w-auto">
-                <Button
-                  size="lg"
-                  className="bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-10 sm:px-12 w-full sm:w-auto shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
-                >
-                  Crear mi Nido
-                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-                </Button>
-              </Link>
-              <p className="text-xs sm:text-sm text-foreground/60 mt-4 font-medium">
-                Gratis - Sin tarjeta
-              </p>
+              {isAuthenticated ? (
+                <Link href={dashboardRoute} className="w-full sm:w-auto">
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-10 sm:px-12 w-full sm:w-auto shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
+                  >
+                    Ir a mi Nido
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
+                  </Button>
+                </Link>
+              ) : (
+                <Link href="/register" className="w-full sm:w-auto">
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-10 sm:px-12 w-full sm:w-auto shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
+                  >
+                    Crear mi Nido
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
+                  </Button>
+                </Link>
+              )}
+              {!isAuthenticated && (
+                <p className="text-xs sm:text-sm text-foreground/60 mt-4 font-medium">
+                  Gratis - Sin tarjeta
+                </p>
+              )}
             </div>
           </motion.div>
         </section>
@@ -116,7 +148,7 @@ function LandingPageContent() {
                 <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                   <Bird className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <span className="text-foreground text-lg font-serif-custom italic">NuestroNido</span>
+                <span className="text-foreground text-xl font-serif-custom italic">NuestroNido</span>
               </div>
 
               <div className="flex flex-wrap justify-center gap-x-8 gap-y-3">

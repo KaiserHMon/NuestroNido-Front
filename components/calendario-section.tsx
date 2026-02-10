@@ -255,10 +255,12 @@ export function CalendarioSection() {
         // For 'none', end_date is the same as due_date
         end_date = due_date;
       }
-    } else if (data.recurrencia === 'mensual') {
-      end_date = endOfMonth(baseDate).toISOString();
     } else if (data.recurrencia === 'anual') {
+      // Until the end of the current year
       end_date = endOfYear(baseDate).toISOString();
+    } else {
+      // For 'mensual', repeat indefinitely
+      end_date = null;
     }
 
     try {
@@ -304,10 +306,11 @@ export function CalendarioSection() {
       } else {
         end_date = due_date;
       }
-    } else if (data.recurrencia === 'mensual') {
-      end_date = endOfMonth(baseDate).toISOString();
     } else if (data.recurrencia === 'anual') {
       end_date = endOfYear(baseDate).toISOString();
+    } else {
+      // For 'mensual', repeat indefinitely
+      end_date = null;
     }
 
     try {

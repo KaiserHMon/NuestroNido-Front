@@ -74,7 +74,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
                 <Bird className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
               </div>
               <div className="flex flex-col gap-0.5">
-                <h1 className="text-base sm:text-lg font-bold text-foreground font-heading">NuestroNido</h1>
+                <h1 className="text-xl sm:text-2xl text-foreground font-serif-custom italic tracking-tight">NuestroNido</h1>
                 <p className="text-xs sm:text-sm text-muted-foreground">{familia.nombre}</p>
               </div>
             </div>

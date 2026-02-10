@@ -11,20 +11,33 @@ interface NotaCardProps {
   nota: Nota;
   onEdit?: (nota: Nota) => void;
   onDelete?: (notaId: string) => void;
+  onClick?: (nota: Nota) => void;
   currentUserId?: string;
 }
 
-export function NotaCard({ nota, onEdit, onDelete, currentUserId }: NotaCardProps) {
+export function NotaCard({ nota, onEdit, onDelete, onClick, currentUserId }: NotaCardProps) {
   const fechaFormato = format(new Date(nota.created_at), "d 'de' MMMM", { locale: es });
   const isCreator = currentUserId === nota.user_id;
   const colorBg = nota.user.color?.bg || '#9CA3AF';
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClick?.(nota);
+    }
+  };
+
   return (
     <Card
-      className="border-l-4 overflow-hidden transition-all hover:shadow-md h-full flex flex-col"
+      className="border-l-4 overflow-hidden transition-all hover:shadow-md h-full flex flex-col cursor-pointer active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
       style={{
         borderLeftColor: colorBg,
       }}
+      onClick={() => onClick?.(nota)}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
+      aria-label={`Ver nota: ${nota.title || 'Sin título'}`}
     >
       <CardContent className="p-4 space-y-3 flex-1 flex flex-col">
         {/* Header */}
@@ -37,7 +50,12 @@ export function NotaCard({ nota, onEdit, onDelete, currentUserId }: NotaCardProp
           </div>
 
           {/* Actions */}
-          <div className="flex gap-1 flex-shrink-0">
+          <div 
+            className="flex gap-1 flex-shrink-0" 
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+            role="presentation"
+          >
             {isCreator && onEdit && (
               <Button
                 variant="ghost"

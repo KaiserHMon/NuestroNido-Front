@@ -3,6 +3,7 @@
 import { Miembro } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { getColorById } from '@/lib/colors';
 
 interface NotaFilterProps {
   miembros: Miembro[];
@@ -11,6 +12,13 @@ interface NotaFilterProps {
 }
 
 export function NotaFilter({ miembros, filtrosActivos, onFilterChange }: NotaFilterProps) {
+  const getMiembroColor = (miembro: Miembro) => {
+    if (typeof miembro.color === 'string') {
+        return getColorById(miembro.color)?.bg || '#9CA3AF';
+    }
+    return miembro.color?.bg || '#9CA3AF';
+  };
+
   const handleToggleFiltro = (miembroId: string) => {
     if (filtrosActivos.includes(miembroId)) {
       onFilterChange(filtrosActivos.filter((id) => id !== miembroId));
@@ -40,34 +48,39 @@ export function NotaFilter({ miembros, filtrosActivos, onFilterChange }: NotaFil
       </div>
 
       <div className="flex flex-wrap gap-2">
-        {miembros.map((miembro) => (
-          <Badge
-            key={miembro.id}
-            variant={filtrosActivos.includes(miembro.id) ? 'default' : 'outline'}
-            className={`cursor-pointer transition-all ${
-              filtrosActivos.includes(miembro.id)
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-white text-foreground border-2'
-            }`}
-            onClick={() => handleToggleFiltro(miembro.id)}
-            style={
-              !filtrosActivos.includes(miembro.id)
-                ? {
-                    borderColor: miembro.color.bg,
-                    color: miembro.color.bg,
-                  }
-                : undefined
-            }
-          >
-            <div
-              className="w-2 h-2 rounded-full mr-1"
-              style={{
-                backgroundColor: miembro.color.bg,
-              }}
-            />
-            {miembro.nombre}
-          </Badge>
-        ))}
+        {miembros.map((miembro) => {
+          const colorBg = getMiembroColor(miembro);
+          const isActive = filtrosActivos.includes(miembro.id);
+          
+          return (
+            <Badge
+              key={miembro.id}
+              variant={isActive ? 'default' : 'outline'}
+              className={`cursor-pointer transition-all ${
+                isActive
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-white text-foreground border-2'
+              }`}
+              onClick={() => handleToggleFiltro(miembro.id)}
+              style={
+                !isActive
+                  ? {
+                      borderColor: colorBg,
+                      color: colorBg,
+                    }
+                  : undefined
+              }
+            >
+              <div
+                className="w-2 h-2 rounded-full mr-1"
+                style={{
+                  backgroundColor: colorBg,
+                }}
+              />
+              {miembro.nombre}
+            </Badge>
+          );
+        })}
       </div>
 
       {filtrosActivos.length > 0 && (

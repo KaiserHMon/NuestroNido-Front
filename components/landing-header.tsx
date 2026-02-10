@@ -26,7 +26,7 @@ export function LandingHeader() {
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-full flex items-center justify-center">
                 <Bird className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
               </div>
-              <span className="text-base sm:text-lg text-foreground font-serif-custom italic">NuestroNido</span>
+              <span className="text-xl sm:text-2xl text-foreground font-serif-custom italic">NuestroNido</span>
             </div>
           </div>
         </div>
@@ -45,7 +45,7 @@ export function LandingHeader() {
             <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-full flex items-center justify-center">
               <Bird className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
             </div>
-            <span className="text-base sm:text-lg text-foreground font-serif-custom italic">NuestroNido</span>
+            <span className="text-xl sm:text-2xl text-foreground font-serif-custom italic">NuestroNido</span>
           </Link>
 
           <div className="flex items-center gap-2">
@@ -54,22 +54,20 @@ export function LandingHeader() {
                 <Link href={dashboardRoute}>
                   <Button
                     variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 sm:h-10 sm:w-10 p-0 hover:bg-primary/10 text-primary"
-                    title="Dashboard"
+                    className="text-primary text-sm sm:text-base px-3 sm:px-4 hover:bg-primary/10 flex items-center gap-2"
                   >
-                    <LayoutDashboard className="w-5 h-5 sm:w-6 sm:h-6" />
+                    <LayoutDashboard className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span>Dashboard</span>
                   </Button>
                 </Link>
 
                 <Button
                   variant="ghost"
-                  size="sm"
                   onClick={handleLogout}
-                  className="h-8 w-8 sm:h-10 sm:w-10 p-0 hover:bg-destructive/10 text-destructive"
-                  title="Cerrar sesión"
+                  className="text-destructive text-sm sm:text-base px-3 sm:px-4 hover:bg-destructive/10 flex items-center gap-2"
                 >
                   <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span>Salir</span>
                 </Button>
               </>
             ) : (
@@ -77,15 +75,14 @@ export function LandingHeader() {
                 <Link href="/login">
                   <Button
                     variant="ghost"
-                    className="text-foreground text-sm sm:text-base px-2 sm:px-4 hover:bg-primary/10"
+                    className="text-foreground text-sm sm:text-lg px-3 sm:px-5 hover:bg-primary/10"
                   >
                     Iniciar Sesión
                   </Button>
                 </Link>
                 <Link href="/register">
-                  <Button className="bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-sm sm:text-base px-3 sm:px-4 shadow-md shadow-primary/30 transition-all duration-300 active:scale-95">
-                    <span className="hidden sm:inline">Comenzar</span>
-                    <span className="sm:hidden">Comenzar</span>
+                  <Button className="bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-sm sm:text-lg px-4 sm:px-6 py-5 sm:py-6 shadow-md shadow-primary/30 transition-all duration-300 active:scale-95">
+                    Comenzar
                   </Button>
                 </Link>
               </>

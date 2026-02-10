@@ -28,15 +28,18 @@ export function MiembroCard({
 
   const getMedalColor = (rank: number) => {
     switch (rank) {
-      case 1: return 'text-yellow-500 fill-yellow-500';
-      case 2: return 'text-slate-400 fill-slate-400';
-      case 3: return 'text-amber-700 fill-amber-700';
+      case 1: 
+        return 'text-[#FFD700] fill-[#FFD700] drop-shadow-[0_2px_4px_rgba(218,165,32,0.6)] filter brightness-110';
+      case 2: 
+        return 'text-[#C0C0C0] fill-[#C0C0C0] drop-shadow-[0_2px_4px_rgba(169,169,169,0.5)] filter brightness-105';
+      case 3: 
+        return 'text-[#CD7F32] fill-[#CD7F32] drop-shadow-[0_2px_4px_rgba(139,69,19,0.4)]';
       default: return '';
     }
   };
 
   return (
-    <Card className="rounded-[20px] shadow-[0_10px_30px_rgba(0,0,0,0.06)] border-none bg-card overflow-hidden transition-all hover:shadow-md group">
+    <Card className="rounded-[24px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-none bg-card overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1 group">
       <CardContent className="p-5 py-6 flex flex-row items-center gap-5 relative min-h-[100px]">
         {/* Avatar centrado a la izquierda - Opción A: Protagonista */}
         <div className="shrink-0 relative flex flex-col items-center">
@@ -45,31 +48,33 @@ export function MiembroCard({
             color={miembro.color}
             imageUrl={miembro.nivel?.image_url}
             size="lg"
-            className="w-[60px] h-[60px] text-xl border-2 shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
+            className="w-[64px] h-[64px] text-xl border-4 shadow-[0_4px_12px_rgba(0,0,0,0.08)] transition-transform group-hover:scale-105"
             style={{ borderColor: miembro.color.bg }}
           />
           {rank && (
-            <div className="absolute -bottom-2 bg-card rounded-full p-0.5 shadow-sm border border-border">
-              <Medal className={`w-4 h-4 ${getMedalColor(rank)}`} />
+            <div className="absolute -bottom-2 bg-card rounded-full p-1.5 shadow-md border border-border/50 animate-in zoom-in duration-300">
+              <Medal className={`w-4 h-4 ${getMedalColor(rank)}`} strokeWidth={2.5} />
             </div>
           )}
         </div>
 
         {/* Info: Nombre y Título (Nivel) */}
-        <div className="flex flex-col min-w-0 pr-16 flex-1 justify-center">
-          <div className="flex items-center gap-2 mb-0.5">
-            <h4 className="font-bold text-foreground text-base truncate" title={miembro.nombre}>
+        <div className="flex flex-col min-w-0 pr-12 flex-1 justify-center">
+          <div className="flex flex-wrap items-center gap-2 mb-1">
+            <h4 className="font-bold text-foreground text-lg truncate" title={miembro.nombre}>
               {miembro.nombre}
             </h4>
             {esMiembroCreador && (
-              <Badge variant="secondary" className="bg-[#FFE3E3] text-[#FF5A5A] hover:bg-[#FFE3E3] rounded-full px-2 py-0.5 text-[11px] font-bold tracking-normal border-none shadow-none h-auto">
+              <Badge variant="secondary" className="bg-red-100 text-red-500 hover:bg-red-100 rounded-full px-2.5 py-0.5 text-[10px] font-black tracking-wider border-none shadow-sm uppercase">
                 CREADOR
               </Badge>
             )}
           </div>
-          <span className="text-sm text-muted-foreground truncate font-medium opacity-80">
-            {miembro.nivel?.name || 'Miembro'}
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm text-muted-foreground truncate font-semibold opacity-70">
+                {miembro.nivel?.name || 'Miembro'}
+            </span>
+          </div>
         </div>
 
         {/* Botones de acción alineados verticalmente al centro */}
