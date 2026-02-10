@@ -71,9 +71,12 @@ export function MiembrosSection() {
        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
   }, [familia, usuario]);
 
-  const topMemberId = useMemo(() => {
-    if (!familia || familia.miembros.length === 0) return null;
-    return [...familia.miembros].sort((a, b) => b.experience_points - a.experience_points)[0].id;
+  const topThreeIds = useMemo(() => {
+    if (!familia || familia.miembros.length === 0) return [];
+    return [...familia.miembros]
+      .sort((a, b) => b.experience_points - a.experience_points)
+      .slice(0, 3)
+      .map(m => m.id);
   }, [familia]);
 
   const handleConfirmarEdicion = async (miembroActualizado: Miembro) => {
@@ -124,13 +127,16 @@ export function MiembrosSection() {
         <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {familia.miembros.map((miembro) => {
             const esMiembro = usuario?.id === miembro.id;
+            const rankIndex = topThreeIds.indexOf(miembro.id);
+            const rank = rankIndex !== -1 ? rankIndex + 1 : undefined;
+            
             return (
               <MiembroCard
                 key={miembro.id}
                 miembro={miembro}
                 esMiembro={esMiembro}
                 esCreador={esCreador}
-                isFirst={miembro.id === topMemberId}
+                rank={rank}
                 onEliminar={handleEliminarMiembro}
                 onEditar={handleEditarPerfil}
               />

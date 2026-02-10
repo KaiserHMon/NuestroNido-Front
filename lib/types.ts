@@ -163,47 +163,54 @@ export interface EliminarMiembroResponse {
 // ============ NOTAS ============
 export interface Nota {
   id: string;
-  titulo?: string;
-  contenido: string;
-  colorCreador: ColorMiembro;
-  fechaCreacion: string; // ISO string
-  familiaId: string;
-  user_id?: string; // Optional helper for filtering
+  title: string | null;
+  content: string | null;
+  family_id: string;
+  user_id: string;
+  created_at: string; // ISO string
+  updated_at: string; // ISO string
+  user: {
+    id: string;
+    name: string;
+    experience_points: number;
+    level?: Level;
+    color?: {
+      id: string;
+      name: string;
+      bg: string;
+    };
+  };
+}
+
+export interface CrearNotaRequest {
+  title: string;
+  content: string;
+  family_id: string;
+}
+
+export interface ActualizarNotaRequest {
+  title?: string;
+  content?: string;
 }
 
 export interface Tarea {
   id: string;
   titulo: string;
   tipoFecha?: 'fecha' | 'dias';
-  fecha?: string; // ISO date: "2025-12-10" (Opcional si es por días)
+  fecha?: string; // ISO 8601 string: due_date
+  endDate?: string; // ISO 8601 string: end_date
   diasSemana?: string[]; // ["1", "3"] para Lunes y Miércoles
   hora?: string; // Opcional: "14:30"
   creadorId: string;
   colorCreador: ColorMiembro;
   prioridad?: 'baja' | 'media' | 'alta';
   frecuencia?: 'unica' | 'diaria' | 'semanal' | 'mensual' | 'anual';
+  recurrence_type: 'none' | 'daily' | 'weekly' | 'monthly';
   completada: boolean;
   miembrosAsignados?: string[];
   familiaId: string;
   createdAt?: string;
   updatedAt?: string;
-}
-
-export interface CrearNotaRequest {
-  titulo: string;
-  contenido: string;
-  fecha: Date;
-  membrosAsignados: string[];
-  prioritad?: 'low' | 'medium' | 'high';
-}
-
-export interface ActualizarNotaRequest {
-  titulo?: string;
-  contenido?: string;
-  fecha?: Date;
-  membrosAsignados?: string[];
-  prioritad?: 'low' | 'medium' | 'high';
-  completada?: boolean;
 }
 
 // ============ CALENDARIO ============

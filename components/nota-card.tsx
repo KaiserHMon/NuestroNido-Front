@@ -1,6 +1,6 @@
 'use client';
 
-import { Nota, Miembro } from '@/lib/types';
+import { Nota } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Trash2, Edit2 } from 'lucide-react';
@@ -9,31 +9,31 @@ import { es } from 'date-fns/locale';
 
 interface NotaCardProps {
   nota: Nota;
-  creador?: Miembro;
   onEdit?: (nota: Nota) => void;
   onDelete?: (notaId: string) => void;
   currentUserId?: string;
 }
 
-export function NotaCard({ nota, creador, onEdit, onDelete, currentUserId }: NotaCardProps) {
-  const fechaFormato = format(new Date(nota.fechaCreacion), "d 'de' MMMM", { locale: es });
+export function NotaCard({ nota, onEdit, onDelete, currentUserId }: NotaCardProps) {
+  const fechaFormato = format(new Date(nota.created_at), "d 'de' MMMM", { locale: es });
   const isCreator = currentUserId === nota.user_id;
+  const colorBg = nota.user.color?.bg || '#9CA3AF';
 
   return (
     <Card
-      className="border-l-4 overflow-hidden transition-opacity"
+      className="border-l-4 overflow-hidden transition-all hover:shadow-md h-full flex flex-col"
       style={{
-        borderLeftColor: nota.colorCreador.bg,
+        borderLeftColor: colorBg,
       }}
     >
-      <CardContent className="p-4 space-y-3">
+      <CardContent className="p-4 space-y-3 flex-1 flex flex-col">
         {/* Header */}
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-foreground break-words text-left">
-              {nota.titulo || nota.contenido}
+            <h3 className="font-semibold text-foreground break-words text-left line-clamp-2">
+              {nota.title || 'Nota sin título'}
             </h3>
-            <p className="text-xs text-muted-foreground mt-1">{fechaFormato}</p>
+            <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">{fechaFormato}</p>
           </div>
 
           {/* Actions */}
@@ -43,10 +43,10 @@ export function NotaCard({ nota, creador, onEdit, onDelete, currentUserId }: Not
                 variant="ghost"
                 size="sm"
                 onClick={() => onEdit(nota)}
-                className="h-8 w-8 p-0 hover:bg-primary/10"
+                className="h-7 w-7 p-0 hover:bg-primary/10"
                 title="Editar nota"
               >
-                <Edit2 className="w-4 h-4 text-primary" />
+                <Edit2 className="w-3.5 h-3.5 text-primary" />
               </Button>
             )}
             {isCreator && onDelete && (
@@ -54,37 +54,38 @@ export function NotaCard({ nota, creador, onEdit, onDelete, currentUserId }: Not
                 variant="ghost"
                 size="sm"
                 onClick={() => onDelete(nota.id)}
-                className="h-8 w-8 p-0 hover:bg-destructive/10"
+                className="h-7 w-7 p-0 hover:bg-destructive/10"
                 title="Eliminar nota"
               >
-                <Trash2 className="w-4 h-4 text-destructive" />
+                <Trash2 className="w-3.5 h-3.5 text-destructive" />
               </Button>
             )}
           </div>
         </div>
 
-        {/* Creador */}
-        <div className="flex items-center gap-2 text-sm">
-          <span className="text-muted-foreground">Por:</span>
+        {/* Content */}
+        {nota.content && (
+          <p className="text-sm text-muted-foreground line-clamp-4 flex-1 whitespace-pre-wrap">
+            {nota.content}
+          </p>
+        )}
+
+        {/* Footer - Creador */}
+        <div className="flex items-center gap-2 pt-2 mt-auto border-t border-border/40">
           <div
-            className="px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1"
+            className="px-2 py-0.5 rounded-full text-[10px] font-medium flex items-center gap-1.5"
             style={{
-              backgroundColor: nota.colorCreador.bg + '20',
-              color: nota.colorCreador.bg,
+              backgroundColor: colorBg + '15',
+              color: colorBg,
             }}
           >
             <div
-              className="w-2 h-2 rounded-full"
-              style={{ backgroundColor: nota.colorCreador.bg }}
+              className="w-1.5 h-1.5 rounded-full"
+              style={{ backgroundColor: colorBg }}
             />
-            {creador?.nombre || nota.colorCreador.nombre}
+            {nota.user.name}
           </div>
         </div>
-
-        {/* Content */}
-        {nota.contenido && (
-          <p className="text-sm text-muted-foreground line-clamp-3">{nota.contenido}</p>
-        )}
       </CardContent>
     </Card>
   );

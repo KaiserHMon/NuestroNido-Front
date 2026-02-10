@@ -15,10 +15,11 @@ export const TaskService = {
     title: string;
     family_id: string;
     assigned_to_user_id?: string;
-    recurrence_type?: string;
-    week_days?: string;
+    recurrence_type: 'none' | 'daily' | 'weekly' | 'monthly';
+    week_days?: string | null;
     status?: string;
-    due_date?: string | null;
+    due_date: string;
+    end_date?: string | null;
   }): Promise<Tarea> {
     return fetchClient<Tarea>('/api/v1/tasks/', {
       method: 'POST',

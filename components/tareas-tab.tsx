@@ -47,9 +47,8 @@ export function TareasTab({
     return tareas
       .filter((tarea) => {
         // Filtro por tipo (Unica vs Recurrente)
-        // Ahora 'unicas' son solo las de fecha específica que no se repiten
-        // 'recurrentes' son las de días de semana o las que tienen frecuencia mensual/anual
-        const esRecurrente = tarea.tipoFecha === 'dias' || (tarea.frecuencia !== 'unica' && tarea.frecuencia !== undefined);
+        // Ahora 'unicas' son solo las de recurrence_type === 'none'
+        const esRecurrente = tarea.recurrence_type !== 'none';
         
         if (filtro === 'unicas') {
           if (esRecurrente) return false;
@@ -181,7 +180,7 @@ export function TareasTab({
                         {filtro === 'unicas' ? (
                           <span>
                             {tarea.fecha
-                              ? format(new Date(tarea.fecha + 'T12:00:00'), "d 'de' MMMM", {
+                              ? format(new Date(tarea.fecha), "d 'de' MMMM", {
                                   locale: es,
                                 })
                               : 'Sin fecha'}

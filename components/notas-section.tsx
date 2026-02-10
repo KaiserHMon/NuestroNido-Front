@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { Nota, Miembro } from '@/lib/types';
+import { Nota } from '@/lib/types';
 import { NotaCard } from '@/components/nota-card';
 import { NotaFilter } from '@/components/nota-filter';
 import { CrearNotaDialog } from '@/components/dialogs/crear-nota-dialog';
@@ -24,15 +24,6 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-interface ApiNote {
-  id: string;
-  titulo: string;
-  contenido: string;
-  user_id: string;
-  family_id: string;
-  created_at: string;
-}
-
 interface NoteFormData {
   titulo: string;
   contenido: string;
@@ -48,50 +39,19 @@ export function NotasSection() {
   const [notaAEliminar, setNotaAEliminar] = useState<string | null>(null);
   const [notaAEditar, setNotaAEditar] = useState<Nota | undefined>(undefined);
 
-  // Index members by ID for faster lookups
-  const miembrosMap = useMemo(() => {
-    if (!familia) return new Map<string, Miembro>();
-    return new Map(familia.miembros.map((m) => [m.id, m]));
-  }, [familia]);
-
   const fetchNotas = useCallback(async () => {
     if (!familia) return;
     try {
       setLoading(true);
-      const data = await NoteService.getNotes() as unknown as ApiNote[];
-
-      const mappedNotas: Nota[] = data.map((apiNote) => {
-        const creatorMember = miembrosMap.get(apiNote.user_id);
-        const color = creatorMember
-          ? creatorMember.color
-          : {
-              id: 'temp',
-              nombre: 'Gris',
-              bg: '#9CA3AF',
-              text: '#FFFFFF',
-              accent: '#9CA3AF',
-              wcagContrast: 4.5,
-            };
-
-        return {
-          id: apiNote.id,
-          titulo: apiNote.titulo,
-          contenido: apiNote.contenido || '',
-          colorCreador: color,
-          fechaCreacion: apiNote.created_at,
-          familiaId: apiNote.family_id,
-          user_id: apiNote.user_id, // Store for filtering
-        };
-      });
-
-      setNotas(mappedNotas);
+      const data = await NoteService.getNotes();
+      setNotas(data);
     } catch (error) {
       console.error('Error fetching notes:', error);
       toast.error('Error al cargar las notas');
     } finally {
       setLoading(false);
     }
-  }, [familia, miembrosMap]);
+  }, [familia]);
 
   useEffect(() => {
     fetchNotas();
@@ -102,35 +62,12 @@ export function NotasSection() {
 
     try {
       const newNote = await NoteService.create({
-        titulo: data.titulo,
-        contenido: data.contenido,
+        title: data.titulo,
+        content: data.contenido,
         family_id: familia.id,
-        user_id: usuario.id,
-      }) as unknown as ApiNote;
+      });
 
-      const creatorMember = miembrosMap.get(newNote.user_id);
-      const color = creatorMember
-        ? creatorMember.color
-        : {
-            id: 'temp',
-            nombre: 'Gris',
-            bg: '#9CA3AF',
-            text: '#FFFFFF',
-            accent: '#9CA3AF',
-            wcagContrast: 4.5,
-          };
-
-      const mappedNote: Nota = {
-        id: newNote.id,
-        titulo: newNote.titulo,
-        contenido: newNote.contenido || '',
-        colorCreador: color,
-        fechaCreacion: newNote.created_at,
-        familiaId: newNote.family_id,
-        user_id: newNote.user_id,
-      };
-
-      setNotas((prev) => [mappedNote, ...prev]);
+      setNotas((prev) => [newNote, ...prev]);
       setIsNuevaNotaOpen(false);
       toast.success('Nota creada');
     } catch (error) {
@@ -144,23 +81,15 @@ export function NotasSection() {
 
     try {
       const updatedNote = await NoteService.update(notaAEditar.id, {
-        titulo: data.titulo,
-        contenido: data.contenido,
-      }) as unknown as ApiNote;
+        title: data.titulo,
+        content: data.contenido,
+      });
 
       setNotas((prev) =>
-        prev.map((n) =>
-          n.id === updatedNote.id
-            ? {
-                ...n,
-                titulo: updatedNote.titulo,
-                contenido: updatedNote.contenido || '',
-              }
-            : n
-        )
+        prev.map((n) => (n.id === updatedNote.id ? updatedNote : n))
       );
       setNotaAEditar(undefined);
-      setIsNuevaNotaOpen(false); // Close dialog if open
+      setIsNuevaNotaOpen(false);
       toast.success('Nota actualizada');
     } catch (error) {
       console.error('Error updating note:', error);
@@ -170,29 +99,30 @@ export function NotasSection() {
 
   const handleDeleteNota = async (noteId: string) => {
     try {
-          await NoteService.delete(noteId);
-          setNotas(prev => prev.filter(n => n.id !== noteId));
-          toast.success('Nota eliminada');
-      } catch (error) {
-          console.error('Error deleting note:', error);
-          toast.error('Error al eliminar la nota');
-      }
+      await NoteService.delete(noteId);
+      setNotas((prev) => prev.filter((n) => n.id !== noteId));
+      toast.success('Nota eliminada');
+    } catch (error) {
+      console.error('Error deleting note:', error);
+      toast.error('Error al eliminar la nota');
+    }
   };
 
   const onConfirmDelete = async () => {
     if (notaAEliminar) {
       await handleDeleteNota(notaAEliminar);
-      setNotaAEliminar(null); // Close dialog
+      setNotaAEliminar(null);
     }
   };
 
   const notasFiltradas = useMemo(() => {
-    const filtered = filtrosActivos.length === 0
-      ? notas
-      : notas.filter((nota) => nota.user_id && filtrosActivos.includes(nota.user_id));
-    
-    return [...filtered].sort((a, b) => 
-      new Date(b.fechaCreacion).getTime() - new Date(a.fechaCreacion).getTime()
+    const filtered =
+      filtrosActivos.length === 0
+        ? notas
+        : notas.filter((nota) => filtrosActivos.includes(nota.user_id));
+
+    return [...filtered].sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
   }, [notas, filtrosActivos]);
 
@@ -202,12 +132,18 @@ export function NotasSection() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-foreground">Notas</h2>
-        <Button className="bg-primary hover:bg-primary/90" onClick={() => {
-          setNotaAEditar(undefined);
-          setIsNuevaNotaOpen(true);
-        }}>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Notas Familiares</h2>
+          <p className="text-sm text-muted-foreground mt-1">Comparte pensamientos, recordatorios o listas con tu familia</p>
+        </div>
+        <Button
+          className="bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground shadow-md shadow-primary/30 transition-all duration-300 active:scale-95 sm:w-auto w-full"
+          onClick={() => {
+            setNotaAEditar(undefined);
+            setIsNuevaNotaOpen(true);
+          }}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Nueva Nota
         </Button>
@@ -233,24 +169,23 @@ export function NotasSection() {
           </EmptyHeader>
         </Empty>
       ) : (
-        <div className="grid gap-4">
-          <div className="text-sm text-muted-foreground">
-            Mostrando {notasFiltradas.length} de {notas.length} nota{notas.length > 1 ? 's' : ''}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between text-sm text-muted-foreground px-1">
+            <span>
+              Mostrando {notasFiltradas.length} de {notas.length} nota
+              {notas.length !== 1 ? 's' : ''}
+            </span>
           </div>
-          <div className="space-y-3">
-            {notasFiltradas.map((nota) => {
-              const creador = miembrosMap.get(nota.user_id || '');
-              return (
-                <NotaCard
-                  key={nota.id}
-                  nota={nota}
-                  creador={creador}
-                  onDelete={() => setNotaAEliminar(nota.id)}
-                  onEdit={() => setNotaAEditar(nota)}
-                  currentUserId={usuario?.id}
-                />
-              );
-            })}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {notasFiltradas.map((nota) => (
+              <NotaCard
+                key={nota.id}
+                nota={nota}
+                onDelete={() => setNotaAEliminar(nota.id)}
+                onEdit={() => setNotaAEditar(nota)}
+                currentUserId={usuario?.id}
+              />
+            ))}
           </div>
         </div>
       )}
@@ -265,8 +200,8 @@ export function NotasSection() {
         notaAEditar={
           notaAEditar
             ? {
-                titulo: notaAEditar.titulo || '',
-                contenido: notaAEditar.contenido,
+                titulo: notaAEditar.title || '',
+                contenido: notaAEditar.content || '',
               }
             : undefined
         }

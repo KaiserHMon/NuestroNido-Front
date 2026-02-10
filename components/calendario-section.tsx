@@ -23,11 +23,10 @@ import {
   format,
   startOfMonth,
   endOfMonth,
+  endOfWeek,
+  endOfYear,
   eachDayOfInterval,
   isSameDay,
-  isSameWeek,
-  isSameMonth,
-  isSameYear,
   addMonths,
   subMonths,
 } from 'date-fns';
@@ -46,14 +45,22 @@ interface ColorDot {
 interface ApiTask {
   id: string;
   title: string;
-  due_date: string | null;
-  created_at: string;
-  assigned_to_user_id?: string;
-  assigned_user?: { id: string };
-  status: string;
   family_id: string;
-  week_days?: string;
-  recurrence_type: string;
+  assigned_to_user_id: string | null;
+  recurrence_type: 'none' | 'daily' | 'weekly' | 'monthly';
+  week_days: string | null;
+  status: 'pending' | 'completed';
+  due_date: string;
+  end_date: string | null;
+  created_at: string;
+  updated_at: string;
+  assigned_user: {
+    id: string;
+    name?: string;
+    color?: {
+      bg: string;
+    };
+  } | null;
 }
 
 interface CrearTareaData {
@@ -61,7 +68,7 @@ interface CrearTareaData {
   tipoFecha?: 'fecha' | 'dias';
   fecha?: Date;
   asignadoA?: string;
-  recurrencia: string;
+  recurrencia: 'unica' | 'mensual' | 'anual';
   diasSemana?: string[];
 }
 
@@ -96,31 +103,29 @@ export function CalendarioSection() {
           : {
               id: 'temp',
               nombre: 'Gris',
-              bg: '#9CA3AF',
+              bg: t.assigned_user?.color?.bg || '#9CA3AF',
               text: '#FFFFFF',
               accent: '#9CA3AF',
               wcagContrast: 4.5,
             };
 
-        // Determine tipoFecha based on presence of due_date vs week_days
+        // Determine tipoFecha based on presence of week_days
         const tipoFecha = t.week_days ? 'dias' : 'fecha';
 
-        // Map recurrence type correctly
+        // Map frequency for UI display
         let frecuencia: Tarea['frecuencia'] = 'unica';
-        if (t.recurrence_type === 'monthly') frecuencia = 'mensual';
-        else if (t.recurrence_type === 'yearly') frecuencia = 'anual';
-        else if (t.recurrence_type === 'weekly' || t.week_days) frecuencia = 'semanal';
-        else if (t.recurrence_type === 'daily') frecuencia = 'diaria';
-        else if (t.recurrence_type === 'recurring' && !t.week_days) frecuencia = 'mensual'; // Fallback for old data
+        if (t.recurrence_type === 'daily') frecuencia = 'diaria';
+        else if (t.recurrence_type === 'weekly') frecuencia = 'semanal';
+        else if (t.recurrence_type === 'monthly') frecuencia = 'mensual';
         
         return {
           id: t.id,
           titulo: t.title,
           tipoFecha: tipoFecha, 
-          fecha: t.due_date
-            ? format(new Date(t.due_date), 'yyyy-MM-dd')
-            : undefined,
+          fecha: t.due_date,
+          endDate: t.end_date || undefined,
           frecuencia: frecuencia,
+          recurrence_type: t.recurrence_type,
           creadorId: t.assigned_to_user_id || '',
           colorCreador: color,
           completada: t.status === 'completed',
@@ -144,7 +149,6 @@ export function CalendarioSection() {
   }, [fetchTareas]);
 
   const isTareaOnDay = useCallback((tarea: Tarea, dia: Date) => {
-    const diaISO = format(dia, 'yyyy-MM-dd');
     const diaSemana = dia.getDay().toString();
     
     // User requested to hide past tasks (que ya paso su dia)
@@ -155,32 +159,38 @@ export function CalendarioSection() {
       return false;
     }
 
-    if (tarea.tipoFecha === 'dias' && tarea.diasSemana) {
-      const matchesDay = tarea.diasSemana.includes(diaSemana);
-      if (!matchesDay) return false;
+    // Check validity period
+    const startDate = new Date(tarea.fecha!);
+    startDate.setHours(0, 0, 0, 0);
+    if (dia < startDate) return false;
 
-      // Limit by recurrence period based on creation date
-      const createdDate = tarea.createdAt ? new Date(tarea.createdAt) : new Date();
-      
-      if (tarea.frecuencia === 'unica') {
-        // Only same week (shown as semanal)
-        return isSameWeek(dia, createdDate, { locale: es, weekStartsOn: 1 });
-      }
-      if (tarea.frecuencia === 'mensual') {
-        // Only same month
-        return isSameMonth(dia, createdDate);
-      }
-      if (tarea.frecuencia === 'anual') {
-        // Only same year
-        return isSameYear(dia, createdDate);
-      }
+    if (tarea.endDate) {
+      const endDate = new Date(tarea.endDate);
+      endDate.setHours(23, 59, 59, 999);
+      if (dia > endDate) return false;
+    }
+
+    // 1. None (Unique)
+    if (tarea.recurrence_type === 'none') {
+      return isSameDay(new Date(tarea.fecha!), dia);
+    }
+
+    // 2. Daily
+    if (tarea.recurrence_type === 'daily') {
       return true;
     }
 
-    if (tarea.fecha) {
-      // For 'fecha' type, recurrence is disabled, only show on specific day
-      return tarea.fecha === diaISO;
+    // 3. Weekly
+    if (tarea.recurrence_type === 'weekly' && tarea.diasSemana) {
+      return tarea.diasSemana.includes(diaSemana);
     }
+
+    // 4. Monthly
+    if (tarea.recurrence_type === 'monthly') {
+      // Repeat on the same day of the month as due_date
+      return new Date(tarea.fecha!).getDate() === dia.getDate();
+    }
+
     return false;
   }, []);
 
@@ -223,19 +233,32 @@ export function CalendarioSection() {
   const handleCrearTarea = async (data: CrearTareaData) => {
     if (!familia || !usuario) return;
 
-    let due_date = null;
-    if (data.tipoFecha === 'fecha' && data.fecha) {
-      due_date = data.fecha.toISOString();
-    }
-
-    // Determine recurrence_type string for backend
-    let recurrence_type = 'unique';
+    const due_date = data.fecha ? data.fecha.toISOString() : new Date().toISOString();
+    
+    // Determine recurrence_type based on UI selection
+    let recurrence_type: 'none' | 'daily' | 'weekly' | 'monthly' = 'none';
     if (data.tipoFecha === 'dias') {
       recurrence_type = 'weekly';
     } else if (data.recurrencia === 'mensual') {
       recurrence_type = 'monthly';
+    }
+
+    // Calculate end_date (Vigencia)
+    let end_date = null;
+    const baseDate = data.fecha || new Date();
+    
+    if (data.recurrencia === 'unica') {
+      // If it's weekly, "unica" means "only this week"
+      if (recurrence_type === 'weekly') {
+        end_date = endOfWeek(baseDate, { weekStartsOn: 1 }).toISOString();
+      } else {
+        // For 'none', end_date is the same as due_date
+        end_date = due_date;
+      }
+    } else if (data.recurrencia === 'mensual') {
+      end_date = endOfMonth(baseDate).toISOString();
     } else if (data.recurrencia === 'anual') {
-      recurrence_type = 'yearly';
+      end_date = endOfYear(baseDate).toISOString();
     }
 
     try {
@@ -244,9 +267,10 @@ export function CalendarioSection() {
         family_id: familia.id,
         assigned_to_user_id: data.asignadoA || usuario.id,
         recurrence_type: recurrence_type,
-        week_days: data.tipoFecha === 'dias' && data.diasSemana ? data.diasSemana.join(',') : undefined,
+        week_days: data.tipoFecha === 'dias' && data.diasSemana ? data.diasSemana.join(',') : null,
         status: 'pending',
         due_date: due_date,
+        end_date: end_date,
       });
       fetchTareas();
       setIsNuevaTareaOpen(false);
@@ -260,19 +284,30 @@ export function CalendarioSection() {
   const handleGuardarEdicion = async (data: CrearTareaData) => {
     if (!tareaAEditar || !familia) return;
 
-    let due_date = null;
-    if (data.tipoFecha === 'fecha' && data.fecha) {
-      due_date = data.fecha.toISOString();
-    }
+    const due_date = data.fecha ? data.fecha.toISOString() : new Date().toISOString();
 
-    // Determine recurrence_type string for backend
-    let recurrence_type = 'unique';
+    // Determine recurrence_type based on UI selection
+    let recurrence_type: 'none' | 'daily' | 'weekly' | 'monthly' = 'none';
     if (data.tipoFecha === 'dias') {
       recurrence_type = 'weekly';
     } else if (data.recurrencia === 'mensual') {
       recurrence_type = 'monthly';
+    }
+
+    // Calculate end_date (Vigencia)
+    let end_date = null;
+    const baseDate = data.fecha || new Date();
+    
+    if (data.recurrencia === 'unica') {
+      if (recurrence_type === 'weekly') {
+        end_date = endOfWeek(baseDate, { weekStartsOn: 1 }).toISOString();
+      } else {
+        end_date = due_date;
+      }
+    } else if (data.recurrencia === 'mensual') {
+      end_date = endOfMonth(baseDate).toISOString();
     } else if (data.recurrencia === 'anual') {
-      recurrence_type = 'yearly';
+      end_date = endOfYear(baseDate).toISOString();
     }
 
     try {
@@ -280,9 +315,10 @@ export function CalendarioSection() {
         title: data.titulo,
         assigned_to_user_id: data.asignadoA,
         recurrence_type: recurrence_type,
-        week_days: data.tipoFecha === 'dias' && data.diasSemana ? data.diasSemana.join(',') : undefined,
+        week_days: data.tipoFecha === 'dias' && data.diasSemana ? data.diasSemana.join(',') : null,
         status: tareaAEditar.completada ? 'completed' : 'pending',
         due_date: due_date,
+        end_date: end_date,
       });
       fetchTareas();
       setTareaAEditar(undefined);
@@ -514,7 +550,7 @@ export function CalendarioSection() {
             ? {
                 titulo: tareaAEditar.titulo,
                 tipoFecha: tareaAEditar.tipoFecha || 'fecha',
-                fecha: tareaAEditar.fecha ? new Date(tareaAEditar.fecha + 'T12:00:00') : undefined,
+                fecha: tareaAEditar.fecha ? new Date(tareaAEditar.fecha) : undefined,
                 diasSemana: tareaAEditar.diasSemana,
                 recurrencia: (tareaAEditar.frecuencia === 'semanal' || !tareaAEditar.frecuencia ? 'unica' : tareaAEditar.frecuencia) as 'unica' | 'mensual' | 'anual',
                 asignadoA: tareaAEditar.creadorId,

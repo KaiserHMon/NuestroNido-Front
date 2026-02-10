@@ -98,14 +98,11 @@ export const CrearNotaSchema = z.object({
   titulo: z
     .string()
     .min(1, 'El título es requerido')
-    .max(200, 'El título no puede exceder 200 caracteres'),
+    .max(50, 'El título no puede exceder 50 caracteres'),
   contenido: z
     .string()
     .min(1, 'El contenido es requerido')
-    .max(5000, 'El contenido no puede exceder 5000 caracteres'),
-  fecha: z.date().min(new Date(), 'La fecha debe ser en el futuro o hoy'),
-  membrosAsignados: z.array(z.string()).optional(),
-  prioritad: z.enum(['low', 'medium', 'high']).optional(),
+    .max(500, 'El contenido no puede exceder 500 caracteres'),
 });
 
 export type CrearNotaFormInputs = z.infer<typeof CrearNotaSchema>;

@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trash2, Edit2, LogOut, Crown } from 'lucide-react';
+import { Trash2, Edit2, LogOut, Medal } from 'lucide-react';
 import { MiembroAvatar } from '@/components/ui/miembro-avatar';
 import { Miembro } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
@@ -11,7 +11,7 @@ interface MiembroCardProps {
   miembro: Miembro;
   esMiembro: boolean; // Si es el usuario actual
   esCreador: boolean; // Si el usuario actual es el creador de la familia
-  isFirst?: boolean; // Si es el primero en el leaderboard
+  rank?: number; // Rango en el leaderboard (1, 2, 3)
   onEliminar: (miembro: Miembro) => void;
   onEditar: (miembro: Miembro) => void;
 }
@@ -20,22 +20,26 @@ export function MiembroCard({
   miembro,
   esMiembro,
   esCreador,
-  isFirst,
+  rank,
   onEliminar,
   onEditar,
 }: MiembroCardProps) {
   const esMiembroCreador = miembro.rolId === 'creador';
 
+  const getMedalColor = (rank: number) => {
+    switch (rank) {
+      case 1: return 'text-yellow-500 fill-yellow-500';
+      case 2: return 'text-slate-400 fill-slate-400';
+      case 3: return 'text-amber-700 fill-amber-700';
+      default: return '';
+    }
+  };
+
   return (
     <Card className="rounded-[20px] shadow-[0_10px_30px_rgba(0,0,0,0.06)] border-none bg-card overflow-hidden transition-all hover:shadow-md group">
       <CardContent className="p-5 py-6 flex flex-row items-center gap-5 relative min-h-[100px]">
         {/* Avatar centrado a la izquierda - Opción A: Protagonista */}
-        <div className="shrink-0 relative">
-          {isFirst && (
-            <div className="absolute -top-7 left-1/2 -translate-x-1/2 z-10 drop-shadow-md">
-              <Crown className="w-5 h-5 text-primary fill-primary" />
-            </div>
-          )}
+        <div className="shrink-0 relative flex flex-col items-center">
           <MiembroAvatar
             nombre={miembro.nombre}
             color={miembro.color}
@@ -44,6 +48,11 @@ export function MiembroCard({
             className="w-[60px] h-[60px] text-xl border-2 shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
             style={{ borderColor: miembro.color.bg }}
           />
+          {rank && (
+            <div className="absolute -bottom-2 bg-card rounded-full p-0.5 shadow-sm border border-border">
+              <Medal className={`w-4 h-4 ${getMedalColor(rank)}`} />
+            </div>
+          )}
         </div>
 
         {/* Info: Nombre y Título (Nivel) */}

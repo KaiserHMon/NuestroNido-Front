@@ -1,24 +1,19 @@
 import { fetchClient } from '@/lib/api-client';
-import { Nota } from '@/lib/types';
+import { Nota, CrearNotaRequest, ActualizarNotaRequest } from '@/lib/types';
 
 export const NoteService = {
   async getNotes(): Promise<Nota[]> {
     return fetchClient<Nota[]>('/api/v1/notes/');
   },
 
-  async create(note: {
-    titulo: string;
-    family_id: string;
-    user_id: string;
-    contenido?: string;
-  }): Promise<Nota> {
+  async create(note: CrearNotaRequest): Promise<Nota> {
     return fetchClient<Nota>('/api/v1/notes/', {
       method: 'POST',
       body: note,
     });
   },
 
-  async update(noteId: string, updates: Partial<Nota>): Promise<Nota> {
+  async update(noteId: string, updates: ActualizarNotaRequest): Promise<Nota> {
     return fetchClient<Nota>(`/api/v1/notes/${noteId}`, {
       method: 'PUT',
       body: updates,
