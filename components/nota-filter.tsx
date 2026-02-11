@@ -3,7 +3,6 @@
 import { Miembro } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { getColorById } from '@/lib/colors';
 
 interface NotaFilterProps {
   miembros: Miembro[];
@@ -13,10 +12,7 @@ interface NotaFilterProps {
 
 export function NotaFilter({ miembros, filtrosActivos, onFilterChange }: NotaFilterProps) {
   const getMiembroColor = (miembro: Miembro) => {
-    if (typeof miembro.color === 'string') {
-        return getColorById(miembro.color)?.bg || '#9CA3AF';
-    }
-    return miembro.color?.bg || '#9CA3AF';
+    return miembro.color.bg || '#9CA3AF';
   };
 
   const handleToggleFiltro = (miembroId: string) => {

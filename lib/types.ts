@@ -174,11 +174,7 @@ export interface Nota {
     name: string;
     experience_points: number;
     level?: Level;
-    color?: {
-      id: string;
-      name: string;
-      bg: string;
-    };
+    color?: ColorMiembro;
   };
 }
 

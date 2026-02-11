@@ -70,10 +70,9 @@ export function RegisterPageContent() {
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
-              <Bird className="w-5 h-5 text-primary-foreground" />
-            </div>
-                          <h1 className="text-3xl font-bold text-foreground font-serif-custom italic">NuestroNido</h1>          </div>
+            <img src="/logo.png" alt="NuestroNido Logo" className="w-8 h-8 object-contain" />
+            <h1 className="text-3xl font-bold text-foreground font-serif-custom italic">NuestroNido</h1>
+          </div>
           <h2 className="text-lg font-semibold text-foreground mb-1">Crear Cuenta</h2>
           <p className="text-muted-foreground text-xs sm:text-sm">
             Gestiona tu hogar de manera fácil y divertida

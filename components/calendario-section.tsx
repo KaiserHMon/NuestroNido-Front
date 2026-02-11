@@ -36,6 +36,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useFamilia } from '@/hooks/use-familia';
 import { toast } from 'sonner';
 import { SectionSkeleton } from '@/components/ui/section-skeleton';
+import { mapColor } from '@/lib/colors';
 
 interface ColorDot {
   bg: string;
@@ -100,14 +101,7 @@ export function CalendarioSection() {
 
         const color = creatorMember
           ? creatorMember.color
-          : {
-              id: 'temp',
-              nombre: 'Gris',
-              bg: t.assigned_user?.color?.bg || '#9CA3AF',
-              text: '#FFFFFF',
-              accent: '#9CA3AF',
-              wcagContrast: 4.5,
-            };
+          : mapColor(t.assigned_user?.color, t.assigned_to_user_id || t.assigned_user?.id);
 
         // Determine tipoFecha based on presence of week_days
         const tipoFecha = t.week_days ? 'dias' : 'fecha';

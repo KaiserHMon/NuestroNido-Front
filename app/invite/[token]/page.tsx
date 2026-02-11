@@ -6,6 +6,10 @@ export async function generateMetadata({ params }: { params: { token: string } }
   const token = params.token;
   try {
     const info = await FamilyService.getInvitationInfo(token);
+    const ogUrl = new URL('https://nuestronido.vercel.app/api/og');
+    if (info.family_name) ogUrl.searchParams.set('familyName', info.family_name);
+    if (info.inviter_name) ogUrl.searchParams.set('inviterName', info.inviter_name);
+
     return {
       title: `Únete a la familia ${info.family_name}`,
       description: `Te han invitado a formar parte de ${info.family_name} en NuestroNido. ¡Coordina tareas, listas y más en un solo lugar!`,
@@ -13,6 +17,20 @@ export async function generateMetadata({ params }: { params: { token: string } }
         title: `Invitación a NuestroNido: Familia ${info.family_name}`,
         description: `Únete a ${info.family_name} y ayuda a organizar el hogar de forma divertida.`,
         type: 'website',
+        images: [
+          {
+            url: ogUrl.toString(),
+            width: 1200,
+            height: 630,
+            alt: `Invitación a la familia ${info.family_name}`,
+          },
+        ],
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `¡Te invitamos a la familia ${info.family_name}!`,
+        description: `Únete a nosotros en NuestroNido.`,
+        images: [ogUrl.toString()],
       },
     };
   } catch {

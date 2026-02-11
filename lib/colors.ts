@@ -155,3 +155,33 @@ export const getColorCSSVariables = (colorId: string) => {
     '--color-accent': color.accent,
   } as React.CSSProperties;
 };
+
+/**
+ * Mapear un color de la API a un ColorMiembro completo.
+ * Si el color es un string (ID), busca el objeto correspondiente.
+ * Si es un objeto parcial, lo completa.
+ * Si es 'default' o falta, asigna uno basado en el userId para consistencia.
+ */
+export const mapColor = (
+  apiColor: { id?: string; name?: string; bg?: string } | string | undefined | null,
+  _userId?: string
+): ColorMiembro => {
+  let colorData: ColorMiembro | undefined;
+
+  // 1. Intentar obtener por ID si es string o si el objeto tiene ID
+  if (typeof apiColor === 'string') {
+    colorData = getColorById(apiColor);
+  } else if (apiColor && apiColor.id) {
+    colorData = getColorById(apiColor.id);
+  }
+
+  // 2. Retornar el color encontrado o el gris por defecto
+  return colorData || {
+    id: 'default',
+    nombre: 'Gris',
+    bg: '#9CA3AF',
+    text: '#FFFFFF',
+    accent: '#9CA3AF',
+    wcagContrast: 4.5,
+  };
+};

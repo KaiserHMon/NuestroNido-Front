@@ -91,8 +91,10 @@ export async function fetchClient<T>(endpoint: string, options: FetchOptions = {
 
     // Si no hay refresh token o falla el refresco: logout
     TokenService.clearSession();
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('auth-logout'));
+    }
     // No redirigimos automáticamente aquí para permitir que la UI reaccione al estado de auth
-    // o podríamos despachar un evento personalizado si fuera necesario.
   }
 
   const responseData = await response.json().catch(() => ({}));

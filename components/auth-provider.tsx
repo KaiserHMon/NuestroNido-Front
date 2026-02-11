@@ -1,5 +1,6 @@
 'use client';
 
+/* global StorageEvent */
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { Usuario, AuthContextType, Familia, Level } from '@/lib/types';
 import { AuthService } from '@/services/auth-service';
@@ -46,14 +47,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                setUsuario(updatedUser);
                TokenService.setUser(updatedUser);
             }
+          } else {
+            setFamilia(null);
           }
         } catch (err) {
            console.error("Error loading family in checkSession:", err);
-           // Ignore 404 or other errors, user just might not have a family
+           // If we get a 401 here, the api-client will trigger 'auth-logout'
         }
       } else {
-        console.log("No stored session found, clearing.");
+        console.log("No stored session found or session incomplete, clearing.");
         TokenService.clearSession();
+        setUsuario(null);
+        setToken(null);
+        setFamilia(null);
+        setIsAuthenticated(false);
       }
     } catch (error) {
       console.error('Error checking session:', error);
@@ -66,6 +73,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     checkSession();
   }, [checkSession]);
+
+  // Sincronización entre pestañas y eventos de logout global
+  useEffect(() => {
+    const performLogout = () => {
+      setUsuario(null);
+      setToken(null);
+      setFamilia(null);
+      setIsAuthenticated(false);
+    };
+
+    const handleStorageChange = (e: Event) => {
+      const storageEvent = e as StorageEvent;
+      if (storageEvent.key === 'auth_token' && !storageEvent.newValue) {
+        performLogout();
+      }
+    };
+
+    const handleAuthLogout = () => {
+      performLogout();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('auth-logout', handleAuthLogout);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('auth-logout', handleAuthLogout);
+    };
+  }, []);
 
   const login = useCallback(async (email: string, password: string) => {
     const response = await AuthService.login(email, password);

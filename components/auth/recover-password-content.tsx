@@ -1,7 +1,6 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { Bird } from 'lucide-react';
 import { ResetPasswordForm } from '@/components/auth/reset-password-form';
 
 export function RecoverPasswordContent() {
@@ -13,10 +12,9 @@ export function RecoverPasswordContent() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-              <Bird className="w-6 h-6 text-primary-foreground" />
-            </div>
-                          <h1 className="text-3xl sm:text-4xl font-bold text-foreground font-serif-custom italic">NuestroNido</h1>          </div>
+            <img src="/logo.png" alt="NuestroNido Logo" className="w-10 h-10 object-contain" />
+            <h1 className="text-3xl sm:text-4xl font-bold text-foreground font-serif-custom italic">NuestroNido</h1>
+          </div>
           <p className="text-muted-foreground text-sm sm:text-base">Restablecer Contraseña</p>
         </div>
 

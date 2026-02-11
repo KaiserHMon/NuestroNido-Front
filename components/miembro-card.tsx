@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Trash2, Edit2, LogOut, Medal } from 'lucide-react';
+import { Trash2, Edit2, LogOut } from 'lucide-react';
 import { MiembroAvatar } from '@/components/ui/miembro-avatar';
 import { Miembro } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
@@ -26,18 +26,6 @@ export function MiembroCard({
 }: MiembroCardProps) {
   const esMiembroCreador = miembro.rolId === 'creador';
 
-  const getMedalColor = (rank: number) => {
-    switch (rank) {
-      case 1: 
-        return 'text-[#FFD700] fill-[#FFD700] drop-shadow-[0_2px_4px_rgba(218,165,32,0.6)] filter brightness-110';
-      case 2: 
-        return 'text-[#C0C0C0] fill-[#C0C0C0] drop-shadow-[0_2px_4px_rgba(169,169,169,0.5)] filter brightness-105';
-      case 3: 
-        return 'text-[#CD7F32] fill-[#CD7F32] drop-shadow-[0_2px_4px_rgba(139,69,19,0.4)]';
-      default: return '';
-    }
-  };
-
   return (
     <Card className="rounded-[24px] shadow-[0_8px_30px_rgba(0,0,0,0.04)] border-none bg-card overflow-hidden transition-all hover:shadow-xl hover:-translate-y-1 group">
       <CardContent className="p-5 py-6 flex flex-row items-center gap-5 relative min-h-[100px]">
@@ -52,8 +40,8 @@ export function MiembroCard({
             style={{ borderColor: miembro.color.bg }}
           />
           {rank && (
-            <div className="absolute -bottom-2 bg-card rounded-full p-1.5 shadow-md border border-border/50 animate-in zoom-in duration-300">
-              <Medal className={`w-4 h-4 ${getMedalColor(rank)}`} strokeWidth={2.5} />
+            <div className={`absolute -bottom-2 bg-card rounded-full shadow-md border border-border/50 animate-in zoom-in duration-300 leading-none ${rank <= 3 ? 'p-1.5 text-lg' : 'px-2 py-1 text-[10px] font-bold text-muted-foreground'}`}>
+              {rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`}
             </div>
           )}
         </div>

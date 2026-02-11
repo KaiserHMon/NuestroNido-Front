@@ -1,6 +1,6 @@
 import { fetchClient } from '@/lib/api-client';
 import { Familia, Miembro, ValidarCodigoResponse } from '@/lib/types';
-import { getColorById, COLORES_DISPONIBLES } from '@/lib/colors';
+import { mapColor } from '@/lib/colors';
 
 interface ApiMember {
   user_id: string;
@@ -88,27 +88,7 @@ export const FamilyService = {
     return response.map((apiMember) => {
       const user = apiMember.user || {};
       
-      let colorData: { id?: string; name?: string; bg?: string } = { name: 'Gris', bg: '#9CA3AF', id: 'default' };
-      
-      if (typeof user.color === 'string') {
-        const foundColor = getColorById(user.color);
-        if (foundColor) {
-           colorData = foundColor;
-        }
-      } else if (user.color) {
-        colorData = user.color;
-      }
-
-      // If color is still default, assign a consistent random color based on user_id
-      if (colorData.id === 'default' && COLORES_DISPONIBLES.length > 0) {
-        let hash = 0;
-        const str = apiMember.user_id;
-        for (let i = 0; i < str.length; i++) {
-            hash = str.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        const index = Math.abs(hash) % COLORES_DISPONIBLES.length;
-        colorData = COLORES_DISPONIBLES[index];
-      }
+      const colorData = mapColor(user.color, apiMember.user_id);
 
       const levelData = user.level;
       
@@ -122,14 +102,7 @@ export const FamilyService = {
       return {
         id: apiMember.user_id, // The member ID in UI usually refers to the User ID for identification
         nombre: user.name || 'Miembro',
-        color: {
-          id: colorData.id || 'default',
-          nombre: colorData.name || 'Gris',
-          bg: colorData.bg || '#9CA3AF',
-          text: '#FFFFFF', // Default
-          accent: colorData.bg || '#9CA3AF', // Default
-          wcagContrast: 4.5,
-        },
+        color: colorData,
         experience_points: user.experience_points || 0,
         nivel: levelData
           ? {
