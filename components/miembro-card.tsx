@@ -40,7 +40,7 @@ export function MiembroCard({
             style={{ borderColor: miembro.color.bg }}
           />
           {rank && (
-            <div className={`absolute -bottom-2 bg-card rounded-full shadow-md border border-border/50 animate-in zoom-in duration-300 leading-none ${rank <= 3 ? 'p-1.5 text-lg' : 'px-2 py-1 text-[10px] font-bold text-muted-foreground'}`}>
+            <div className={`absolute -bottom-4 bg-card rounded-full shadow-md border border-border/50 animate-in zoom-in duration-300 leading-none ${rank <= 3 ? 'p-1.5 text-lg' : 'px-2 py-1 text-[10px] font-bold text-muted-foreground'}`}>
               {rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`}
             </div>
           )}

@@ -87,18 +87,16 @@ export function MiembrosSection() {
       try {
         await UserService.updateUser(usuario.id, {
           name: miembroActualizado.nombre,
-          // Color update not supported by simple user update yet?
-          // UserUpdate schema has 'name'. Color might be separate.
         });
-                    // Also need to refresh family to see updated name in list
-                    cargarFamiliaGuardada();
-                    setMiembroAEditar(null);
-                    toast.success('Perfil actualizado');
-                } catch (error) {
-                    console.error('Error updating profile:', error);
-                    toast.error('Error al actualizar perfil');
-                }
         
+        // Refresh family to see updated name in list
+        cargarFamiliaGuardada();
+        setMiembroAEditar(null);
+        toast.success('Perfil actualizado');
+      } catch (error) {
+        console.error('Error updating profile:', error);
+        toast.error('Error al actualizar perfil');
+      }
     }
   };
 

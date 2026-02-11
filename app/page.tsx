@@ -11,9 +11,8 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@/components/ui/carousel"
+import Autoplay from 'embla-carousel-autoplay'
 import { useAuth } from '@/hooks/use-auth';
 import { LandingHeader } from '@/components/landing-header';
 import { SupportDialog } from '@/components/dialogs/support-dialog';
@@ -91,31 +90,39 @@ function LandingPageContent() {
             </div>
 
             <div className="hidden lg:flex relative w-full items-center justify-center">
-              <Carousel className="w-full" opts={{ loop: true }}>
+              <Carousel 
+                className="w-full" 
+                opts={{ loop: true }}
+                plugins={[
+                  Autoplay({
+                    delay: 4000,
+                  }),
+                ]}
+              >
                 <CarouselContent>
                   <CarouselItem>
                     <Card className="overflow-hidden border-2 border-primary/20 shadow-2xl rounded-xl">
-                      <img 
-                        src="/screenshot-1.png" 
-                        alt="NuestroNido Screenshot 1" 
-                        className="w-full h-auto object-cover"
-                      />
+                      <div className="aspect-video w-full overflow-hidden bg-muted">
+                        <img 
+                          src="/screenshot-1.png" 
+                          alt="NuestroNido Screenshot 1" 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                     </Card>
                   </CarouselItem>
                   <CarouselItem>
                     <Card className="overflow-hidden border-2 border-primary/20 shadow-2xl rounded-xl">
-                      <img 
-                        src="/screenshot-2.png" 
-                        alt="NuestroNido Screenshot 2" 
-                        className="w-full h-auto object-cover"
-                      />
+                      <div className="aspect-video w-full overflow-hidden bg-muted">
+                        <img 
+                          src="/screenshot-2.png" 
+                          alt="NuestroNido Screenshot 2" 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                     </Card>
                   </CarouselItem>
                 </CarouselContent>
-                <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex gap-2">
-                  <CarouselPrevious className="static translate-y-0" />
-                  <CarouselNext className="static translate-y-0" />
-                </div>
               </Carousel>
             </div>
           </div>
@@ -177,9 +184,8 @@ function LandingPageContent() {
         <footer className="border-t border-card bg-card/80 backdrop-blur-sm">
           <div className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
             <div className="flex flex-col items-center text-center gap-6">
-                          <div className="flex items-center gap-2">
-                            <img src="/logo.png" alt="NuestroNido Logo" className="w-8 h-8 object-contain" />
-                            <span className="text-foreground text-xl font-serif-custom italic">NuestroNido</span>
+                          <div className="flex items-center justify-center">
+                            <img src="/logo.png" alt="NuestroNido Logo" className="h-12 w-auto object-contain" />
                           </div>
                             <div className="flex flex-wrap justify-center gap-x-8 gap-y-3">
                 <button

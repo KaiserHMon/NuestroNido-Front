@@ -157,31 +157,66 @@ export const getColorCSSVariables = (colorId: string) => {
 };
 
 /**
+ * Determina si un color es oscuro o claro para elegir el color de texto (blanco/negro)
+ */
+const getContrastColor = (hexcolor: string): string => {
+  // Limpiar el hash si existe
+  const hex = hexcolor.replace('#', '');
+  
+  // Convertir a RGB
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  
+  // Calcular luminancia (fórmula estándar)
+  const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+  
+  return yiq >= 128 ? '#1A1A1A' : '#FFFFFF';
+};
+
+/**
  * Mapear un color de la API a un ColorMiembro completo.
- * Si el color es un string (ID), busca el objeto correspondiente.
- * Si es un objeto parcial, lo completa.
- * Si es 'default' o falta, asigna uno basado en el userId para consistencia.
  */
 export const mapColor = (
   apiColor: { id?: string; name?: string; bg?: string } | string | undefined | null,
-  _userId?: string
+  userId?: string
 ): ColorMiembro => {
-  let colorData: ColorMiembro | undefined;
-
-  // 1. Intentar obtener por ID si es string o si el objeto tiene ID
-  if (typeof apiColor === 'string') {
-    colorData = getColorById(apiColor);
-  } else if (apiColor && apiColor.id) {
-    colorData = getColorById(apiColor.id);
+  // 1. Si es un objeto de la API con 'bg', lo usamos directamente
+  if (apiColor && typeof apiColor === 'object' && apiColor.bg) {
+    const bg = apiColor.bg.startsWith('#') ? apiColor.bg : `#${apiColor.bg}`;
+    return {
+      id: apiColor.id || 'custom',
+      nombre: apiColor.name || 'Personalizado',
+      bg: bg,
+      text: getContrastColor(bg),
+      accent: bg, // Podríamos oscurecerlo un poco si fuera necesario
+      wcagContrast: 4.5,
+    };
   }
 
-  // 2. Retornar el color encontrado o el gris por defecto
-  return colorData || {
+  // 2. Intentar obtener por ID si es string (Legacy o fallback)
+  if (typeof apiColor === 'string') {
+    const colorData = getColorById(apiColor.toLowerCase());
+    if (colorData) return colorData;
+  }
+
+  // 3. Si no hay color del backend, asignar uno determinístico basado en el userId
+  if (userId) {
+    let hash = 0;
+    for (let i = 0; i < userId.length; i++) {
+      hash = userId.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % COLORES_DISPONIBLES.length;
+    return COLORES_DISPONIBLES[index];
+  }
+
+  // 4. Default final (Gris)
+  return {
     id: 'default',
     nombre: 'Gris',
     bg: '#9CA3AF',
     text: '#FFFFFF',
-    accent: '#9CA3AF',
+    accent: '#4B5563',
     wcagContrast: 4.5,
   };
 };

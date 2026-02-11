@@ -55,7 +55,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <img src="/logo.png" alt="Cargando..." className="w-16 h-16 object-contain mx-auto mb-4 animate-pulse" />
+          <img src="/logo.png" alt="Cargando..." className="h-16 w-auto object-contain mx-auto mb-4 animate-pulse" />
           <p className="text-foreground">Cargando...</p>
         </div>
       </div>
@@ -65,13 +65,12 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-card bg-card/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
+        <div className="container mx-auto px-4 sm:px-6 py-2">
           <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3 flex-1">
-            <img src="/logo.png" alt="NuestroNido Logo" className="w-8 h-8 sm:w-10 sm:h-10 object-contain" />
-            <div className="flex flex-col gap-0.5">
-              <h1 className="text-xl sm:text-2xl text-foreground font-serif-custom italic tracking-tight">NuestroNido</h1>
-              <p className="text-xs sm:text-sm text-muted-foreground">{familia.nombre}</p>
+            <img src="/logo.png" alt="NuestroNido Logo" className="h-8 sm:h-10 w-auto object-contain" />
+            <div className="flex flex-col">
+              <p className="text-sm sm:text-base font-semibold text-foreground leading-tight">{familia.nombre}</p>
             </div>
           </div>
 

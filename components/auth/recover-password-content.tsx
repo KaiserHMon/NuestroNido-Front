@@ -11,9 +11,8 @@ export function RecoverPasswordContent() {
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <img src="/logo.png" alt="NuestroNido Logo" className="w-10 h-10 object-contain" />
-            <h1 className="text-3xl sm:text-4xl font-bold text-foreground font-serif-custom italic">NuestroNido</h1>
+          <div className="flex items-center justify-center mb-4">
+            <img src="/logo.png" alt="NuestroNido Logo" className="w-16 h-16 object-contain" />
           </div>
           <p className="text-muted-foreground text-sm sm:text-base">Restablecer Contraseña</p>
         </div>

@@ -20,11 +20,10 @@ export function LandingHeader() {
   if (isLoading) {
     return (
       <header className="border-b border-card bg-card/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
+        <div className="container mx-auto px-4 sm:px-6 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <img src="/logo.png" alt="NuestroNido Logo" className="w-8 h-8 sm:w-10 sm:h-10 object-contain" />
-              <span className="text-xl sm:text-2xl text-foreground font-serif-custom italic">NuestroNido</span>
+            <div className="flex items-center">
+              <img src="/logo.png" alt="NuestroNido Logo" className="h-8 sm:h-12 w-auto object-contain" />
             </div>
           </div>
         </div>
@@ -34,14 +33,17 @@ export function LandingHeader() {
 
   return (
     <header className="border-b border-card bg-card/80 backdrop-blur-sm sticky top-0 z-50">
-      <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
+      <div className="container mx-auto px-4 sm:px-6 py-3">
         <div className="flex items-center justify-between">
           <Link
             href="/"
-            className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity"
+            className="flex items-center hover:opacity-80 transition-opacity shrink-0"
           >
-            <img src="/logo.png" alt="NuestroNido Logo" className="w-8 h-8 sm:w-10 sm:h-10 object-contain" />
-            <span className="text-xl sm:text-2xl text-foreground font-serif-custom italic">NuestroNido</span>
+            <img 
+              src="/logo.png" 
+              alt="NuestroNido Logo" 
+              className="h-8 sm:h-12 w-auto object-contain" 
+            />
           </Link>
 
           <div className="flex items-center gap-2">

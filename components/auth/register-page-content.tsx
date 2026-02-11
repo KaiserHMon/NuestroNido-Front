@@ -69,9 +69,8 @@ export function RegisterPageContent() {
     <main className="min-h-screen bg-background flex items-center justify-center px-4 py-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <img src="/logo.png" alt="NuestroNido Logo" className="w-8 h-8 object-contain" />
-            <h1 className="text-3xl font-bold text-foreground font-serif-custom italic">NuestroNido</h1>
+          <div className="flex items-center justify-center mb-2">
+            <img src="/logo.png" alt="NuestroNido Logo" className="h-16 w-auto object-contain" />
           </div>
           <h2 className="text-lg font-semibold text-foreground mb-1">Crear Cuenta</h2>
           <p className="text-muted-foreground text-xs sm:text-sm">
