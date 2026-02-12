@@ -6,13 +6,6 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel"
-import Autoplay from 'embla-carousel-autoplay'
 import { useAuth } from '@/hooks/use-auth';
 import { LandingHeader } from '@/components/landing-header';
 import { SupportDialog } from '@/components/dialogs/support-dialog';
@@ -42,107 +35,95 @@ function LandingPageContent() {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-cover bg-center" style={{ backgroundImage: "url('/bg.svg')" }}>
+      <div className="absolute inset-0 bg-background/10 z-0"></div> {/* Overlay for background opacity */}
       <main className="relative z-10">
         {/* Header */}
         <LandingHeader />
 
         {/* Hero Section */}
-        <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-20 md:py-32">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="text-left">
-              <AnimatedHeroText />
-              
-              <p className="text-base sm:text-lg md:text-xl text-foreground mb-8 sm:mb-10 text-pretty max-w-2xl font-medium">
-                Organizá el hogar y motivá a todos a participar,
-                <br className="hidden sm:block" /> sin fricción ni discusiones.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-start items-center">
-                <div className="flex flex-col items-center w-full sm:w-auto">
-                  {isAuthenticated ? (
-                    <Link href={dashboardRoute} className="w-full sm:w-auto">
-                      <Button
-                        size="lg"
-                        className="w-full sm:w-auto bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-8 sm:px-10 shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
-                      >
-                        Ir a mi Nido
-                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-                      </Button>
-                    </Link>
-                  ) : (
-                    <Link href="/register" className="w-full sm:w-auto">
-                      <Button
-                        size="lg"
-                        className="w-full sm:w-auto bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-8 sm:px-10 shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
-                      >
-                        Crear mi Nido
-                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-                      </Button>
-                    </Link>
-                  )}
-                  {!isAuthenticated && (
-                    <p className="text-xs sm:text-sm text-foreground/60 mt-3 font-medium">
-                      Gratis - Sin tarjeta
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
+        <section className="w-full pt-10 sm:pt-6 md:pt-8 pb-12 sm:pb-20 md:pb-32">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="grid lg:grid-cols-2 gap-6 lg:gap-12 items-center">
+                      <div className="text-left">
+                        <AnimatedHeroText />
+                        
+                        <p className="text-base sm:text-lg md:text-xl text-foreground mb-8 sm:mb-10 text-pretty max-w-2xl font-medium">
+                          Organizá el hogar y motivá a todos a participar,
+                          <br className="hidden sm:block" /> sin fricción ni discusiones.
+                        </p>
+                        
+                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-start items-center">
+                          <div className="flex flex-col items-center w-full sm:w-auto">
+                            {isAuthenticated ? (
+                              <Link href={dashboardRoute} className="w-full sm:w-auto">
+                                <Button
+                                  size="lg"
+                                  className="w-full sm:w-auto bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-8 sm:px-10 shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
+                                >
+                                  Ir a mi Nido
+                                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
+                                </Button>
+                              </Link>
+                            ) : (
+                              <Link href="/register" className="w-full sm:w-auto">
+                                <Button
+                                  size="lg"
+                                  className="w-full sm:w-auto bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-8 sm:px-10 shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
+                                >
+                                  Crear mi Nido
+                                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
+                                </Button>
+                              </Link>
+                            )}
+                            {!isAuthenticated && (
+                              <p className="text-xs sm:text-sm text-foreground/60 mt-3 font-medium">
+                                Gratis - Sin tarjeta
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
 
-            <div className="hidden lg:flex relative w-full items-center justify-center">
-              <Carousel 
-                className="w-full" 
-                opts={{ loop: true }}
-                plugins={[
-                  Autoplay({
-                    delay: 4000,
-                  }),
-                ]}
-              >
-                <CarouselContent>
-                  <CarouselItem>
-                    <Card className="overflow-hidden border-2 border-primary/20 shadow-2xl rounded-xl">
-                      <div className="aspect-video w-full overflow-hidden bg-muted">
-                        <img 
-                          src="/screenshot-1.png" 
-                          alt="NuestroNido Screenshot 1" 
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    </Card>
-                  </CarouselItem>
-                  <CarouselItem>
-                    <Card className="overflow-hidden border-2 border-primary/20 shadow-2xl rounded-xl">
-                      <div className="aspect-video w-full overflow-hidden bg-muted">
-                        <img 
-                          src="/screenshot-2.png" 
-                          alt="NuestroNido Screenshot 2" 
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                    </Card>
-                  </CarouselItem>
-                </CarouselContent>
-              </Carousel>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }} // Removed rotate: 1
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              className="relative w-full flex items-center justify-center pt-2 lg:pt-0"
+            >
+              <img
+                src="\family.png"
+                alt="NuestroNido App Mockup"
+                className="w-full h-auto object-contain rounded-lg shadow-2xl shadow-primary/30 max-w-xl" // Changed w-[108%] to w-full and added max-w-xl
+                style={{
+                  boxShadow: '0 15px 30px -5px rgba(var(--primary-rgb), 0.20), 0 0px 50px rgba(var(--primary-rgb), 0.10)', // Adjusted boxShadow
+                  // Removed transform: 'scale(1.08)'
+                }}
+                loading="eager"
+              />
+              {/* Radial blur/halo removed */}
+            </motion.div>
           </div>
+        </div>
         </section>
 
         {/* Features Section */}
         <FeaturesSection />
 
+
+
         {/* How it Works */}
         <HowItWorksSection />
 
         {/* CTA Section */}
-        <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-20">
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false, amount: 0.3 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="max-w-4xl mx-auto text-center bg-gradient-to-br from-card via-card to-primary/10 rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-2xl border border-primary/10"
-          >
+        <section className="w-full py-12 sm:py-20">
+          <div className="container mx-auto px-4 sm:px-6">
+            <motion.div 
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: false, amount: 0.3 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="max-w-4xl mx-auto text-center bg-gradient-to-br from-card/80 via-card/50 to-primary/10 rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-2xl border border-primary/10"
+            >
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-heading text-primary mb-3 sm:mb-4">
               Comienza a organizar tu familia hoy
             </h2>
@@ -178,6 +159,7 @@ function LandingPageContent() {
               )}
             </div>
           </motion.div>
+          </div>
         </section>
 
         {/* Footer */}

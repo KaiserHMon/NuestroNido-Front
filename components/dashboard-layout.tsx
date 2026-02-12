@@ -66,15 +66,14 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
     <div className="min-h-screen bg-background">
       <header className="border-b border-card bg-card/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 py-2">
-          <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-3 flex-1">
-            <img src="/logo.png" alt="NuestroNido Logo" className="h-8 sm:h-10 w-auto object-contain" />
-            <div className="flex flex-col">
-              <p className="text-sm sm:text-base font-semibold text-foreground leading-tight">{familia.nombre}</p>
+          <div className="flex items-start justify-between w-full">
+            {/* Logo and Family Name */}
+            <div className="flex flex-col items-center flex-1">
+              <img src="/logo.png" alt="NuestroNido Logo" className="h-8 sm:h-10 w-auto object-contain" />
+              <p className="text-sm sm:text-base font-semibold text-foreground leading-tight mt-1">{familia.nombre}</p>
             </div>
-          </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 pt-1">
               <Link href="/">
                 <Button
                   variant="ghost"
@@ -102,7 +101,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
         </div>
       </header>
 
-      <nav className="bg-primary backdrop-blur-sm border-b border-primary sticky top-[57px] sm:top-[65px] z-10" aria-label="Navegación principal">
+      <nav className="bg-primary backdrop-blur-sm border-b border-primary sticky top-[48px] sm:top-[56px] z-10" aria-label="Navegación principal">
         <div className="container mx-auto px-3 sm:px-4">
           <div className="flex items-center justify-between">
             <div className="flex gap-1 sm:gap-2 overflow-x-auto py-2 sm:py-3 scrollbar-hide items-center">

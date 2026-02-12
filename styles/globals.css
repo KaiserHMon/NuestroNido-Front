@@ -6,22 +6,22 @@
 :root {
   --background: #fbd7a7;
   --foreground: #000000;
-  --card: #ffffff;
+  --card: #fffff0;
   --card-foreground: #000000;
-  --popover: #ffffff;
+  --popover: #f2f8fc;
   --popover-foreground: #000000;
   --primary: #f76e6e;
-  --primary-foreground: #ffffff;
+  --primary-foreground: #f2f8fc;
   --secondary: #3b7e9b;
-  --secondary-foreground: #ffffff;
+  --secondary-foreground: #f2f8fc;
   --muted: #fde9cc;
   --muted-foreground: #57534e;
   --accent: #3b7e9b;
   --accent-foreground: #000000;
   --destructive: #f76e6e;
-  --destructive-foreground: #ffffff;
+  --destructive-foreground: #f2f8fc;
   --border: #e0b48e;
-  --input: #ffffff;
+  --input: #f2f8fc;
   --ring: #f76e6e;
   --chart-1: #3b7e9b;
   --chart-2: #5cb2af;

@@ -48,9 +48,10 @@ const itemVariants: Variants = {
 
 export function FeaturesSection() {
   return (
-    <section className="container mx-auto px-4 sm:px-6 py-12 sm:py-20 bg-card/50 backdrop-blur-sm">
-      <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-10 sm:mb-16 px-2">
+    <section className="w-full py-12 sm:py-20 bg-card/30 backdrop-blur-sm border-y border-card/10">
+      <div className="container mx-auto px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-10 sm:mb-16 px-2">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -91,6 +92,7 @@ export function FeaturesSection() {
             </motion.div>
           ))}
         </motion.div>
+      </div>
       </div>
     </section>
   );
