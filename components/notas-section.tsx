@@ -46,7 +46,10 @@ export function NotasSection() {
     try {
       setLoading(true);
       const data = await NoteService.getNotes();
-      setNotas(data);
+      // Filter notes to only show those from current members
+      const memberIds = new Set(familia.miembros.map(m => m.id));
+      const filteredData = data.filter(n => memberIds.has(n.user_id));
+      setNotas(filteredData);
     } catch (error) {
       console.error('Error fetching notes:', error);
       toast.error('Error al cargar las notas');

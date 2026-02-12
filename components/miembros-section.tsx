@@ -52,12 +52,16 @@ export function MiembrosSection() {
     try {
       if (miembroAEliminar.id === usuario?.id) {
         await FamilyService.leave(nuevoCreadorId);
+        toast.success('Has salido de la familia');
+        // Usar window.location para asegurar un refresco total del estado de la app
+        window.location.href = '/home';
+        return;
       } else {
         await FamilyService.removeMember(miembroAEliminar.id);
+        toast.success('Miembro eliminado');
       }
       cargarFamiliaGuardada();
       setMiembroAEliminar(null);
-      toast.success('Miembro eliminado');
     } catch (error) {
       console.error('Error removing member:', error);
       toast.error('Error al eliminar miembro');

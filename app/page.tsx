@@ -70,15 +70,10 @@ function LandingPageContent() {
                                   size="lg"
                                   className="w-full sm:w-auto bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-8 sm:px-10 shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
                                 >
-                                  Crear mi Nido
+                                  Comenzar gratis
                                   <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
                                 </Button>
                               </Link>
-                            )}
-                            {!isAuthenticated && (
-                              <p className="text-xs sm:text-sm text-foreground/60 mt-3 font-medium">
-                                Gratis - Sin tarjeta
-                              </p>
                             )}
                           </div>
                         </div>
@@ -147,15 +142,10 @@ function LandingPageContent() {
                     size="lg"
                     className="bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-10 sm:px-12 w-full sm:w-auto shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
                   >
-                    Crear mi Nido
+                    Comenzar gratis
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
                   </Button>
                 </Link>
-              )}
-              {!isAuthenticated && (
-                <p className="text-xs sm:text-sm text-foreground/60 mt-4 font-medium">
-                  Gratis - Sin tarjeta
-                </p>
               )}
             </div>
           </motion.div>

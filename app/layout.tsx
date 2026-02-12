@@ -70,7 +70,7 @@ export const metadata: Metadata = {
     siteName: 'NuestroNido',
     images: [
       {
-        url: '/api/og',
+        url: '/og-image.svg',
         width: 1200,
         height: 630,
         alt: 'NuestroNido - Gestión Familiar',
@@ -84,7 +84,7 @@ export const metadata: Metadata = {
     title: 'NuestroNido - Tu hogar organizado',
     description:
       'Coordina tareas, listas y notas con tu familia de forma divertida. ¡Únete a NuestroNido!',
-    images: ['/api/og'],
+    images: ['/og-image.svg'],
     creator: '@nuestronido',
   },
   icons: {

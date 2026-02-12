@@ -36,7 +36,6 @@ import { useAuth } from '@/hooks/use-auth';
 import { useFamilia } from '@/hooks/use-familia';
 import { toast } from 'sonner';
 import { SectionSkeleton } from '@/components/ui/section-skeleton';
-import { mapColor } from '@/lib/colors';
 
 interface ColorDot {
   bg: string;
@@ -95,13 +94,12 @@ export function CalendarioSection() {
       setLoading(true);
       const data = await TaskService.getTasks() as unknown as ApiTask[];
 
-      const mappedTareas: Tarea[] = data.map((t) => {
-        const creatorMember = miembrosMap.get(t.assigned_to_user_id || '') || 
-                             miembrosMap.get(t.assigned_user?.id || '');
+      const mappedTareas: Tarea[] = data
+        .filter((t) => t.assigned_to_user_id && miembrosMap.has(t.assigned_to_user_id))
+        .map((t) => {
+          const creatorMember = miembrosMap.get(t.assigned_to_user_id!)!;
 
-        const color = creatorMember
-          ? creatorMember.color
-          : mapColor(t.assigned_user?.color, t.assigned_to_user_id || t.assigned_user?.id);
+          const color = creatorMember.color;
 
         // Determine tipoFecha based on presence of week_days
         const tipoFecha = t.week_days ? 'dias' : 'fecha';

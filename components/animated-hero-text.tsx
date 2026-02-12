@@ -20,7 +20,7 @@ export function AnimatedHeroText() {
   }, []);
 
   return (
-    <h1 className="flex flex-col text-left text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold font-heading leading-tight mb-6">
+    <h1 className="flex flex-col text-left text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-heading leading-tight mb-6">
       <span className="text-primary">Un hogar más</span>
       <div className="h-[1.3em] relative overflow-hidden">
         <AnimatePresence mode="popLayout">

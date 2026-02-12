@@ -68,7 +68,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
         <div className="container mx-auto px-4 sm:px-6 py-2">
           <div className="flex items-start justify-between w-full">
             {/* Logo and Family Name */}
-            <div className="flex flex-col items-center flex-1">
+            <div className="flex flex-col items-start">
               <img src="/logo.png" alt="NuestroNido Logo" className="h-8 sm:h-10 w-auto object-contain" />
               <p className="text-sm sm:text-base font-semibold text-foreground leading-tight mt-1">{familia.nombre}</p>
             </div>
