@@ -50,142 +50,17 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
   const onSubmit = async (data: RegisterFormInputs) => {
     setIsSubmitting(true);
     try {
-      await registerUser(data.nombre, data.email, data.password);
+      await registerUser(data.name, data.email, data.password);
       onSuccess?.();
     } catch {
-      // Error is handled by state
+      // Handled by auth state
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-      {authError ? (
-        <Alert variant="destructive" className="mb-2">
-          <AlertDescription>{authError}</AlertDescription>
-        </Alert>
-      ) : null}
-
-      <div className="space-y-1.5">
-        <Label htmlFor="nombre" className="text-foreground font-medium">
-          Nombre Completo
-        </Label>
-        <div className="relative">
-          <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            id="nombre"
-            type="text"
-            placeholder="Juan García"
-            className="pl-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
-            {...register('nombre')}
-            disabled={isSubmitting}
-          />
-        </div>
-        {errors.nombre && <p className="text-sm text-destructive">{errors.nombre.message}</p>}
-      </div>
-
-      <div className="space-y-1.5">
-        <Label htmlFor="email" className="text-foreground font-medium">
-          Email
-        </Label>
-        <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            id="email"
-            type="email"
-            placeholder="tu@email.com"
-            className="pl-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
-            {...register('email')}
-            disabled={isSubmitting}
-          />
-        </div>
-        {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
-      </div>
-
-      <div className="space-y-1.5">
-        <Label htmlFor="password" className="text-foreground font-medium">
-          Contraseña
-        </Label>
-        <div className="relative">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            id="password"
-            type={showPassword ? 'text' : 'password'}
-            placeholder="Ingresa tu contraseña"
-            className="pl-10 pr-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
-            {...register('password')}
-            disabled={isSubmitting}
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-            tabIndex={-1}
-          >
-            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          </button>
-        </div>
-        {errors.password ? <p className="text-xs text-destructive">{errors.password.message}</p> : null}
-        {!password ? (
-          <p className="text-xs text-muted-foreground">
-            Mínimo 8 caracteres, mayúsculas, números y símbolos
-          </p>
-        ) : null}
-      </div>
-
-      <div className="space-y-1.5">
-        <Label htmlFor="passwordConfirm" className="text-foreground font-medium">
-          Confirmar Contraseña
-        </Label>
-        <div className="relative">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            id="passwordConfirm"
-            type={showConfirmPassword ? 'text' : 'password'}
-            placeholder="Confirma tu contraseña"
-            className="pl-10 pr-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
-            {...register('passwordConfirm')}
-            disabled={isSubmitting}
-          />
-          <button
-            type="button"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-            tabIndex={-1}
-          >
-            {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          </button>
-        </div>
-        {errors.passwordConfirm && (
-          <p className="text-sm text-destructive">{errors.passwordConfirm.message}</p>
-        )}
-      </div>
-
-      <Button
-        type="submit"
-        className="w-full bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground font-medium h-10 shadow-md shadow-primary/30 transition-all duration-300 mt-2"
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? (
-          <>
-            <span className="inline-block w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" />
-            Creando cuenta...
-          </>
-        ) : (
-          'Crear Cuenta'
-        )}
-      </Button>
-
-      <div className="relative py-2">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-border"></div>
-        </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">O</span>
-        </div>
-      </div>
-
+    <div className="space-y-3">
       <Button
         type="button"
         variant="outline"
@@ -213,6 +88,133 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         </svg>
         <span className="font-medium">Continuar con Google</span>
       </Button>
-    </form>
+
+      <div className="relative py-2">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-border"></div>
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-background px-2 text-muted-foreground">O</span>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
+        {authError ? (
+          <Alert variant="destructive" className="mb-2">
+            <AlertDescription>{authError}</AlertDescription>
+          </Alert>
+        ) : null}
+
+        <div className="space-y-1.5">
+          <Label htmlFor="name" className="text-foreground font-medium">
+            Nombre Completo
+          </Label>
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              id="name"
+              type="text"
+              placeholder="Juan García"
+              className="pl-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
+              {...register('name')}
+              disabled={isSubmitting}
+            />
+          </div>
+          {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="email" className="text-foreground font-medium">
+            Email
+          </Label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              id="email"
+              type="email"
+              placeholder="tu@email.com"
+              className="pl-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
+              {...register('email')}
+              disabled={isSubmitting}
+            />
+          </div>
+          {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="password" className="text-foreground font-medium">
+            Contraseña
+          </Label>
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Ingresa tu contraseña"
+              className="pl-10 pr-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
+              {...register('password')}
+              disabled={isSubmitting}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              tabIndex={-1}
+            >
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
+          {errors.password ? <p className="text-xs text-destructive">{errors.password.message}</p> : null}
+          {!password ? (
+            <p className="text-xs text-muted-foreground">
+              Mínimo 8 caracteres, mayúsculas, números y símbolos
+            </p>
+          ) : null}
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="passwordConfirm" className="text-foreground font-medium">
+            Confirmar Contraseña
+          </Label>
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              id="passwordConfirm"
+              type={showConfirmPassword ? 'text' : 'password'}
+              placeholder="Confirma tu contraseña"
+              className="pl-10 pr-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
+              {...register('passwordConfirm')}
+              disabled={isSubmitting}
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              tabIndex={-1}
+            >
+              {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          </div>
+          {errors.passwordConfirm && (
+            <p className="text-sm text-destructive">{errors.passwordConfirm.message}</p>
+          )}
+        </div>
+
+        <Button
+          type="submit"
+          className="w-full bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground font-medium h-10 shadow-md shadow-primary/30 transition-all duration-300 mt-2"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <>
+              <span className="inline-block w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" />
+              Creando cuenta...
+            </>
+          ) : (
+            'Crear Cuenta'
+          )}
+        </Button>
+      </form>
+    </div>
   );
 }

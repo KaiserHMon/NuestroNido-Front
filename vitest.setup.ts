@@ -6,7 +6,7 @@ afterEach(() => {
   cleanup();
 });
 
-// Mock de next/navigation
+// Mock next/navigation
 vi.mock('next/navigation', () => ({
   useRouter: () => ({
     push: vi.fn(),
@@ -19,7 +19,7 @@ vi.mock('next/navigation', () => ({
   usePathname: () => '/',
 }));
 
-// Mock de next/router (si es necesario)
+// Mock next/router
 vi.mock('next/router', () => ({
   useRouter: () => ({
     push: vi.fn(),
@@ -30,7 +30,7 @@ vi.mock('next/router', () => ({
   }),
 }));
 
-// Mock global para window.matchMedia (para responsive tests)
+// Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: vi.fn().mockImplementation((query) => ({
@@ -45,7 +45,7 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-// Mock de ResizeObserver
+// Mock ResizeObserver
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),

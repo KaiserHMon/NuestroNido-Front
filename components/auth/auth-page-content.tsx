@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { useAuth } from '@/hooks/use-auth';
-import { useFamilia } from '@/hooks/use-familia';
+import { useFamily } from '@/hooks/use-family'; // Corrected import
 
-// Lazy load formularios
+// Lazy load forms
 const LoginForm = dynamic(
   () => import('@/components/auth/login-form').then((mod) => ({ default: mod.LoginForm })),
   {
@@ -40,18 +40,18 @@ export function AuthPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
-  const { familia, isLoading: familiaLoading } = useFamilia();
+  const { family, isLoading: familyLoading } = useFamily(); // Renamed from familia to family
   const [activeTab, setActiveTab] = useState<'login' | 'forgot-password'>('login');
 
   useEffect(() => {
-    if (isAuthenticated && !authLoading && !familiaLoading) {
-      if (familia) {
+    if (isAuthenticated && !authLoading && !familyLoading) {
+      if (family) { // Renamed from familia to family
         router.push('/dashboard');
       } else {
         router.push('/home');
       }
     }
-  }, [isAuthenticated, authLoading, familiaLoading, familia, router]);
+  }, [isAuthenticated, authLoading, familyLoading, family, router]); // Included family in dependency array
 
   useEffect(() => {
     const tab = searchParams.get('tab');
@@ -62,7 +62,7 @@ export function AuthPageContent() {
     }
   }, [searchParams]);
 
-  if (authLoading || familiaLoading) {
+  if (authLoading || familyLoading) {
     return null; // Let the parent's Suspense fallback handle it
   }
 

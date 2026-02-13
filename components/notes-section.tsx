@@ -1,17 +1,17 @@
 'use client';
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { Nota } from '@/lib/types';
-import { NotaCard } from '@/components/nota-card';
-import { NotaFilter } from '@/components/nota-filter';
-import { NotaExpandidaModal } from '@/components/nota-expandida-modal';
-import { CrearNotaDialog } from '@/components/dialogs/crear-nota-dialog';
+import { Note } from '@/lib/types';
+import { NoteCard } from '@/components/note-card';
+import { NoteFilter } from '@/components/note-filter';
+import { ExpandedNoteModal } from '@/components/expanded-note-modal';
+import { CreateNoteDialog } from '@/components/dialogs/create-note-dialog';
 import { Button } from '@/components/ui/button';
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from '@/components/ui/empty';
 import { Plus } from 'lucide-react';
 import { NoteService } from '@/services/note-service';
 import { useAuth } from '@/hooks/use-auth';
-import { useFamilia } from '@/hooks/use-familia';
+import { useFamily } from '@/hooks/use-family';
 import { toast } from 'sonner';
 import { SectionSkeleton } from '@/components/ui/section-skeleton';
 import {
@@ -26,54 +26,53 @@ import {
 } from '@/components/ui/alert-dialog';
 
 interface NoteFormData {
-  titulo: string;
-  contenido: string;
+  title: string;
+  content: string;
 }
 
-export function NotasSection() {
-  const { usuario } = useAuth();
-  const { familia } = useFamilia();
-  const [notas, setNotas] = useState<Nota[]>([]);
-  const [filtrosActivos, setFiltrosActivos] = useState<string[]>([]);
+export function NotesSection() {
+  const { user } = useAuth();
+  const { family } = useFamily();
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const [isNuevaNotaOpen, setIsNuevaNotaOpen] = useState(false);
-  const [notaAEliminar, setNotaAEliminar] = useState<string | null>(null);
-  const [notaAEditar, setNotaAEditar] = useState<Nota | undefined>(undefined);
-  const [notaAExpandir, setNotaAExpandir] = useState<Nota | null>(null);
+  const [isNewNoteOpen, setIsNewNoteOpen] = useState(false);
+  const [noteToDelete, setNoteToDelete] = useState<string | null>(null);
+  const [noteToEdit, setNoteToEdit] = useState<Note | undefined>(undefined);
+  const [noteToExpand, setNoteToExpand] = useState<Note | null>(null);
 
-  const fetchNotas = useCallback(async () => {
-    if (!familia) return;
+  const fetchNotes = useCallback(async () => {
+    if (!family) return;
     try {
       setLoading(true);
       const data = await NoteService.getNotes();
-      // Filter notes to only show those from current members
-      const memberIds = new Set(familia.miembros.map(m => m.id));
+      const memberIds = new Set(family.members.map(m => m.id));
       const filteredData = data.filter(n => memberIds.has(n.user_id));
-      setNotas(filteredData);
+      setNotes(filteredData);
     } catch (error) {
       console.error('Error fetching notes:', error);
       toast.error('Error al cargar las notas');
     } finally {
       setLoading(false);
     }
-  }, [familia]);
+  }, [family]);
 
   useEffect(() => {
-    fetchNotas();
-  }, [fetchNotas]);
+    fetchNotes();
+  }, [fetchNotes]);
 
-  const handleCrearNota = async (data: NoteFormData) => {
-    if (!familia || !usuario) return;
+  const handleCreateNote = async (data: NoteFormData) => {
+    if (!family || !user) return;
 
     try {
-      const newNote = await NoteService.create({
-        title: data.titulo,
-        content: data.contenido,
-        family_id: familia.id,
+      const newNote = await NoteService.createNote({
+        title: data.title,
+        content: data.content,
+        family_id: family.id,
       });
 
-      setNotas((prev) => [newNote, ...prev]);
-      setIsNuevaNotaOpen(false);
+      setNotes((prev) => [newNote, ...prev]);
+      setIsNewNoteOpen(false);
       toast.success('Nota creada');
     } catch (error) {
       console.error('Error creating note:', error);
@@ -81,20 +80,20 @@ export function NotasSection() {
     }
   };
 
-  const handleEditNota = async (data: NoteFormData) => {
-    if (!familia || !usuario || !notaAEditar) return;
+  const handleEditNote = async (data: NoteFormData) => {
+    if (!family || !user || !noteToEdit) return;
 
     try {
-      const updatedNote = await NoteService.update(notaAEditar.id, {
-        title: data.titulo,
-        content: data.contenido,
+      const updatedNote = await NoteService.updateNote(noteToEdit.id, {
+        title: data.title,
+        content: data.content,
       });
 
-      setNotas((prev) =>
+      setNotes((prev) =>
         prev.map((n) => (n.id === updatedNote.id ? updatedNote : n))
       );
-      setNotaAEditar(undefined);
-      setIsNuevaNotaOpen(false);
+      setNoteToEdit(undefined);
+      setIsNewNoteOpen(false);
       toast.success('Nota actualizada');
     } catch (error) {
       console.error('Error updating note:', error);
@@ -102,10 +101,10 @@ export function NotasSection() {
     }
   };
 
-  const handleDeleteNota = async (noteId: string) => {
+  const handleDeleteNote = async (noteId: string) => {
     try {
-      await NoteService.delete(noteId);
-      setNotas((prev) => prev.filter((n) => n.id !== noteId));
+      await NoteService.deleteNote(noteId);
+      setNotes((prev) => prev.filter((n) => n.id !== noteId));
       toast.success('Nota eliminada');
     } catch (error) {
       console.error('Error deleting note:', error);
@@ -114,24 +113,24 @@ export function NotasSection() {
   };
 
   const onConfirmDelete = async () => {
-    if (notaAEliminar) {
-      await handleDeleteNota(notaAEliminar);
-      setNotaAEliminar(null);
+    if (noteToDelete) {
+      await handleDeleteNote(noteToDelete);
+      setNoteToDelete(null);
     }
   };
 
-  const notasFiltradas = useMemo(() => {
+  const filteredNotes = useMemo(() => {
     const filtered =
-      filtrosActivos.length === 0
-        ? notas
-        : notas.filter((nota) => filtrosActivos.includes(nota.user_id));
+      activeFilters.length === 0
+        ? notes
+        : notes.filter((note) => activeFilters.includes(note.user_id));
 
     return [...filtered].sort(
       (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
-  }, [notas, filtrosActivos]);
+  }, [notes, activeFilters]);
 
-  if (loading && notas.length === 0) {
+  if (loading && notes.length === 0) {
     return <SectionSkeleton />;
   }
 
@@ -145,8 +144,8 @@ export function NotasSection() {
         <Button
           className="bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground shadow-md shadow-primary/30 transition-all duration-300 active:scale-95 sm:w-auto w-full"
           onClick={() => {
-            setNotaAEditar(undefined);
-            setIsNuevaNotaOpen(true);
+            setNoteToEdit(undefined);
+            setIsNewNoteOpen(true);
           }}
         >
           <Plus className="w-4 h-4 mr-2" />
@@ -154,20 +153,20 @@ export function NotasSection() {
         </Button>
       </div>
 
-      {familia && familia.miembros.length > 0 ? (
-        <NotaFilter
-          miembros={familia.miembros}
-          filtrosActivos={filtrosActivos}
-          onFilterChange={setFiltrosActivos}
+      {family && family.members.length > 0 ? (
+        <NoteFilter
+          members={family.members}
+          activeFilters={activeFilters}
+          onFilterChange={setActiveFilters}
         />
       ) : null}
 
-      {notasFiltradas.length === 0 ? (
+      {filteredNotes.length === 0 ? (
         <Empty>
           <EmptyHeader>
             <EmptyTitle>No hay notas</EmptyTitle>
             <EmptyDescription>
-              {filtrosActivos.length > 0
+              {activeFilters.length > 0
                 ? 'No hay notas que coincidan con los filtros seleccionados'
                 : 'Aún no hay notas. ¡Crea una para comenzar!'}
             </EmptyDescription>
@@ -177,52 +176,52 @@ export function NotasSection() {
         <div className="space-y-4">
           <div className="flex items-center justify-between text-sm text-muted-foreground px-1">
             <span>
-              Mostrando {notasFiltradas.length} de {notas.length} nota
-              {notas.length !== 1 ? 's' : ''}
+              Mostrando {filteredNotes.length} de {notes.length} nota
+              {notes.length !== 1 ? 's' : ''}
             </span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {notasFiltradas.map((nota) => (
-              <NotaCard
-                key={nota.id}
-                nota={nota}
-                onDelete={() => setNotaAEliminar(nota.id)}
-                onEdit={() => setNotaAEditar(nota)}
-                onClick={() => setNotaAExpandir(nota)}
-                currentUserId={usuario?.id}
+            {filteredNotes.map((note) => (
+              <NoteCard
+                key={note.id}
+                note={note}
+                onDelete={() => setNoteToDelete(note.id)}
+                onEdit={() => setNoteToEdit(note)}
+                onClick={() => setNoteToExpand(note)}
+                currentUserId={user?.id}
               />
             ))}
           </div>
         </div>
       )}
 
-      <NotaExpandidaModal
-        nota={notaAExpandir}
-        open={!!notaAExpandir}
-        onOpenChange={(open) => !open && setNotaAExpandir(null)}
-        onEdit={setNotaAEditar}
-        onDelete={setNotaAEliminar}
-        currentUserId={usuario?.id}
+      <ExpandedNoteModal
+        note={noteToExpand}
+        open={!!noteToExpand}
+        onOpenChange={(open: boolean) => !open && setNoteToExpand(null)}
+        onEdit={setNoteToEdit}
+        onDelete={setNoteToDelete}
+        currentUserId={user?.id}
       />
 
-      <CrearNotaDialog
-        open={isNuevaNotaOpen || !!notaAEditar}
-        onOpenChange={(open) => {
-          if (!open) setNotaAEditar(undefined);
-          setIsNuevaNotaOpen(open);
+      <CreateNoteDialog
+        open={isNewNoteOpen || !!noteToEdit}
+        onOpenChange={(open: boolean) => {
+          if (!open) setNoteToEdit(undefined);
+          setIsNewNoteOpen(open);
         }}
-        onSubmit={notaAEditar ? handleEditNota : handleCrearNota}
-        notaAEditar={
-          notaAEditar
+        onSubmit={noteToEdit ? handleEditNote : handleCreateNote}
+        noteToEdit={
+          noteToEdit
             ? {
-                titulo: notaAEditar.title || '',
-                contenido: notaAEditar.content || '',
+                title: noteToEdit.title || '',
+                content: noteToEdit.content || '',
               }
             : undefined
         }
       />
 
-      <AlertDialog open={!!notaAEliminar} onOpenChange={() => setNotaAEliminar(null)}>
+      <AlertDialog open={!!noteToDelete} onOpenChange={() => setNoteToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>

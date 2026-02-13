@@ -1,8 +1,3 @@
-/**
- * Tipos y interfaces compartidas para la aplicación NuestroNido
- */
-
-// ============ AUTENTICACIÓN ============
 export interface Level {
   id?: string;
   name: string;
@@ -11,19 +6,19 @@ export interface Level {
   image_url?: string;
 }
 
-export interface Usuario {
+export interface User {
   id: string;
-  nombre: string;
+  name: string;
   email?: string;
-  familiaId?: string;
-  color?: ColorMiembro;
+  familyId?: string;
+  color?: MemberColor;
   experience_points: number;
-  nivel?: Level;
+  level?: Level;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface UsuarioSession extends Usuario {
+export interface UserSession extends User {
   token: string;
 }
 
@@ -34,134 +29,130 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   token: string;
-  usuario: Usuario;
-  familia?: Familia;
+  user: User;
+  family?: Family;
 }
 
 export interface RegisterRequest {
-  nombre: string;
+  name: string;
   email: string;
   password: string;
   passwordConfirm: string;
-  aceptaTerminos: boolean;
+  acceptTerms: boolean;
 }
 
 export interface RegisterResponse {
   success: boolean;
-  usuario: Usuario;
+  user: User;
   token: string;
-  familia?: Familia;
+  family?: Family;
 }
 
-// ============ COLORES ============
-export interface ColorMiembro {
+export interface MemberColor {
   id: string;
-  nombre: string;
+  name: string;
   bg: string;
   text: string;
   accent: string;
   wcagContrast: number;
 }
 
-// ============ FAMILIA ============
-export interface Familia {
+export interface Family {
   id: string;
-  nombre: string;
-  codigoInvitacion: string;
-  creadorId: string;
-  miembros: Miembro[];
-  maxMiembros?: number;
-  maxNotas?: number;
-  activa: boolean;
+  name: string;
+  invitationCode: string;
+  creatorId: string;
+  members: Member[];
+  maxMembers?: number;
+  maxNotes?: number;
+  active: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface CrearFamiliaRequest {
-  nombre: string;
+export interface CreateFamilyRequest {
+  name: string;
 }
 
-export interface CrearFamiliaResponse {
+export interface CreateFamilyResponse {
   success: boolean;
-  familia: Familia;
-  codigoInvitacion: string;
+  family: Family;
+  invitationCode: string;
 }
 
-export interface UnirseAFamiliaRequest {
-  codigoInvitacion: string;
+export interface JoinFamilyRequest {
+  invitationCode: string;
 }
 
-export interface UnirseAFamiliaResponse {
+export interface JoinFamilyResponse {
   success: boolean;
-  familia: Familia;
-  miembro: Miembro;
+  family: Family;
+  member: Member;
 }
 
-export interface ValidarCodigoRequest {
-  codigo: string;
+export interface ValidateCodeRequest {
+  code: string;
 }
 
-export interface ValidarCodigoResponse {
-  valido: boolean;
-  nombreFamilia?: string;
-  miembrosActuales?: number;
-  maxMiembros?: number;
+export interface ValidateCodeResponse {
+  valid: boolean;
+  familyName?: string;
+  currentMembers?: number;
+  maxMembers?: number;
   error?: string;
 }
 
-export interface ActualizarFamiliaRequest {
-  nuevoNombre: string;
+export interface UpdateFamilyRequest {
+  newName: string;
 }
 
-export interface ActualizarFamiliaResponse {
+export interface UpdateFamilyResponse {
   success: boolean;
-  familia: Familia;
+  family: Family;
 }
 
-export interface EliminarFamiliaRequest {
-  confirmacionTexto: string;
+export interface DeleteFamilyRequest {
+  confirmationText: string;
 }
 
-export interface EliminarFamiliaResponse {
+export interface DeleteFamilyResponse {
   success: boolean;
-  mensaje: string;
+  message: string;
 }
 
-// ============ MIEMBROS ============
-export interface Miembro {
+export interface Member {
   id: string;
-  nombre: string;
-  color: ColorMiembro;
+  name: string;
+  color: MemberColor;
   experience_points: number;
-  nivel?: Level;
-  rolId: 'creador' | 'miembro' | 'member';
-  familiaId: string;
+  level?: Level;
+  roleId: 'creator' | 'member';
+  familyId: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export interface CrearMiembroRequest {
-  nombre: string;
-  familiaId: string;
+export interface CreateMemberRequest {
+  name: string;
+  familyId: string;
 }
 
-export interface EliminarMiembroRequest {
-  miembroId: string;
-  nuevoCreadorId?: string;
-  motivo?: string;
+export interface DeleteMemberRequest {
+  memberId: string;
+  newCreatorId?: string;
+  reason?: string;
 }
 
-export interface EliminarMiembroResponse {
+export interface DeleteMemberResponse {
   success: boolean;
   message: string;
-  familiaActualizada?: {
-    miembros: Miembro[];
-    nuevoCreador?: Miembro;
+  updatedFamily?: {
+    members: Member[];
+    newCreator?: Member;
   };
 }
 
-// ============ NOTAS ============
-export interface Nota {
+export interface Note {
   id: string;
   title: string | null;
   content: string | null;
@@ -174,75 +165,72 @@ export interface Nota {
     name: string;
     experience_points: number;
     level?: Level;
-    color?: ColorMiembro;
+    color?: MemberColor;
   };
 }
 
-export interface CrearNotaRequest {
+export interface CreateNoteRequest {
   title: string;
   content: string;
   family_id: string;
 }
 
-export interface ActualizarNotaRequest {
+export interface UpdateNoteRequest {
   title?: string;
   content?: string;
 }
 
-export interface Tarea {
+export interface Task {
   id: string;
-  titulo: string;
-  tipoFecha?: 'fecha' | 'dias';
-  fecha?: string; // ISO 8601 string: due_date
+  title: string;
+  dateType?: 'date' | 'days';
+  date?: string; // ISO 8601 string: due_date
   endDate?: string; // ISO 8601 string: end_date
-  diasSemana?: string[]; // ["1", "3"] para Lunes y Miércoles
-  hora?: string; // Opcional: "14:30"
-  creadorId: string;
-  colorCreador: ColorMiembro;
-  prioridad?: 'baja' | 'media' | 'alta';
-  frecuencia?: 'unica' | 'diaria' | 'semanal' | 'mensual' | 'anual';
+  daysOfWeek?: string[]; // ["1", "3"] for Monday and Wednesday
+  time?: string; // Optional: "14:30"
+  creatorId: string;
+  creatorColor: MemberColor;
+  priority?: 'low' | 'medium' | 'high';
+  frequency?: 'once' | 'daily' | 'weekly' | 'monthly' | 'yearly';
   recurrence_type: 'none' | 'daily' | 'weekly' | 'monthly';
-  completada: boolean;
-  miembrosAsignados?: string[];
-  familiaId: string;
+  completed: boolean;
+  assignedMembers?: string[];
+  familyId: string;
   createdAt?: string;
   updatedAt?: string;
 }
 
-// ============ CALENDARIO ============
-export interface EventoCalendario {
+export interface CalendarEvent {
   id: string;
-  notaId: string;
-  titulo: string;
-  fecha: Date;
-  colorMiembro: ColorMiembro;
-  nombreMiembro: string;
+  noteId: string;
+  title: string;
+  date: Date;
+  memberColor: MemberColor;
+  memberName: string;
 }
 
-// ============ LEADERBOARD ============
 export interface LeaderboardEntry {
-  puesto: number;
-  miembro: {
+  rank: number;
+  member: {
     id: string;
-    nombre: string;
-    color: ColorMiembro;
+    name: string;
+    color: MemberColor;
     imageUrl?: string;
   };
   experience_points: number;
-  nivel: Level;
-  nextLevel?: Level; // To help calculate progress
-  distintivo?: 'oro' | 'plata' | 'bronce';
+  level: Level;
+  nextLevel?: Level;
+  badge?: 'gold' | 'silver' | 'bronze';
 }
 
-export interface ResumenJugadorEnLeaderboard {
-  posicionActual: number;
-  totalMiembros: number;
-  puntos: number;
-  puntosParaSubirUnPuesto: number;
-  posicionAnterior?: number;
+export interface PlayerSummaryLeaderboard {
+  currentPosition: number;
+  totalMembers: number;
+  points: number;
+  pointsToNextRank: number;
+  previousPosition?: number;
 }
 
-// ============ ERRORES ============
 export interface AppError {
   code: string;
   message: string;
@@ -250,7 +238,6 @@ export interface AppError {
   details?: Record<string, unknown>;
 }
 
-// ============ API GENÉRICA ============
 export interface ApiResponse<T> {
   success: boolean;
   data?: T;
@@ -258,21 +245,20 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
-// ============ CONTEXTO DE AUTENTICACIÓN ============
 export interface AuthContextType {
-  usuario: Usuario | null;
-  familia: Familia | null;
+  user: User | null;
+  family: Family | null;
   token: string | null;
   levels: Level[];
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (nombre: string, email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
-  crearFamilia: (nombre: string) => Promise<void>;
-  unirseAFamilia: (codigo: string) => Promise<void>;
-  unirsePorLink: (token: string) => Promise<void>;
-  actualizarFamilia: (familiaId: string, nombre: string) => Promise<void>;
-  eliminarFamilia: (familiaId: string) => Promise<void>;
+  createFamily: (name: string) => Promise<void>;
+  joinFamily: (code: string) => Promise<void>;
+  joinByLink: (token: string) => Promise<void>;
+  updateFamily: (familyId: string, name: string) => Promise<void>;
+  deleteFamily: (familyId: string) => Promise<void>;
   refreshFamily: () => Promise<void>;
 }

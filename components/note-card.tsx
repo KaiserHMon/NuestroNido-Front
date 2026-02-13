@@ -1,29 +1,29 @@
 'use client';
 
-import { Nota } from '@/lib/types';
+import { Note } from '@/lib/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Trash2, Edit2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
-interface NotaCardProps {
-  nota: Nota;
-  onEdit?: (nota: Nota) => void;
-  onDelete?: (notaId: string) => void;
-  onClick?: (nota: Nota) => void;
+interface NoteCardProps {
+  note: Note;
+  onEdit?: (note: Note) => void;
+  onDelete?: (noteId: string) => void;
+  onClick?: (note: Note) => void;
   currentUserId?: string;
 }
 
-export function NotaCard({ nota, onEdit, onDelete, onClick, currentUserId }: NotaCardProps) {
-  const fechaFormato = format(new Date(nota.created_at), "d 'de' MMMM", { locale: es });
-  const isCreator = currentUserId === nota.user_id;
-  const colorBg = nota.user.color?.bg || '#9CA3AF';
+export function NoteCard({ note, onEdit, onDelete, onClick, currentUserId }: NoteCardProps) {
+  const formattedDate = format(new Date(note.created_at), "d 'de' MMMM", { locale: es });
+  const isCreator = currentUserId === note.user_id;
+  const colorBg = note.user.color?.bg || '#9CA3AF';
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      onClick?.(nota);
+      onClick?.(note);
     }
   };
 
@@ -33,23 +33,21 @@ export function NotaCard({ nota, onEdit, onDelete, onClick, currentUserId }: Not
       style={{
         borderLeftColor: colorBg,
       }}
-      onClick={() => onClick?.(nota)}
+      onClick={() => onClick?.(note)}
       onKeyDown={handleKeyDown}
       role="button"
       tabIndex={0}
-      aria-label={`Ver nota: ${nota.title || 'Sin título'}`}
+      aria-label={`Ver nota: ${note.title || 'Sin título'}`}
     >
       <CardContent className="p-4 space-y-3 flex-1 flex flex-col">
-        {/* Header */}
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-foreground break-words text-left line-clamp-2">
-              {nota.title || 'Nota sin título'}
+              {note.title || 'Nota sin título'}
             </h3>
-            <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">{fechaFormato}</p>
+            <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">{formattedDate}</p>
           </div>
 
-          {/* Actions */}
           <div 
             className="flex gap-1 flex-shrink-0" 
             onClick={(e) => e.stopPropagation()}
@@ -60,7 +58,7 @@ export function NotaCard({ nota, onEdit, onDelete, onClick, currentUserId }: Not
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onEdit(nota)}
+                onClick={() => onEdit(note)}
                 className="h-7 w-7 p-0 hover:bg-primary/10"
                 title="Editar nota"
               >
@@ -71,7 +69,7 @@ export function NotaCard({ nota, onEdit, onDelete, onClick, currentUserId }: Not
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onDelete(nota.id)}
+                onClick={() => onDelete(note.id)}
                 className="h-7 w-7 p-0 hover:bg-destructive/10"
                 title="Eliminar nota"
               >
@@ -81,14 +79,12 @@ export function NotaCard({ nota, onEdit, onDelete, onClick, currentUserId }: Not
           </div>
         </div>
 
-        {/* Content */}
-        {nota.content && (
+        {note.content && (
           <p className="text-sm text-muted-foreground line-clamp-4 flex-1 whitespace-pre-wrap">
-            {nota.content}
+            {note.content}
           </p>
         )}
 
-        {/* Footer - Creador */}
         <div className="flex items-center gap-2 pt-2 mt-auto border-t border-border/40">
           <div
             className="px-2 py-0.5 rounded-full text-[10px] font-medium flex items-center gap-1.5"
@@ -101,7 +97,7 @@ export function NotaCard({ nota, onEdit, onDelete, onClick, currentUserId }: Not
               className="w-1.5 h-1.5 rounded-full"
               style={{ backgroundColor: colorBg }}
             />
-            {nota.user.name}
+            {note.user.name}
           </div>
         </div>
       </CardContent>

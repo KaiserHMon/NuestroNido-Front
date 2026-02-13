@@ -1,12 +1,12 @@
 'use client';
 
 import { DashboardLayout } from '@/components/dashboard-layout';
-import { MiembrosSection } from '@/components/miembros-section';
+import { MembersSection } from '@/components/members-section';
 
-export default function MiembrosPage() {
+export default function MembersPage() {
   return (
-    <DashboardLayout activeSection="miembros">
-      <MiembrosSection />
+    <DashboardLayout activeSection="members">
+      <MembersSection />
     </DashboardLayout>
   );
 }

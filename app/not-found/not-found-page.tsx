@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Bird } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-export default function NotFound() {
+export default function NotFoundPage() {
   return (
     <main className="min-h-screen bg-background flex items-center justify-center">
       <section className="w-full">
@@ -17,15 +17,14 @@ export default function NotFound() {
               404
             </h1>
             <p className="mb-4 text-3xl md:text-4xl tracking-tight font-bold text-foreground">
-              Algo falta.
+              Something&apos;s missing.
             </p>
             <p className="mb-6 text-lg font-light text-muted-foreground">
-              Lo sentimos, no podemos encontrar esa página. Encontrarás muchas cosas para explorar
-              en la página de inicio.
+              Sorry, we can&apos;t find that page. You&apos;ll find plenty to explore on the home page.
             </p>
             <Link href="/">
-              <Button className="bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground font-medium px-6 py-2.5 shadow-md shadow-primary/30 transition-all duration-300">
-                Volver a Inicio
+              <Button className="bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/20 text-primary-foreground font-medium px-6 py-2.5 shadow-md shadow-primary/30 transition-all duration-300">
+                Back to Home
               </Button>
             </Link>
           </div>

@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { Bird } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useAuth } from '@/hooks/use-auth';
-import { useFamilia } from '@/hooks/use-familia';
+import { useFamily } from '@/hooks/use-family';
 import { FamilyService } from '@/services/family-service';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
@@ -33,7 +33,7 @@ export function RegisterPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
-  const { familia, isLoading: familiaLoading } = useFamilia();
+  const { family, isLoading: familyLoading } = useFamily();
   const [inviteInfo, setInviteInfo] = useState<{ family_name: string; inviter_name: string | null } | null>(null);
 
   useEffect(() => {
@@ -52,16 +52,16 @@ export function RegisterPageContent() {
   }, [searchParams]);
 
   useEffect(() => {
-    if (isAuthenticated && !authLoading && !familiaLoading) {
-      if (familia) {
+    if (isAuthenticated && !authLoading && !familyLoading) {
+      if (family) {
         router.push('/dashboard');
       } else {
         router.push('/home');
       }
     }
-  }, [isAuthenticated, authLoading, familiaLoading, familia, router]);
+  }, [isAuthenticated, authLoading, familyLoading, family, router]);
 
-  if (authLoading || familiaLoading) {
+  if (authLoading || familyLoading) {
     return null; // Let the parent's Suspense fallback handle it
   }
 

@@ -22,7 +22,7 @@ export function SupportDialog({ open, onOpenChange }: SupportDialogProps) {
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async () => {
+  const handleFormSubmit = async () => {
     if (!message.trim()) return;
 
     setIsSubmitting(true);
@@ -62,7 +62,7 @@ export function SupportDialog({ open, onOpenChange }: SupportDialogProps) {
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} disabled={isSubmitting || !message.trim()}>
+          <Button onClick={handleFormSubmit} disabled={isSubmitting || !message.trim()}>
             {isSubmitting ? 'Enviando...' : 'Enviar'}
           </Button>
         </DialogFooter>

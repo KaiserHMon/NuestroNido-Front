@@ -73,7 +73,6 @@ export function HowItWorksSection() {
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0 text-primary-foreground font-bold text-base sm:text-lg shadow-lg shadow-primary/30 z-10 relative">
                   {step.number}
                 </div>
-                {/* Mobile connector line for individual items if needed, or keeping it simple */}
               </div>
               
               <div className="pt-1">

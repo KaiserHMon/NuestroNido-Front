@@ -8,12 +8,12 @@ import { AuthProvider } from '@/components/auth-provider';
 import { Toaster } from '@/components/ui/sonner';
 import '@/styles/globals.css';
 
-const _geist = Geist({
+const geist = Geist({
   subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
 });
-const _geistMono = Geist_Mono({
+const geistMono = Geist_Mono({
   subsets: ['latin'],
   variable: '--font-mono',
   display: 'swap',
@@ -100,8 +100,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" suppressHydrationWarning>
-      <body className={`${_geist.variable} ${_geistMono.variable} ${poppins.variable} ${dmSerifText.variable} font-sans antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geist.variable} ${geistMono.variable} ${poppins.variable} ${dmSerifText.variable} font-sans antialiased`}>
         <AuthProvider>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
             {children}

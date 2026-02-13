@@ -10,37 +10,36 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { CrearFamiliaSchema, CrearFamiliaFormInputs } from '@/lib/validation';
-import { useFamilia } from '@/hooks/use-familia';
+import { CreateFamilySchema, CreateFamilyFormInputs } from '@/lib/validation';
+import { useFamily } from '@/hooks/use-family';
 
-interface CrearFamiliaCardProps {
+interface CreateFamilyCardProps {
   onSuccess?: () => void;
 }
 
-export function CrearFamiliaCard({ onSuccess }: CrearFamiliaCardProps) {
+export function CreateFamilyCard({ onSuccess }: CreateFamilyCardProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { crearFamilia } = useFamilia();
+  const { createFamily } = useFamily();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CrearFamiliaFormInputs>({
-    resolver: zodResolver(CrearFamiliaSchema),
+  } = useForm<CreateFamilyFormInputs>({
+    resolver: zodResolver(CreateFamilySchema),
   });
 
-  const onSubmit = async (data: CrearFamiliaFormInputs) => {
+  const handleFormSubmit = async (data: CreateFamilyFormInputs) => {
     setIsSubmitting(true);
     setError(null);
     try {
-      await crearFamilia(data.nombre);
+      await createFamily(data.name);
       onSuccess?.();
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Error al crear la familia';
       
-      // Check for specific error indicating user already has a family
       if (
         message.includes('User already belongs to a family') || 
         (err && typeof err === 'object' && 'response' in err && (err as { response?: { status: number } }).response?.status === 400 && message.includes('belongs to a family'))
@@ -78,20 +77,20 @@ export function CrearFamiliaCard({ onSuccess }: CrearFamiliaCardProps) {
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="nombre" className="text-foreground font-medium">
+            <Label htmlFor="name" className="text-foreground font-medium">
               Nombre de la familia
             </Label>
             <Input
-              id="nombre"
+              id="name"
               type="text"
               placeholder="Ej: Familia García"
               className="bg-background border-input text-foreground placeholder:text-muted-foreground"
-              {...register('nombre')}
+              {...register('name')}
               disabled={isSubmitting}
             />
-            {errors.nombre && <p className="text-sm text-destructive">{errors.nombre.message}</p>}
+            {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
           </div>
 
           <div className="text-xs text-muted-foreground space-y-1">

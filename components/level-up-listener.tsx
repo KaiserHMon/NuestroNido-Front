@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
-import { useFamilia } from '@/hooks/use-familia';
+import { useFamily } from '@/hooks/use-family';
 import {
   Dialog,
   DialogContent,
@@ -16,8 +16,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Trophy } from 'lucide-react';
 
 export function LevelUpListener() {
-  const { usuario } = useAuth();
-  const { familia } = useFamilia();
+  const { user } = useAuth();
+  const { family } = useFamily();
   
   // Store the previous level number to detect changes
   const prevLevelNumberRef = useRef<number | undefined>(undefined);
@@ -27,14 +27,14 @@ export function LevelUpListener() {
   const [newLevelData, setNewLevelData] = useState<{ name: string; image_url?: string } | undefined>(undefined);
 
   useEffect(() => {
-    if (!usuario || !familia) return;
+    if (!user || !family) return;
 
     // Find the current user member object in the family
-    const miMiembro = familia.miembros.find((m) => m.id === usuario.id);
+    const myMember = family.members.find((m) => m.id === user.id);
     
-    if (!miMiembro || !miMiembro.nivel) return;
+    if (!myMember || !myMember.level) return;
 
-    const currentLevelNumber = miMiembro.nivel.level_number;
+    const currentLevelNumber = myMember.level.level_number;
 
     // First run: just initialize the ref if valid
     if (prevLevelNumberRef.current === undefined) {
@@ -49,8 +49,8 @@ export function LevelUpListener() {
         
         setTimeout(() => {
           setNewLevelData({
-              name: miMiembro.nivel?.name || '',
-              image_url: miMiembro.nivel?.image_url
+              name: myMember.level?.name || '',
+              image_url: myMember.level?.image_url
           });
           setShowCelebration(true);
         }, 0);
@@ -58,9 +58,9 @@ export function LevelUpListener() {
 
     // Update ref
     prevLevelNumberRef.current = currentLevelNumber;
-  }, [familia, usuario]);
+  }, [family, user]);
 
-  if (!showCelebration || !newLevelData || !usuario) return null;
+  if (!showCelebration || !newLevelData || !user) return null;
 
   return (
     <Dialog open={showCelebration} onOpenChange={setShowCelebration}>
@@ -70,7 +70,7 @@ export function LevelUpListener() {
             <Trophy className="w-8 h-8 text-yellow-600" />
           </div>
           <DialogTitle className="text-2xl font-bold text-center text-yellow-600 dark:text-yellow-400">
-            ¡Felicidades, {usuario.nombre}!
+            ¡Felicidades, {user.name}!
           </DialogTitle>
           <DialogDescription className="text-center text-lg mt-2">
             Has subido de nivel.

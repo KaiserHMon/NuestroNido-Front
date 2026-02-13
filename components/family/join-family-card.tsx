@@ -9,58 +9,54 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { UnirseAFamiliaSchema, UnirseAFamiliaFormInputs } from '@/lib/validation';
-import { useFamilia } from '@/hooks/use-familia';
+import { JoinFamilySchema, JoinFamilyFormInputs } from '@/lib/validation';
+import { useFamily } from '@/hooks/use-family';
+import { ValidateCodeResponse } from '@/lib/types';
 
-interface UnirseAFamiliaCardProps {
+interface JoinFamilyCardProps {
   onSuccess?: () => void;
 }
 
-export function UnirseAFamiliaCard({ onSuccess }: UnirseAFamiliaCardProps) {
+export function JoinFamilyCard({ onSuccess }: JoinFamilyCardProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [validacionCodigo, setValidacionCodigo] = useState<{
-    valido: boolean;
-    nombreFamilia?: string;
-    miembrosActuales?: number;
-  } | null>(null);
-  const { unirseAFamilia, validarCodigo } = useFamilia();
+  const [codeValidation, setCodeValidation] = useState<ValidateCodeResponse | null>(null);
+  const { joinFamily, validateCode } = useFamily();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
-  } = useForm<UnirseAFamiliaFormInputs>({
-    resolver: zodResolver(UnirseAFamiliaSchema),
+  } = useForm<JoinFamilyFormInputs>({
+    resolver: zodResolver(JoinFamilySchema),
   });
 
-  const codigo = watch('codigoInvitacion');
+  const invitationCode = watch('invitationCode');
 
-  // Validar código en tiempo real con debounce
   useEffect(() => {
     const validate = async () => {
-      if (codigo && codigo.length >= 6) {
+      if (invitationCode && invitationCode.length >= 6) {
         try {
-          const resultado = await validarCodigo(codigo);
-          setValidacionCodigo(resultado);
+          const result = await validateCode(invitationCode);
+          setCodeValidation(result);
         } catch {
-          setValidacionCodigo({ valido: false });
+          setCodeValidation({ valid: false });
         }
       } else {
-        setValidacionCodigo(null);
+        setCodeValidation(null);
       }
     };
 
     const timer = setTimeout(validate, 500);
     return () => clearTimeout(timer);
-  }, [codigo, validarCodigo]);
+  }, [invitationCode, validateCode]);
 
-  const onSubmit = async (data: UnirseAFamiliaFormInputs) => {
+  const handleFormSubmit = async (data: JoinFamilyFormInputs) => {
     setIsSubmitting(true);
     setError(null);
     try {
-      await unirseAFamilia(data.codigoInvitacion);
+      await joinFamily(data.invitationCode);
       onSuccess?.();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error al unirse a la familia';
@@ -93,47 +89,49 @@ export function UnirseAFamiliaCard({ onSuccess }: UnirseAFamiliaCardProps) {
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="codigo" className="text-foreground font-medium">
+            <Label htmlFor="invitationCode" className="text-foreground font-medium">
               Código de invitación
             </Label>
             <Input
-              id="codigo"
+              id="invitationCode"
               type="text"
               placeholder="Ej: ABC123 o NIDO2024"
               className="bg-background border-input text-foreground placeholder:text-muted-foreground uppercase"
-              {...register('codigoInvitacion')}
+              {...register('invitationCode')}
               disabled={isSubmitting}
             />
-            {errors.codigoInvitacion && (
-              <p className="text-sm text-destructive">{errors.codigoInvitacion.message}</p>
+            {errors.invitationCode && (
+              <p className="text-sm text-destructive">{errors.invitationCode.message}</p>
             )}
           </div>
 
-          {codigo && codigo.length >= 6 && validacionCodigo && (
+          {invitationCode && invitationCode.length >= 6 && codeValidation && (
             <div
               className={`p-3 rounded-md border ${
-                validacionCodigo.valido
+                codeValidation.valid
                   ? 'bg-green-50 border-green-200 dark:bg-green-950 dark:border-green-800'
                   : 'bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800'
               }`}
             >
               <div className="flex items-start gap-2">
-                {validacionCodigo.valido ? (
+                {codeValidation.valid ? (
                   <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
                 ) : (
                   <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
                 )}
                 <div className="text-sm">
-                  {validacionCodigo.valido ? (
+                  {codeValidation.valid ? (
                     <div className="space-y-1">
                       <p className="font-medium text-green-900 dark:text-green-200">
-                        {validacionCodigo.nombreFamilia}
+                        {codeValidation.familyName}
                       </p>
-                      <p className="text-green-700 dark:text-green-300">
-                        {validacionCodigo.miembrosActuales} miembros
-                      </p>
+                      {codeValidation.currentMembers !== undefined && (
+                        <p className="text-green-700 dark:text-green-300">
+                          {codeValidation.currentMembers} miembros
+                        </p>
+                      )}
                     </div>
                   ) : (
                     <p className="text-red-700 dark:text-red-300">Código inválido o no existe</p>
@@ -150,7 +148,7 @@ export function UnirseAFamiliaCard({ onSuccess }: UnirseAFamiliaCardProps) {
           <Button
             type="submit"
             className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
-            disabled={isSubmitting || !validacionCodigo?.valido}
+            disabled={isSubmitting || !codeValidation?.valid}
           >
             {isSubmitting ? (
               <>

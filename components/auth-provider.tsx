@@ -2,7 +2,7 @@
 
 /* global StorageEvent */
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { Usuario, AuthContextType, Familia, Level } from '@/lib/types';
+import { User, AuthContextType, Family, Level } from '@/lib/types';
 import { AuthService } from '@/services/auth-service';
 import { TokenService } from '@/services/token-service';
 import { FamilyService } from '@/services/family-service';
@@ -12,9 +12,9 @@ import { UserService } from '@/services/user-service';
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [usuario, setUsuario] = useState<Usuario | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [familia, setFamilia] = useState<Familia | null>(null);
+  const [family, setFamily] = useState<Family | null>(null);
   const [levels, setLevels] = useState<Level[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,36 +30,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const storedToken = TokenService.getToken();
       const storedUser = TokenService.getUser();
-      console.log('AuthProvider checkSession:', { hasToken: !!storedToken, hasUser: !!storedUser });
 
       if (storedToken && storedUser) {
         setToken(storedToken);
-        setUsuario(storedUser);
+        setUser(storedUser);
         setIsAuthenticated(true);
         
         try {
           const fam = await FamilyService.getMyFamily();
           if (fam) {
-            setFamilia(fam);
-            // Self-heal: If user lacks familiaId but has a family, update it.
-            if (!storedUser.familiaId) {
-               const updatedUser = { ...storedUser, familiaId: fam.id };
-               setUsuario(updatedUser);
+            setFamily(fam);
+            if (!storedUser.familyId) {
+               const updatedUser = { ...storedUser, familyId: fam.id };
+               setUser(updatedUser);
                TokenService.setUser(updatedUser);
             }
           } else {
-            setFamilia(null);
+            setFamily(null);
           }
         } catch (err) {
            console.error("Error loading family in checkSession:", err);
-           // If we get a 401 here, the api-client will trigger 'auth-logout'
         }
       } else {
-        console.log("No stored session found or session incomplete, clearing.");
         TokenService.clearSession();
-        setUsuario(null);
+        setUser(null);
         setToken(null);
-        setFamilia(null);
+        setFamily(null);
         setIsAuthenticated(false);
       }
     } catch (error) {
@@ -74,12 +70,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkSession();
   }, [checkSession]);
 
-  // Sincronización entre pestañas y eventos de logout global
   useEffect(() => {
     const performLogout = () => {
-      setUsuario(null);
+      setUser(null);
       setToken(null);
-      setFamilia(null);
+      setFamily(null);
       setIsAuthenticated(false);
     };
 
@@ -106,30 +101,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     const response = await AuthService.login(email, password);
     if (response.success && response.data) {
-      const { token: newToken, usuario: newUser } = response.data;
+      const { token: newToken, user: newUser } = response.data;
       setToken(newToken);
-      setUsuario(newUser);
+      setUser(newUser);
       setIsAuthenticated(true);
       
       try {
           const fam = await FamilyService.getMyFamily();
-          setFamilia(fam);
+          setFamily(fam);
       } catch {
-          setFamilia(null);
+          setFamily(null);
       }
     } else {
       throw new Error(response.error?.message || 'Login failed');
     }
   }, []);
 
-  const register = useCallback(async (nombre: string, email: string, password: string) => {
-    const response = await AuthService.register(nombre, email, password);
+  const register = useCallback(async (name: string, email: string, password: string) => {
+    const response = await AuthService.register(name, email, password);
     if (response.success && response.data) {
-      const { token: newToken, usuario: newUser } = response.data;
+      const { token: newToken, user: newUser } = response.data;
       setToken(newToken);
-      setUsuario(newUser);
+      setUser(newUser);
       setIsAuthenticated(true);
-      setFamilia(null);
+      setFamily(null);
     } else {
       throw new Error(response.error?.message || 'Register failed');
     }
@@ -137,46 +132,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = useCallback(() => {
     TokenService.clearSession();
-    setUsuario(null);
+    setUser(null);
     setToken(null);
-    setFamilia(null);
+    setFamily(null);
     setIsAuthenticated(false);
-    // No redirigimos aquí directamente para mantener el Provider puro, 
-    // la redirección se maneja en los hooks o layouts.
   }, []);
 
-  const crearFamilia = useCallback(async (nombre: string) => {
-     const newFam = await FamilyService.create(nombre);
-     setFamilia(newFam);
-     if (usuario) {
-       const updatedUser = { ...usuario, familiaId: newFam.id };
-       setUsuario(updatedUser);
+  const createFamily = useCallback(async (name: string) => {
+     const newFam = await FamilyService.create(name);
+     setFamily(newFam);
+     if (user) {
+       const updatedUser = { ...user, familyId: newFam.id };
+       setUser(updatedUser);
        TokenService.setUser(updatedUser);
      }
-  }, [usuario]);
+  }, [user]);
 
-  const unirseAFamilia = useCallback(async (codigo: string) => {
+  const joinByCode = useCallback(async (code: string) => {
     try {
-      const newFam = await FamilyService.joinByCode(codigo);
-      setFamilia(newFam);
-      if (usuario) {
-        // Refresh full user profile to get potential color/level updates from backend
-        const updatedUser = await UserService.getUser(usuario.id);
-        const userWithFamily = { ...updatedUser, familiaId: newFam.id };
-        setUsuario(userWithFamily);
+      const newFam = await FamilyService.joinByCode(code);
+      setFamily(newFam);
+      if (user) {
+        const updatedUserFromApi = await UserService.getUser(user.id);
+        const userWithFamily = { ...updatedUserFromApi, familyId: newFam.id };
+        setUser(userWithFamily);
         TokenService.setUser(userWithFamily);
       }
     } catch (error) {
-      // If error is 400 and message contains "already member", treat as success
       const errorMsg = error instanceof Error ? error.message : '';
       if (errorMsg.toLowerCase().includes('already member') || errorMsg.toLowerCase().includes('ya eres miembro')) {
         const fam = await FamilyService.getMyFamily();
         if (fam) {
-          setFamilia(fam);
-          if (usuario) {
-            const updatedUser = await UserService.getUser(usuario.id);
-            const userWithFamily = { ...updatedUser, familiaId: fam.id };
-            setUsuario(userWithFamily);
+          setFamily(fam);
+          if (user) {
+            const updatedUserFromApi = await UserService.getUser(user.id);
+            const userWithFamily = { ...updatedUserFromApi, familyId: fam.id };
+            setUser(userWithFamily);
             TokenService.setUser(userWithFamily);
           }
           return;
@@ -184,17 +175,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       throw error;
     }
-  }, [usuario]);
+  }, [user]);
 
-  const unirsePorLink = useCallback(async (token: string) => {
+  const joinByLink = useCallback(async (token: string) => {
     try {
       const newFam = await FamilyService.joinByLink(token);
-      setFamilia(newFam);
-      if (usuario) {
-        // Refresh full user profile
-        const updatedUser = await UserService.getUser(usuario.id);
-        const userWithFamily = { ...updatedUser, familiaId: newFam.id };
-        setUsuario(userWithFamily);
+      setFamily(newFam);
+      if (user) {
+        const updatedUserFromApi = await UserService.getUser(user.id);
+        const userWithFamily = { ...updatedUserFromApi, familyId: newFam.id };
+        setUser(userWithFamily);
         TokenService.setUser(userWithFamily);
       }
     } catch (error) {
@@ -202,11 +192,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (errorMsg.toLowerCase().includes('already member') || errorMsg.toLowerCase().includes('ya eres miembro')) {
         const fam = await FamilyService.getMyFamily();
         if (fam) {
-          setFamilia(fam);
-          if (usuario) {
-            const updatedUser = await UserService.getUser(usuario.id);
-            const userWithFamily = { ...updatedUser, familiaId: fam.id };
-            setUsuario(userWithFamily);
+          setFamily(fam);
+          if (user) {
+            const updatedUserFromApi = await UserService.getUser(user.id);
+            const userWithFamily = { ...updatedUserFromApi, familyId: fam.id };
+            setUser(userWithFamily);
             TokenService.setUser(userWithFamily);
           }
           return;
@@ -214,27 +204,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       throw error;
     }
-  }, [usuario]);
+  }, [user]);
 
-  const actualizarFamilia = useCallback(async (familiaId: string, nombre: string) => {
-    const updatedFam = await FamilyService.update(familiaId, nombre);
-    setFamilia(updatedFam);
+  const updateFamily = useCallback(async (familyId: string, name: string) => {
+    const updatedFam = await FamilyService.update(familyId, name);
+    setFamily(updatedFam);
   }, []);
 
-  const eliminarFamilia = useCallback(async (familiaId: string) => {
-    await FamilyService.delete(familiaId);
-    setFamilia(null);
-    if (usuario) {
-      const updatedUser = { ...usuario, familiaId: undefined };
-      setUsuario(updatedUser);
+  const deleteFamily = useCallback(async (familyId: string) => {
+    await FamilyService.delete(familyId);
+    setFamily(null);
+    if (user) {
+      const updatedUser = { ...user, familyId: undefined };
+      setUser(updatedUser);
       TokenService.setUser(updatedUser);
     }
-  }, [usuario]);
+  }, [user]);
 
   const refreshFamily = useCallback(async () => {
     try {
       const fam = await FamilyService.getMyFamily();
-      setFamilia(fam);
+      setFamily(fam);
     } catch (error) {
       console.error('Error refreshing family:', error);
     }
@@ -243,20 +233,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return (
     <AuthContext.Provider
       value={{
-        usuario,
+        user,
         token,
         isAuthenticated,
         isLoading,
-        familia,
+        family,
         levels,
         login,
         register,
         logout,
-        crearFamilia,
-        unirseAFamilia,
-        unirsePorLink,
-        actualizarFamilia,
-        eliminarFamilia,
+        createFamily,
+        joinFamily: joinByCode,
+        joinByLink,
+        updateFamily,
+        deleteFamily,
         refreshFamily
       }}
     >

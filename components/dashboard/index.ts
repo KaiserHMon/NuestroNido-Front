@@ -1,8 +1,5 @@
-// Dashboard section components barrel exports
-// Organized for better modularity and lazy loading
-
-export { MiembrosSection } from './miembros-section';
-export { CalendarioSection } from './calendario-section';
-export { ListaSection } from './lista-section';
-export { NotasSection } from './notas-section';
+export { MembersSection } from './members-section';
+export { CalendarSection } from './calendar-section';
+export { ListSection } from './list-section';
+export { NotesSection } from './notes-section';
 export { DashboardLayout } from '../dashboard-layout';

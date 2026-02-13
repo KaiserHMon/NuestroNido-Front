@@ -6,26 +6,26 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ActualizarFamiliaSchema, ActualizarFamiliaFormInputs } from '@/lib/validation';
-import { useFamilia } from '@/hooks/use-familia';
-import { Familia } from '@/lib/types';
+import { UpdateFamilySchema, UpdateFamilyFormInputs } from '@/lib/validation';
+import { useFamily } from '@/hooks/use-family';
+import { Family } from '@/lib/types';
 import { BaseDialog } from './base-dialog';
 
-interface EditarFamiliaDialogProps {
-  familia: Familia;
+interface EditFamilyDialogProps {
+  family: Family;
   onSuccess?: () => void;
   trigger?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
 
-export function EditarFamiliaDialog({ 
-  familia, 
+export function EditFamilyDialog({ 
+  family, 
   onSuccess, 
   trigger,
   open: externalOpen,
   onOpenChange: externalOnOpenChange
-}: EditarFamiliaDialogProps) {
+}: EditFamilyDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   
   const isControlled = externalOpen !== undefined;
@@ -33,29 +33,29 @@ export function EditarFamiliaDialog({
   const setOpen = isControlled ? externalOnOpenChange! : setInternalOpen;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { actualizarNombre, error } = useFamilia();
+  const { updateName, error } = useFamily();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<ActualizarFamiliaFormInputs>({
-    resolver: zodResolver(ActualizarFamiliaSchema),
+  } = useForm<UpdateFamilyFormInputs>({
+    resolver: zodResolver(UpdateFamilySchema),
     defaultValues: {
-      nuevoNombre: familia.nombre,
+      newName: family.name,
     },
   });
 
-  const onSubmit = async (data: ActualizarFamiliaFormInputs) => {
+  const handleFormSubmit = async (data: UpdateFamilyFormInputs) => {
     setIsSubmitting(true);
     try {
-      await actualizarNombre(familia.id, data.nuevoNombre);
+      await updateName(family.id, data.newName);
       setOpen(false);
       reset();
       onSuccess?.();
     } catch (error) {
-      console.error('Error actualizando familia:', error);
+      console.error('Error updating family:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -85,23 +85,23 @@ export function EditarFamiliaDialog({
       }
       isSubmitting={isSubmitting}
       error={error}
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(handleFormSubmit)}
       submitButtonLabel="Guardar"
     >
       <div className="space-y-2">
-        <Label htmlFor="nuevoNombre" className="text-foreground font-medium">
+        <Label htmlFor="newName" className="text-foreground font-medium">
           Nombre de la Familia
         </Label>
         <Input
-          id="nuevoNombre"
+          id="newName"
           type="text"
           placeholder="Ej: Familia García"
           className="bg-background border-input text-foreground placeholder:text-muted-foreground"
-          {...register('nuevoNombre')}
+          {...register('newName')}
           disabled={isSubmitting}
         />
-        {errors.nuevoNombre && (
-          <p className="text-sm text-destructive">{errors.nuevoNombre.message}</p>
+        {errors.newName && (
+          <p className="text-sm text-destructive">{errors.newName.message}</p>
         )}
       </div>
     </BaseDialog>

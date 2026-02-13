@@ -1,16 +1,10 @@
 import { fetchClient } from '@/lib/api-client';
-// Using generic types mostly as ListItem types in lib/types.ts might need alignment
-// but let's try to match existing structures.
-
-// Defining ListItem locally if not in types or ensuring we use the right one.
-// lib/types.ts didn't explicitly show ListItem, so I'll infer from usages or create interface.
-// Reading openapi schemas: ListItemResponse has title, family_id, category, quantity, purchased, id, created_at.
 
 export interface ListItem {
   id: string;
   title: string;
   family_id: string;
-  category: string;
+  category: string | undefined;
   quantity: number;
   purchased: boolean;
   created_at: string;

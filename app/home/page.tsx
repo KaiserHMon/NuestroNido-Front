@@ -5,19 +5,19 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
-import { useFamilia } from '@/hooks/use-familia';
+import { useFamily } from '@/hooks/use-family';
 import { Button } from '@/components/ui/button';
-import { CrearFamiliaCard } from '@/components/familia/crear-familia-card';
-import { UnirseAFamiliaCard } from '@/components/familia/unirse-familia-card';
+import { CreateFamilyCard } from '@/components/family/create-family-card';
+import { JoinFamilyCard } from '@/components/family/join-family-card';
 import { SupportDialog } from '@/components/dialogs/support-dialog';
 import { SettingsDialog } from '@/components/dialogs/settings-dialog';
 import { FamilyService } from '@/services/family-service';
 import { toast } from 'sonner';
 
-export default function HomePage() {
+export default function HomeSelectionPage() {
   const router = useRouter();
-  const { isAuthenticated, usuario, isLoading: authLoading, unirseAFamilia } = useAuth();
-  const { familia, isLoading: familiaLoading } = useFamilia();
+  const { isAuthenticated, user, isLoading: authLoading } = useAuth();
+  const { family, isLoading: familyLoading, joinFamily } = useFamily();
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isCheckingFamily, setIsCheckingFamily] = useState(true);
 
@@ -30,7 +30,7 @@ export default function HomePage() {
         return;
       }
 
-      if (familia) {
+      if (family) {
         router.push('/dashboard');
         return;
       }
@@ -38,7 +38,7 @@ export default function HomePage() {
       // Check for pending invitation by link (Token)
       const pendingToken = sessionStorage.getItem('pendingInviteToken');
       if (pendingToken) {
-        sessionStorage.removeItem('pendingInviteToken'); // Remove to prevent loop, InvitePage will handle param
+        sessionStorage.removeItem('pendingInviteToken');
         router.push(`/invite/${pendingToken}`);
         return;
       }
@@ -47,7 +47,7 @@ export default function HomePage() {
       const pendingCode = sessionStorage.getItem('pendingInvitationCode');
       if (pendingCode) {
         try {
-          await unirseAFamilia(pendingCode);
+          await joinFamily(pendingCode);
           sessionStorage.removeItem('pendingInvitationCode');
           toast.success('¡Te has unido a la familia exitosamente!');
           router.push('/dashboard');
@@ -56,12 +56,11 @@ export default function HomePage() {
           console.error('Error joining with pending code:', error);
           toast.error('No se pudo procesar la invitación. El código podría ser inválido.');
           sessionStorage.removeItem('pendingInvitationCode');
-          // Continue to show home page
         }
       }
 
-      // Fallback check (in case context didn't catch it but API has it)
-      if (!familia) {
+      // Fallback check
+      if (!family) {
         try {
           const existingFamily = await FamilyService.getMyFamily();
           if (existingFamily) {
@@ -77,9 +76,9 @@ export default function HomePage() {
     };
 
     checkStatus();
-  }, [isAuthenticated, authLoading, familia, router, unirseAFamilia]);
+  }, [isAuthenticated, authLoading, family, router, joinFamily]);
 
-  if (authLoading || familiaLoading || (isAuthenticated && isCheckingFamily)) {
+  if (authLoading || familyLoading || (isAuthenticated && isCheckingFamily)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -90,7 +89,7 @@ export default function HomePage() {
     );
   }
 
-  if (!isAuthenticated || !usuario) {
+  if (!isAuthenticated || !user) {
     return null;
   }
 
@@ -119,7 +118,7 @@ export default function HomePage() {
       <main className="container mx-auto px-4 sm:px-6 py-8 sm:py-12">
         <div className="text-center mb-12">
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-2">
-            ¡Bienvenido, {usuario.nombre}!
+            ¡Bienvenido, {user.name}!
           </h2>
           <p className="text-muted-foreground text-sm sm:text-base">
             Selecciona cómo deseas comenzar con tu familia
@@ -127,8 +126,8 @@ export default function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto items-start">
-          <CrearFamiliaCard onSuccess={() => router.push('/dashboard')} />
-          <UnirseAFamiliaCard onSuccess={() => router.push('/dashboard')} />
+          <CreateFamilyCard onSuccess={() => router.push('/dashboard')} />
+          <JoinFamilyCard onSuccess={() => router.push('/dashboard')} />
         </div>
 
         <div className="mt-16 text-center">

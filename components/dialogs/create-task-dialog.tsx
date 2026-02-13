@@ -34,134 +34,131 @@ import {
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Miembro } from '@/lib/types';
+import { Member } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { es } from 'date-fns/locale';
 import { toast } from 'sonner';
 
-// Schema de validación
-const crearTareaSchema = z
+const createTaskSchema = z
   .object({
-    titulo: z.string().min(1, 'El título es requerido').max(50, 'Máximo 50 caracteres'),
-    tipoFecha: z.enum(['fecha', 'dias']).default('fecha'),
-    fecha: z.date().optional(),
-    diasSemana: z.array(z.string()).optional(),
-    recurrencia: z.enum(['unica', 'mensual', 'anual']).default('unica'),
-    asignadoA: z.string().optional(),
+    title: z.string().min(1, 'El título es requerido').max(50, 'Máximo 50 caracteres'),
+    dateType: z.enum(['date', 'days']).default('date'),
+    date: z.date().optional(),
+    daysOfWeek: z.array(z.string()).optional(),
+    recurrence: z.enum(['once', 'monthly', 'yearly']).default('once'),
+    assignedTo: z.string().optional(),
   })
   .refine(
     (data) => {
-      if (data.tipoFecha === 'fecha' && !data.fecha) return false;
-      if (data.tipoFecha === 'dias' && (!data.diasSemana || data.diasSemana.length === 0))
+      if (data.dateType === 'date' && !data.date) return false;
+      if (data.dateType === 'days' && (!data.daysOfWeek || data.daysOfWeek.length === 0))
         return false;
       return true;
     },
     {
       message: 'Debes seleccionar una fecha o al menos un día de la semana',
-      path: ['fecha'], // Apuntar el error al campo fecha
+      path: ['date'],
     }
   );
 
-type CrearTareaFormValues = z.infer<typeof crearTareaSchema>;
+type CreateTaskFormValues = z.infer<typeof createTaskSchema>;
 
-interface CrearTareaDialogProps {
+interface CreateTaskDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: CrearTareaFormValues) => void;
-  tareaAEditar?: CrearTareaFormValues & { id?: string };
-  miembros: Miembro[];
-  usuarioActualId?: string;
+  onSubmit: (data: CreateTaskFormValues) => void;
+  taskToEdit?: CreateTaskFormValues & { id?: string };
+  members: Member[];
+  currentUserId?: string;
 }
 
-const DIAS_SEMANA = [
-  { id: '1', label: 'L' }, // Lunes
-  { id: '2', label: 'M' }, // Martes
-  { id: '3', label: 'X' }, // Miércoles
-  { id: '4', label: 'J' }, // Jueves
-  { id: '5', label: 'V' }, // Viernes
-  { id: '6', label: 'S' }, // Sábado
-  { id: '0', label: 'D' }, // Domingo
+const WEEK_DAYS = [
+  { id: '1', label: 'L' },
+  { id: '2', label: 'M' },
+  { id: '3', label: 'X' },
+  { id: '4', label: 'J' },
+  { id: '5', label: 'V' },
+  { id: '6', label: 'S' },
+  { id: '0', label: 'D' },
 ];
 
-export function CrearTareaDialog({
+export function CreateTaskDialog({
   open,
   onOpenChange,
   onSubmit,
-  tareaAEditar,
-  miembros,
-  usuarioActualId,
-}: CrearTareaDialogProps) {
+  taskToEdit,
+  members,
+  currentUserId,
+}: CreateTaskDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<CrearTareaFormValues>({
-    resolver: zodResolver(crearTareaSchema),
+  const form = useForm<CreateTaskFormValues>({
+    resolver: zodResolver(createTaskSchema),
     defaultValues: {
-      titulo: '',
-      tipoFecha: 'fecha',
-      fecha: new Date(),
-      diasSemana: [],
-      recurrencia: 'unica',
-      asignadoA: usuarioActualId || '',
+      title: '',
+      dateType: 'date',
+      date: new Date(),
+      daysOfWeek: [],
+      recurrence: 'once',
+      assignedTo: currentUserId || '',
     },
   });
 
   useEffect(() => {
     if (open) {
-      if (tareaAEditar) {
+      if (taskToEdit) {
         form.reset({
-          titulo: tareaAEditar.titulo,
-          tipoFecha: tareaAEditar.tipoFecha || 'fecha',
-          fecha: tareaAEditar.fecha ? new Date(tareaAEditar.fecha) : undefined,
-          diasSemana: tareaAEditar.diasSemana || [],
-          recurrencia: tareaAEditar.recurrencia || 'unica',
-          asignadoA: tareaAEditar.asignadoA || usuarioActualId,
+          title: taskToEdit.title,
+          dateType: taskToEdit.dateType || 'date',
+          date: taskToEdit.date ? new Date(taskToEdit.date) : undefined,
+          daysOfWeek: taskToEdit.daysOfWeek || [],
+          recurrence: taskToEdit.recurrence || 'once',
+          assignedTo: taskToEdit.assignedTo || currentUserId,
         });
       } else {
         form.reset({
-          titulo: '',
-          tipoFecha: 'fecha',
-          fecha: new Date(),
-          diasSemana: [],
-          recurrencia: 'unica',
-          asignadoA: usuarioActualId || '',
+          title: '',
+          dateType: 'date',
+          date: new Date(),
+          daysOfWeek: [],
+          recurrence: 'once',
+          assignedTo: currentUserId || '',
         });
       }
     }
-  }, [open, tareaAEditar, form, usuarioActualId]);
+  }, [open, taskToEdit, form, currentUserId]);
 
-  const handleSubmit = async (data: CrearTareaFormValues) => {
+  const handleFormSubmit = async (data: CreateTaskFormValues) => {
     setIsSubmitting(true);
     try {
       await onSubmit(data);
       form.reset();
       onOpenChange(false);
-      // Success toast is handled by the parent component (calendario-section) to avoid duplication
     } catch (error) {
-      console.error('Error creating task:', error);
+      console.error('Error saving task:', error);
       toast.error('Error al guardar la tarea. Verifica los datos.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const tipoFecha = form.watch('tipoFecha');
+  const dateType = form.watch('dateType');
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{tareaAEditar ? 'Editar Tarea' : 'Nueva Tarea'}</DialogTitle>
+          <DialogTitle>{taskToEdit ? 'Editar Tarea' : 'Nueva Tarea'}</DialogTitle>
           <DialogDescription className="sr-only">
-            Formulario para {tareaAEditar ? 'editar la' : 'crear una nueva'} tarea
+            Formulario para {taskToEdit ? 'editar la' : 'crear una nueva'} tarea
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            {/* Título */}
+          <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="titulo"
+              name="title"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Título</FormLabel>
@@ -173,10 +170,9 @@ export function CrearTareaDialog({
               )}
             />
 
-            {/* Asignar a */}
             <FormField
               control={form.control}
-              name="asignadoA"
+              name="assignedTo"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Asignar a</FormLabel>
@@ -191,14 +187,14 @@ export function CrearTareaDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {miembros.map((miembro) => (
-                        <SelectItem key={miembro.id} value={miembro.id}>
+                      {members.map((member) => (
+                        <SelectItem key={member.id} value={member.id}>
                           <div className="flex items-center gap-2">
                             <div
                               className="w-3 h-3 rounded-full"
-                              style={{ backgroundColor: miembro.color.bg }}
+                              style={{ backgroundColor: member.color.bg }}
                             />
-                            {miembro.nombre}
+                            {member.name}
                           </div>
                         </SelectItem>
                       ))}
@@ -209,31 +205,29 @@ export function CrearTareaDialog({
               )}
             />
 
-            {/* Selector de Tipo de Fecha */}
             <div className="flex gap-4">
               <Button
                 type="button"
-                variant={tipoFecha === 'fecha' ? 'default' : 'outline'}
-                onClick={() => form.setValue('tipoFecha', 'fecha')}
+                variant={dateType === 'date' ? 'default' : 'outline'}
+                onClick={() => form.setValue('dateType', 'date')}
                 className="flex-1"
               >
                 Fecha Específica
               </Button>
               <Button
                 type="button"
-                variant={tipoFecha === 'dias' ? 'default' : 'outline'}
-                onClick={() => form.setValue('tipoFecha', 'dias')}
+                variant={dateType === 'days' ? 'default' : 'outline'}
+                onClick={() => form.setValue('dateType', 'days')}
                 className="flex-1"
               >
                 Varios Días
               </Button>
             </div>
 
-            {/* Fecha Específica */}
-            {tipoFecha === 'fecha' && (
+            {dateType === 'date' && (
               <FormField
                 control={form.control}
-                name="fecha"
+                name="date"
                 render={({ field }) => (
                   <FormItem className="flex flex-col">
                     <FormLabel>Fecha</FormLabel>
@@ -273,39 +267,38 @@ export function CrearTareaDialog({
               />
             )}
 
-            {/* Días de la Semana */}
-            {tipoFecha === 'dias' && (
+            {dateType === 'days' && (
               <FormField
                 control={form.control}
-                name="diasSemana"
+                name="daysOfWeek"
                 render={() => (
                   <FormItem>
                     <FormLabel className="mb-2 block">Días de la semana</FormLabel>
                     <div className="flex justify-between">
-                      {DIAS_SEMANA.map((dia) => (
+                      {WEEK_DAYS.map((day) => (
                         <FormField
-                          key={dia.id}
+                          key={day.id}
                           control={form.control}
-                          name="diasSemana"
+                          name="daysOfWeek"
                           render={({ field }) => {
                             return (
                               <FormItem
-                                key={dia.id}
+                                key={day.id}
                                 className="flex flex-col items-center space-y-1"
                               >
                                 <FormControl>
                                   <Checkbox
-                                    checked={field.value?.includes(dia.id)}
+                                    checked={field.value?.includes(day.id)}
                                     onCheckedChange={(checked) => {
                                       return checked
-                                        ? field.onChange([...(field.value || []), dia.id])
+                                        ? field.onChange([...(field.value || []), day.id])
                                         : field.onChange(
-                                            field.value?.filter((value) => value !== dia.id)
+                                            field.value?.filter((value) => value !== day.id)
                                           );
                                     }}
                                   />
                                 </FormControl>
-                                <FormLabel className="font-normal text-xs">{dia.label}</FormLabel>
+                                <FormLabel className="font-normal text-xs">{day.label}</FormLabel>
                               </FormItem>
                             );
                           }}
@@ -318,13 +311,12 @@ export function CrearTareaDialog({
               />
             )}
 
-            {/* Recurrencia */}
             <FormField
               control={form.control}
-              name="recurrencia"
+              name="recurrence"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{tipoFecha === 'fecha' ? 'Repetir' : 'Vigencia de la Tarea'}</FormLabel>
+                  <FormLabel>{dateType === 'date' ? 'Repetir' : 'Vigencia de la Tarea'}</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
@@ -336,16 +328,16 @@ export function CrearTareaDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {tipoFecha === 'fecha' ? (
+                      {dateType === 'date' ? (
                         <>
-                          <SelectItem value="unica">Una sola vez</SelectItem>
-                          <SelectItem value="mensual">Todos los meses</SelectItem>
+                          <SelectItem value="once">Una sola vez</SelectItem>
+                          <SelectItem value="monthly">Todos los meses</SelectItem>
                         </>
                       ) : (
                         <>
-                          <SelectItem value="unica">Solo esta semana</SelectItem>
-                          <SelectItem value="mensual">Solo este mes</SelectItem>
-                          <SelectItem value="anual">Todo este año</SelectItem>
+                          <SelectItem value="once">Solo esta semana</SelectItem>
+                          <SelectItem value="monthly">Solo este mes</SelectItem>
+                          <SelectItem value="yearly">Todo este año</SelectItem>
                         </>
                       )}
                     </SelectContent>
@@ -360,7 +352,7 @@ export function CrearTareaDialog({
                 Cancelar
               </Button>
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? 'Guardando...' : tareaAEditar ? 'Guardar Cambios' : 'Crear Tarea'}
+                {isSubmitting ? 'Guardando...' : taskToEdit ? 'Guardar Cambios' : 'Crear Tarea'}
               </Button>
             </DialogFooter>
           </form>

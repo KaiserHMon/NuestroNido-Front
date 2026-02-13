@@ -1,9 +1,9 @@
 /**
- * Servicio de Autenticación
- * Gestiona las llamadas a la API para login y registro.
+ * Authentication Service
+ * Manages API calls for login and registration.
  */
 
-import { Usuario, ApiResponse, Familia } from '@/lib/types';
+import { User, ApiResponse, Family } from '@/lib/types';
 import { fetchClient, ApiError } from '@/lib/api-client';
 import { TokenService } from './token-service';
 import { parseJwt } from '@/lib/jwt-utils';
@@ -20,7 +20,7 @@ export const AuthService = {
   async login(
     email: string,
     password: string
-  ): Promise<ApiResponse<{ token: string; usuario: Usuario }>> {
+  ): Promise<ApiResponse<{ token: string; user: User }>> {
     try {
       const tokenData = await fetchClient<TokenResponse>('/api/v1/auth/login', {
         method: 'POST',
@@ -42,23 +42,21 @@ export const AuthService = {
 
       const userId = decoded.sub;
 
-      // Fetch user details and family details in parallel
-      const [user, familyResponse] = await Promise.allSettled([
+      const [userResponse, familyResponse] = await Promise.allSettled([
         UserService.getUser(userId),
-        fetchClient<Familia>('/api/v1/families/me'),
+        fetchClient<Family>('/api/v1/families/me'),
       ]);
 
-      let usuario: Usuario;
+      let userData: User;
 
-      if (user.status === 'fulfilled') {
-        usuario = {
-          ...user.value,
+      if (userResponse.status === 'fulfilled') {
+        userData = {
+          ...userResponse.value,
         };
       } else {
-        // Fallback if user fetch fails (shouldn't happen for valid token)
-        usuario = {
+        userData = {
           id: userId,
-          nombre: email.split('@')[0],
+          name: email.split('@')[0],
           experience_points: 0,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -66,16 +64,16 @@ export const AuthService = {
       }
 
       if (familyResponse.status === 'fulfilled' && familyResponse.value) {
-        usuario.familiaId = familyResponse.value.id;
+        userData.familyId = familyResponse.value.id;
       }
 
-      TokenService.setUser(usuario);
+      TokenService.setUser(userData);
 
       return {
         success: true,
         data: {
           token,
-          usuario,
+          user: userData,
         },
       };
     } catch (error) {
@@ -91,30 +89,27 @@ export const AuthService = {
   },
 
   async register(
-    nombre: string,
+    name: string,
     email: string,
     password: string
-  ): Promise<ApiResponse<{ token: string; usuario: Usuario }>> {
+  ): Promise<ApiResponse<{ token: string; user: User }>> {
     try {
-      // 1. Signup
       await fetchClient('/api/v1/auth/signup', {
         method: 'POST',
         body: {
           email,
           password,
-          full_name: nombre,
+          full_name: name,
         },
         requiresAuth: false,
       });
 
-      // 2. Login immediately to get token
       return this.login(email, password);
     } catch (error) {
       console.error('Register error:', error);
       let message = 'Error al registrar usuario';
       
       if (error instanceof ApiError && error.data && typeof error.data === 'object' && 'detail' in error.data) {
-         // FastAPI usually returns { detail: "message" }
          message = String((error.data as { detail: unknown }).detail);
       } else if (error instanceof Error) {
          message = error.message;

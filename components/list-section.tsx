@@ -24,12 +24,12 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ListService, ListItem } from '@/services/list-service';
-import { useFamilia } from '@/hooks/use-familia';
+import { useFamily } from '@/hooks/use-family';
 import { toast } from 'sonner';
 import { SectionSkeleton } from '@/components/ui/section-skeleton';
 
-const getCategoryIcon = (categoryName: string) => {
-  const lower = categoryName.toLowerCase();
+const getCategoryIcon = (categoryName: string | undefined) => {
+  const lower = (categoryName || '').toLowerCase();
   if (lower.includes('aliment') || lower.includes('comida')) return ShoppingBasket;
   if (lower.includes('farmacia') || lower.includes('medicin')) return Pill;
   if (lower.includes('ferreter') || lower.includes('herramient')) return Wrench;
@@ -39,27 +39,28 @@ const getCategoryIcon = (categoryName: string) => {
   return ShoppingCart;
 };
 
-const getCategoriaLabel = (categoriaValue: string) => {
-  return categoriaValue.charAt(0).toUpperCase() + categoriaValue.slice(1);
+const getCategoryLabel = (categoryValue: string | undefined) => {
+  if (!categoryValue) return '';
+  return categoryValue.charAt(0).toUpperCase() + categoryValue.slice(1);
 };
 
-export function ListaSection() {
-  const { familia } = useFamilia();
+export function ListSection() {
+  const { family } = useFamily();
   const [items, setItems] = useState<ListItem[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [categoriaActiva, setCategoriaActiva] = useState('todas');
+  const [activeCategory, setActiveCategory] = useState('all');
   const [lastActionMsg, setLastActionMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const [nuevoItem, setNuevoItem] = useState({
-    nombre: '',
+  const [newItem, setNewItem] = useState({
+    title: '',
     category: '',
     quantity: '1',
   });
 
   const fetchItems = useCallback(async () => {
-    if (!familia) return;
+    if (!family) return;
     try {
       setLoading(true);
       const [data, cats] = await Promise.all([
@@ -73,58 +74,58 @@ export function ListaSection() {
     } finally {
       setLoading(false);
     }
-  }, [familia]);
+  }, [family]);
 
   useEffect(() => {
     fetchItems();
   }, [fetchItems]);
 
-  const itemsFiltrados = useMemo(() => 
-    categoriaActiva === 'todas'
+  const filteredItems = useMemo(() => 
+    activeCategory === 'all'
       ? items
-      : items.filter((item) => item.category === categoriaActiva),
-    [items, categoriaActiva]
+      : items.filter((item) => item.category === activeCategory),
+    [items, activeCategory]
   );
 
-  const itemsPendientes = useMemo(() => 
-    itemsFiltrados.filter((item) => !item.purchased),
-    [itemsFiltrados]
+  const pendingItems = useMemo(() => 
+    filteredItems.filter((item) => !item.purchased),
+    [filteredItems]
   );
 
-  const itemsComprados = useMemo(() => 
-    itemsFiltrados.filter((item) => item.purchased),
-    [itemsFiltrados]
+  const purchasedItems = useMemo(() => 
+    filteredItems.filter((item) => item.purchased),
+    [filteredItems]
   );
 
-  const itemsGlobalesPendientesCount = useMemo(() => 
+  const globalPendingCount = useMemo(() => 
     items.filter((i) => !i.purchased).length,
     [items]
   );
 
-  const agregarItem = useCallback(async () => {
-    if (!familia) return;
+  const handleAddItem = useCallback(async () => {
+    if (!family) return;
 
-    const nombreLimpio = nuevoItem.nombre
+    const cleanTitle = newItem.title
       .replace(/\s{2,}/g, ' ')
       .trim()
       .slice(0, 100);
-    const categoryToUse = nuevoItem.category || categories[0] || '';
-    const cantidadLimpia = parseInt(nuevoItem.quantity.trim().slice(0, 50)) || 1;
+    const categoryToUse = newItem.category || categories[0] || '';
+    const cleanQuantity = parseInt(newItem.quantity.trim().slice(0, 50)) || 1;
 
-    if (nombreLimpio && categoryToUse) {
+    if (cleanTitle && categoryToUse) {
       try {
         const createdItem = await ListService.create({
-          title: nombreLimpio,
-          family_id: familia.id,
+          title: cleanTitle,
+          family_id: family.id,
           category: categoryToUse,
-          quantity: cantidadLimpia,
+          quantity: cleanQuantity,
           purchased: false,
         });
 
         setItems((prev) => [...prev, createdItem]);
-        setNuevoItem({ nombre: '', category: categories[0] || '', quantity: '1' });
+        setNewItem({ title: '', category: categories[0] || '', quantity: '1' });
         setDialogOpen(false);
-        setLastActionMsg('Item agregado a la lista');
+        setLastActionMsg('Item added to list');
         setTimeout(() => setLastActionMsg(''), 1500);
         toast.success('Producto agregado');
       } catch (error) {
@@ -132,10 +133,9 @@ export function ListaSection() {
         toast.error('Error al crear el producto');
       }
     }
-  }, [nuevoItem, familia, categories]);
+  }, [newItem, family, categories]);
 
-  const toggleComprado = useCallback(async (item: ListItem) => {
-    // Optimistic update
+  const togglePurchased = useCallback(async (item: ListItem) => {
     setItems((prev) =>
       prev.map((i) => (i.id === item.id ? { ...i, purchased: !i.purchased } : i))
     );
@@ -144,25 +144,23 @@ export function ListaSection() {
       const updatedItem = await ListService.update(item.id, {
         purchased: !item.purchased,
       });
-      // Confirm with server response
       setItems((prev) =>
           prev.map((i) => (i.id === item.id ? updatedItem : i))
       );
     } catch (error) {
       console.error('Error updating item:', error);
       toast.error('Error al actualizar el producto');
-      // Revert
       setItems((prev) =>
         prev.map((i) => (i.id === item.id ? item : i))
       );
     }
   }, []);
 
-  const eliminarItem = useCallback(async (itemId: string) => {
+  const handleDeleteItem = useCallback(async (itemId: string) => {
     try {
       await ListService.delete(itemId);
       setItems((prev) => prev.filter((item) => item.id !== itemId));
-      setLastActionMsg('Item eliminado');
+      setLastActionMsg('Item deleted');
       setTimeout(() => setLastActionMsg(''), 1500);
       toast.success('Producto eliminado');
     } catch (error) {
@@ -171,12 +169,12 @@ export function ListaSection() {
     }
   }, []);
 
-  const limpiarComprados = useCallback(async () => {
+  const clearPurchased = useCallback(async () => {
     const purchased = items.filter((i) => i.purchased);
     try {
       await Promise.all(purchased.map((i) => ListService.delete(i.id)));
       setItems((prev) => prev.filter((item) => !item.purchased));
-      setLastActionMsg('Items comprados limpiados');
+      setLastActionMsg('Purchased items cleared');
       setTimeout(() => setLastActionMsg(''), 1500);
       toast.success('Lista de comprados limpiada');
     } catch (error) {
@@ -185,8 +183,8 @@ export function ListaSection() {
     }
   }, [items]);
 
-  const contarPorCategoria = useCallback((categoria: string) => {
-    return items.filter((item) => item.category === categoria && !item.purchased).length;
+  const countByCategory = useCallback((category: string | undefined) => {
+    return items.filter((item) => item.category === category && !item.purchased).length;
   }, [items]);
 
   if (loading && items.length === 0) {
@@ -203,10 +201,10 @@ export function ListaSection() {
           </p>
         </div>
         <div className="flex gap-2 flex-wrap">
-          {itemsComprados.length > 0 ? (
+          {purchasedItems.length > 0 ? (
             <Button
               variant="outline"
-              onClick={limpiarComprados}
+              onClick={clearPurchased}
               className="text-xs sm:text-sm h-9 sm:h-10 bg-transparent"
               aria-label="Limpiar items comprados"
               title="Limpiar items comprados"
@@ -228,23 +226,23 @@ export function ListaSection() {
               </DialogHeader>
               <div className="space-y-4 pt-4">
                 <div className="space-y-2">
-                  <Label htmlFor="nombre">Nombre del producto</Label>
+                  <Label htmlFor="title">Nombre del producto</Label>
                   <Input
-                    id="nombre"
+                    id="title"
                     placeholder="Ej: Leche"
-                    value={nuevoItem.nombre}
-                    onChange={(e) => setNuevoItem({ ...nuevoItem, nombre: e.target.value })}
-                    onKeyDown={(e) => e.key === 'Enter' && agregarItem()}
+                    value={newItem.title}
+                    onChange={(e) => setNewItem({ ...newItem, title: e.target.value })}
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="categoria">Categoría</Label>
+                  <Label htmlFor="category">Categoría</Label>
                   <Select
-                    value={nuevoItem.category}
-                    onValueChange={(value) => setNuevoItem({ ...nuevoItem, category: value })}
+                    value={newItem.category}
+                    onValueChange={(value) => setNewItem({ ...newItem, category: value })}
                   >
-                    <SelectTrigger id="categoria">
+                    <SelectTrigger id="category">
                       <SelectValue placeholder="Selecciona una categoría" />
                     </SelectTrigger>
                     <SelectContent>
@@ -254,7 +252,7 @@ export function ListaSection() {
                           <SelectItem key={cat} value={cat}>
                             <div className="flex items-center gap-2">
                               <Icon className="w-4 h-4" aria-hidden="true" />
-                              {getCategoriaLabel(cat)}
+                              {getCategoryLabel(cat)}
                             </div>
                           </SelectItem>
                         );
@@ -264,21 +262,21 @@ export function ListaSection() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="cantidad">Cantidad</Label>
+                  <Label htmlFor="quantity">Cantidad</Label>
                   <Input
-                    id="cantidad"
+                    id="quantity"
                     placeholder="Ej: 1"
                     type="number"
-                    value={nuevoItem.quantity}
+                    value={newItem.quantity}
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setNuevoItem((prev) => ({ ...prev, quantity: e.target.value.slice(0, 50) }))
+                      setNewItem((prev) => ({ ...prev, quantity: e.target.value.slice(0, 50) }))
                     }
                     aria-label="Cantidad del producto"
                     maxLength={50}
                   />
                 </div>
 
-                <Button onClick={agregarItem} className="w-full">
+                <Button onClick={handleAddItem} className="w-full">
                   Agregar a la Lista
                 </Button>
               </div>
@@ -287,32 +285,32 @@ export function ListaSection() {
         </div>
       </div>
 
-      <Tabs value={categoriaActiva} onValueChange={setCategoriaActiva}>
+      <Tabs value={activeCategory} onValueChange={setActiveCategory}>
         <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 gap-1 h-auto p-1">
-          <TabsTrigger value="todas" className="text-xs sm:text-sm px-2 sm:px-3 py-2">
+          <TabsTrigger value="all" className="text-xs sm:text-sm px-2 sm:px-3 py-2">
             <span className="hidden sm:inline">Todas</span>
             <span className="sm:hidden">Todo</span>
-            {itemsGlobalesPendientesCount > 0 ? (
+            {globalPendingCount > 0 ? (
               <Badge
                 variant="secondary"
                 className="ml-1 sm:ml-2 text-[10px] sm:text-xs px-1 sm:px-1.5"
               >
-                {itemsGlobalesPendientesCount}
+                {globalPendingCount}
               </Badge>
             ) : null}
           </TabsTrigger>
           {categories.map((cat) => {
             const Icon = getCategoryIcon(cat);
-            const count = contarPorCategoria(cat);
+            const count = countByCategory(cat);
             return (
               <TabsTrigger
                 key={cat}
                 value={cat}
-                aria-label={getCategoriaLabel(cat)}
+                aria-label={getCategoryLabel(cat)}
                 className="gap-0.5 sm:gap-1 text-xs sm:text-sm px-1 sm:px-3 py-2"
               >
                 <Icon className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
-                <span className="hidden lg:inline">{getCategoriaLabel(cat)}</span>
+                <span className="hidden lg:inline">{getCategoryLabel(cat)}</span>
                 {count > 0 ? (
                   <Badge
                     variant="secondary"
@@ -326,8 +324,8 @@ export function ListaSection() {
           })}
         </TabsList>
 
-        <TabsContent value={categoriaActiva} className="mt-4 sm:mt-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-          {itemsFiltrados.length === 0 ? (
+        <TabsContent value={activeCategory} className="mt-4 sm:mt-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          {filteredItems.length === 0 ? (
             <Card>
               <CardContent className="pt-6">
                 <p className="text-center text-sm sm:text-base text-muted-foreground py-4 sm:py-8">
@@ -341,17 +339,17 @@ export function ListaSection() {
                 <CardHeader>
                   <CardTitle>Por Comprar</CardTitle>
                   <CardDescription>
-                    {itemsPendientes.length} {itemsPendientes.length === 1 ? 'item' : 'items'}
+                    {pendingItems.length} {pendingItems.length === 1 ? 'item' : 'items'}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {itemsPendientes.length === 0 ? (
+                  {pendingItems.length === 0 ? (
                     <p className="text-center text-muted-foreground py-8">
                       No hay items pendientes
                     </p>
                   ) : (
                     <div className="space-y-2">
-                      {itemsPendientes.map((item) => {
+                      {pendingItems.map((item) => {
                         const Icon = getCategoryIcon(item.category);
                         return (
                           <div
@@ -362,7 +360,7 @@ export function ListaSection() {
                               size="icon"
                               variant="outline"
                               className="shrink-0 bg-transparent"
-                              onClick={() => toggleComprado(item)}
+                              onClick={() => togglePurchased(item)}
                               aria-label={`Marcar ${item.title} como comprado`}
                               title={`Marcar ${item.title} como comprado`}
                             >
@@ -379,7 +377,7 @@ export function ListaSection() {
                                         aria-hidden="true"
                                       />
                                       <span className="text-xs text-muted-foreground">
-                                        {getCategoriaLabel(item.category)}
+                                        {getCategoryLabel(item.category)}
                                       </span>
                                     </div>
                                     <span className="text-xs text-muted-foreground">
@@ -391,7 +389,7 @@ export function ListaSection() {
                                   size="icon"
                                   variant="ghost"
                                   className="shrink-0"
-                                  onClick={() => eliminarItem(item.id)}
+                                  onClick={() => handleDeleteItem(item.id)}
                                   aria-label={`Eliminar ${item.title}`}
                                   title={`Eliminar ${item.title}`}
                                 >
@@ -411,15 +409,15 @@ export function ListaSection() {
                 <CardHeader>
                   <CardTitle>Comprados</CardTitle>
                   <CardDescription>
-                    {itemsComprados.length} {itemsComprados.length === 1 ? 'item' : 'items'}
+                    {purchasedItems.length} {purchasedItems.length === 1 ? 'item' : 'items'}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {itemsComprados.length === 0 ? (
+                  {purchasedItems.length === 0 ? (
                     <p className="text-center text-muted-foreground py-8">No hay items comprados</p>
                   ) : (
                     <div className="space-y-2">
-                      {itemsComprados.map((item) => {
+                      {purchasedItems.map((item) => {
                         const Icon = getCategoryIcon(item.category);
                         return (
                           <div
@@ -430,7 +428,7 @@ export function ListaSection() {
                               size="icon"
                               variant="secondary"
                               className="shrink-0"
-                              onClick={() => toggleComprado(item)}
+                              onClick={() => togglePurchased(item)}
                               aria-label={`Marcar ${item.title} como no comprado`}
                               title={`Marcar ${item.title} como no comprado`}
                             >
@@ -444,7 +442,7 @@ export function ListaSection() {
                                     <div className="flex items-center gap-1">
                                       <Icon className="w-3 h-3 text-muted-foreground" />
                                       <span className="text-xs text-muted-foreground">
-                                        {getCategoriaLabel(item.category)}
+                                        {getCategoryLabel(item.category)}
                                       </span>
                                     </div>
                                     <span className="text-xs text-muted-foreground">
@@ -456,7 +454,7 @@ export function ListaSection() {
                                   size="icon"
                                   variant="ghost"
                                   className="shrink-0"
-                                  onClick={() => eliminarItem(item.id)}
+                                  onClick={() => handleDeleteItem(item.id)}
                                   aria-label={`Eliminar ${item.title}`}
                                   title={`Eliminar ${item.title}`}
                                 >

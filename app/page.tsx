@@ -17,11 +17,11 @@ function LandingPageContent() {
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { isAuthenticated, usuario, familia } = useAuth();
+  const { isAuthenticated, user, family } = useAuth();
 
   useEffect(() => {
     const code = searchParams.get('code');
-    const token = searchParams.get('token'); // In case implicit flow is used or param name varies
+    const token = searchParams.get('token');
 
     if (code || token) {
       // Redirect to the auth callback handler to process the login
@@ -31,11 +31,11 @@ function LandingPageContent() {
     }
   }, [searchParams, router]);
 
-  const dashboardRoute = (usuario?.familiaId || familia) ? '/dashboard' : '/home';
+  const dashboardRoute = (user?.familyId || family) ? '/dashboard' : '/home';
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-cover bg-center" style={{ backgroundImage: "url('/bg.svg')" }}>
-      <div className="absolute inset-0 bg-background/10 z-0"></div> {/* Overlay for background opacity */}
+      <div className="absolute inset-0 bg-background/10 z-0"></div>
       <main className="relative z-10">
         {/* Header */}
         <LandingHeader />
@@ -81,21 +81,19 @@ function LandingPageContent() {
 
             <motion.div
               initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }} // Removed rotate: 1
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
               className="relative w-full flex items-center justify-center pt-2 lg:pt-0"
             >
               <img
                 src="\family.png"
                 alt="NuestroNido App Mockup"
-                className="w-full h-auto object-contain rounded-lg shadow-2xl shadow-primary/30 max-w-xl" // Changed w-[108%] to w-full and added max-w-xl
+                className="w-full h-auto object-contain rounded-lg shadow-2xl shadow-primary/30 max-w-xl"
                 style={{
-                  boxShadow: '0 15px 30px -5px rgba(var(--primary-rgb), 0.20), 0 0px 50px rgba(var(--primary-rgb), 0.10)', // Adjusted boxShadow
-                  // Removed transform: 'scale(1.08)'
+                  boxShadow: '0 15px 30px -5px rgba(var(--primary-rgb), 0.20), 0 0px 50px rgba(var(--primary-rgb), 0.10)',
                 }}
                 loading="eager"
               />
-              {/* Radial blur/halo removed */}
             </motion.div>
           </div>
         </div>
@@ -103,8 +101,6 @@ function LandingPageContent() {
 
         {/* Features Section */}
         <FeaturesSection />
-
-
 
         {/* How it Works */}
         <HowItWorksSection />

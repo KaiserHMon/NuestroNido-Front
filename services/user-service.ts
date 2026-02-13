@@ -1,5 +1,5 @@
 import { fetchClient } from '@/lib/api-client';
-import { Usuario } from '@/lib/types';
+import { User } from '@/lib/types';
 import { mapColor } from '@/lib/colors';
 
 interface ApiUserResponse {
@@ -17,20 +17,18 @@ interface ApiUserResponse {
 }
 
 export const UserService = {
-  async getUser(userId: string): Promise<Usuario> {
+  async getUser(userId: string): Promise<User> {
     const response = await fetchClient<ApiUserResponse>(`/api/v1/users/${userId}`);
-    
     const colorData = mapColor(response.color, response.id);
-
     const levelData = response.level;
 
     return {
       id: response.id,
-      nombre: response.name,
-      familiaId: undefined,
+      name: response.name,
+      familyId: undefined,
       color: colorData,
       experience_points: response.experience_points || 0,
-      nivel: levelData
+      level: levelData
         ? {
             id: levelData.id,
             name: levelData.name,
@@ -44,24 +42,21 @@ export const UserService = {
     };
   },
 
-  async updateUser(userId: string, data: { name: string }): Promise<Usuario> {
+  async updateUser(userId: string, data: { name: string }): Promise<User> {
     const response = await fetchClient<ApiUserResponse>(`/api/v1/users/${userId}`, {
       method: 'PUT',
       body: data,
     });
-    
     const colorData = mapColor(response.color, response.id);
-
-    // Note: Update usually returns the updated user, but level might not change immediately unless explicitly returned
     const levelData = response.level;
 
     return {
       id: response.id,
-      nombre: response.name,
-      familiaId: undefined,
+      name: response.name,
+      familyId: undefined,
       color: colorData,
       experience_points: response.experience_points || 0,
-      nivel: levelData
+      level: levelData
         ? {
             id: levelData.id,
             name: levelData.name,

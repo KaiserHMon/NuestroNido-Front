@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Familia } from '@/lib/types';
+import { Family } from '@/lib/types';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,22 +10,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Copy, Check, Loader2 } from 'lucide-react';
 import { FamilyService } from '@/services/family-service';
 
-interface InvitarMiembrosDialogProps {
-  familia: Familia;
+interface InviteMembersDialogProps {
+  family: Family;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-export function InvitarMiembrosDialog({ open, onOpenChange }: InvitarMiembrosDialogProps) {
-  const [codigoCopiado, setCodigoCopiado] = useState(false);
-  const [linkCopiado, setLinkCopiado] = useState(false);
-  const [codigoInvitacion, setCodigoInvitacion] = useState('');
-  const [linkInvitacion, setLinkInvitacion] = useState('');
+export function InviteMembersDialog({ open, onOpenChange }: InviteMembersDialogProps) {
+  const [codeCopied, setCodeCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const [invitationCode, setInvitationCode] = useState('');
+  const [invitationLink, setInvitationLink] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (open) {
-      const cargarInvitaciones = async () => {
+      const loadInvitations = async () => {
         setLoading(true);
         try {
           const [codeResult, linkResult] = await Promise.allSettled([
@@ -34,53 +34,52 @@ export function InvitarMiembrosDialog({ open, onOpenChange }: InvitarMiembrosDia
           ]);
 
           if (codeResult.status === 'fulfilled') {
-            setCodigoInvitacion(codeResult.value.code);
+            setInvitationCode(codeResult.value.code);
           } else {
-            console.error('Error generando código:', codeResult.reason);
+            console.error('Error generating code:', codeResult.reason);
           }
 
           if (linkResult.status === 'fulfilled') {
             const linkData = linkResult.value;
-            // El API devuelve el link completo. Si necesitamos que apunte al dominio actual:
             try {
               const url = new URL(linkData.link);
               const currentOrigin = typeof window !== 'undefined' ? window.location.origin : '';
               const localLink = `${currentOrigin}/invite${url.pathname.replace('/invite', '')}`;
-              setLinkInvitacion(localLink);
+              setInvitationLink(localLink);
             } catch (e) {
-              console.error('Error procesando link:', e);
-              setLinkInvitacion(linkData.link);
+              console.error('Error processing link:', e);
+              setInvitationLink(linkData.link);
             }
           } else {
-            console.error('Error generando link:', linkResult.reason);
+            console.error('Error generating link:', linkResult.reason);
           }
         } catch (error) {
-          console.error('Error inesperado al generar invitaciones:', error);
+          console.error('Unexpected error generating invitations:', error);
         } finally {
           setLoading(false);
         }
       };
-      cargarInvitaciones();
+      loadInvitations();
     }
   }, [open]);
 
-  const copiarCodigo = async () => {
+  const copyCode = async () => {
     try {
-      await navigator.clipboard.writeText(codigoInvitacion);
-      setCodigoCopiado(true);
-      setTimeout(() => setCodigoCopiado(false), 2000);
+      await navigator.clipboard.writeText(invitationCode);
+      setCodeCopied(true);
+      setTimeout(() => setCodeCopied(false), 2000);
     } catch (err) {
-      console.error('Error copiando código:', err);
+      console.error('Error copying code:', err);
     }
   };
 
-  const copiarLink = async () => {
+  const copyLink = async () => {
     try {
-      await navigator.clipboard.writeText(linkInvitacion);
-      setLinkCopiado(true);
-      setTimeout(() => setLinkCopiado(false), 2000);
+      await navigator.clipboard.writeText(invitationLink);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
     } catch (err) {
-      console.error('Error copiando link:', err);
+      console.error('Error copying link:', err);
     }
   };
 
@@ -110,23 +109,22 @@ export function InvitarMiembrosDialog({ open, onOpenChange }: InvitarMiembrosDia
               </TabsTrigger>
             </TabsList>
 
-            {/* TAB: CÓDIGO DE INVITACIÓN */}
             <TabsContent value="codigo" className="space-y-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-foreground">Código de Invitación</Label>
                 <div className="flex gap-2">
                   <Input
                     readOnly
-                    value={codigoInvitacion}
+                    value={invitationCode}
                     placeholder="Generando..."
                     className="bg-muted border-border text-foreground font-mono text-sm"
                   />
                   <Button
-                    onClick={copiarCodigo}
-                    disabled={!codigoInvitacion}
+                    onClick={copyCode}
+                    disabled={!invitationCode}
                     className="bg-primary hover:bg-primary/90 text-primary-foreground flex-shrink-0 px-3"
                   >
-                    {codigoCopiado ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    {codeCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -135,23 +133,22 @@ export function InvitarMiembrosDialog({ open, onOpenChange }: InvitarMiembrosDia
               </div>
             </TabsContent>
 
-            {/* TAB: LINK DE INVITACIÓN */}
             <TabsContent value="link" className="space-y-4">
               <div className="space-y-2">
                 <Label className="text-sm font-medium text-foreground">Link de Invitación</Label>
                 <div className="flex gap-2">
                   <Input
                     readOnly
-                    value={linkInvitacion}
+                    value={invitationLink}
                     placeholder="Generando..."
                     className="bg-muted border-border text-foreground font-mono text-xs"
                   />
                   <Button
-                    onClick={copiarLink}
-                    disabled={!linkInvitacion}
+                    onClick={copyLink}
+                    disabled={!invitationLink}
                     className="bg-primary hover:bg-primary/90 text-primary-foreground flex-shrink-0 px-3"
                   >
-                    {linkCopiado ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    {linkCopied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">

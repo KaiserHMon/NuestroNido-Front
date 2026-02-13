@@ -1,18 +1,9 @@
-/**
- * Servicio para gestionar el almacenamiento de tokens y datos de sesión.
- * Actualmente usa localStorage, pero está abstraído para facilitar la migración
- * a cookies HttpOnly en el futuro.
- *
- * @warning El uso de localStorage es vulnerable a ataques XSS.
- * Asegúrese de sanear todas las entradas de usuario.
- */
-
-import { Usuario } from '@/lib/types';
+import { User } from '@/lib/types';
 
 const TOKEN_KEY = 'auth_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
-const USER_KEY = 'usuario';
-const FAMILY_KEY = 'familia';
+const USER_KEY = 'user_data';
+const FAMILY_KEY = 'family_data';
 
 export const TokenService = {
   getToken(): string | null {
@@ -55,7 +46,7 @@ export const TokenService = {
     localStorage.removeItem(REFRESH_TOKEN_KEY);
   },
 
-  getUser(): Usuario | null {
+  getUser(): User | null {
     if (typeof window === 'undefined') return null;
     const userStr = localStorage.getItem(USER_KEY);
     if (!userStr || userStr === 'undefined' || userStr === 'null') {
@@ -63,14 +54,14 @@ export const TokenService = {
       return null;
     }
     try {
-      return JSON.parse(userStr) as Usuario;
+      return JSON.parse(userStr) as User;
     } catch {
       localStorage.removeItem(USER_KEY);
       return null;
     }
   },
 
-  setUser(user: Usuario): void {
+  setUser(user: User): void {
     if (typeof window === 'undefined' || !user) return;
     localStorage.setItem(USER_KEY, JSON.stringify(user));
   },
@@ -86,8 +77,7 @@ export const TokenService = {
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     localStorage.removeItem(FAMILY_KEY);
-    // Borrar cualquier otra posible clave relacionada con la sesión
-    localStorage.removeItem('auth_storage'); // Por si se usó alguna vez
-    localStorage.removeItem('supabase.auth.token'); // Por si hubo restos de Supabase
+    localStorage.removeItem('auth_storage');
+    localStorage.removeItem('supabase.auth.token');
   },
 };

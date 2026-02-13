@@ -18,10 +18,10 @@ export const useAuth = () => {
     }
   }, [context]);
 
-  const register = useCallback(async (nombre: string, email: string, password: string) => {
+  const register = useCallback(async (name: string, email: string, password: string) => {
     setError(null);
     try {
-      await context.register(nombre, email, password);
+      await context.register(name, email, password);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Error al registrarse';
       setError(msg);
@@ -30,9 +30,21 @@ export const useAuth = () => {
   }, [context]);
 
   return {
-    ...context,
+    user: context.user,
+    token: context.token,
+    isAuthenticated: context.isAuthenticated,
+    isLoading: context.isLoading,
+    family: context.family,
+    levels: context.levels,
     login,
     register,
+    logout: context.logout,
+    createFamily: context.createFamily,
+    joinFamily: context.joinFamily,
+    joinByLink: context.joinByLink,
+    updateFamily: context.updateFamily,
+    deleteFamily: context.deleteFamily,
+    refreshFamily: context.refreshFamily,
     error,
   };
 };

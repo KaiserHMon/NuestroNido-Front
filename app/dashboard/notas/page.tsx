@@ -1,12 +1,12 @@
 'use client';
 
 import { DashboardLayout } from '@/components/dashboard-layout';
-import { NotasSection } from '@/components/notas-section';
+import { NotesSection } from '@/components/notes-section';
 
-export default function NotasPage() {
+export default function NotesPage() {
   return (
-    <DashboardLayout activeSection="notas">
-      <NotasSection />
+    <DashboardLayout activeSection="notes">
+      <NotesSection />
     </DashboardLayout>
   );
 }

@@ -4,11 +4,11 @@ import { useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { TokenService } from '@/services/token-service';
 import { fetchClient } from '@/lib/api-client';
-import { Usuario, Familia } from '@/lib/types';
+import { User, Family } from '@/lib/types';
 import { UserService } from '@/services/user-service';
 import { parseJwt } from '@/lib/jwt-utils';
 
-function AuthCallbackContent() {
+function AuthCallbackPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -19,13 +19,10 @@ function AuthCallbackContent() {
         const code = searchParams.get('code');
 
         if (!token && code) {
-           // Exchange code for token via backend
            try {
-             // According to user, backend returns { data: { access_token: "..." } }
              const response = await fetchClient<{ access_token?: string; data?: { access_token: string } }>(`/api/v1/auth/callback?code=${code}`, {
                requiresAuth: false
              });
-             console.log("Backend exchange response:", response);
              token = response.data?.access_token || response.access_token || null;
            } catch (err) {
              console.error("Error exchanging code:", err);
@@ -37,12 +34,8 @@ function AuthCallbackContent() {
           throw new Error('No access token received');
         }
 
-        console.log("Token received:", token);
-        // Store tokens
         TokenService.setToken(token);
-        console.log("Token stored check:", TokenService.getToken());
         
-        // Decode token to get user ID
         const decoded = parseJwt(token);
         if (!decoded || !decoded.sub) {
            throw new Error('Invalid token');
@@ -50,34 +43,32 @@ function AuthCallbackContent() {
         
         const userId = decoded.sub;
 
-        // Fetch user details and family details
         const [userResponse, familyResponse] = await Promise.allSettled([
           UserService.getUser(userId),
-          fetchClient<Familia>('/api/v1/families/me'),
+          fetchClient<Family>('/api/v1/families/me'),
         ]);
 
-        let usuario: Usuario;
+        let user: User;
 
         if (userResponse.status === 'fulfilled') {
-          usuario = userResponse.value;
+          user = userResponse.value;
         } else {
-             // Fallback if user fetch fails
-             usuario = {
+             user = {
               id: userId,
-              nombre: 'Usuario', 
+              name: 'User', 
               experience_points: 0,
-              nivel: undefined,
+              level: undefined,
               createdAt: new Date(),
               updatedAt: new Date(),
             };
         }
 
         if (familyResponse.status === 'fulfilled' && familyResponse.value) {
-           usuario.familiaId = familyResponse.value.id;
-           TokenService.setUser(usuario);
+           user.familyId = familyResponse.value.id;
+           TokenService.setUser(user);
            window.location.href = '/dashboard';
         } else {
-           TokenService.setUser(usuario);
+           TokenService.setUser(user);
            window.location.href = '/home';
         }
 
@@ -107,7 +98,7 @@ export default function AuthCallbackPage() {
           <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
         </div>
     }>
-      <AuthCallbackContent />
+      <AuthCallbackPageContent />
     </Suspense>
   );
 }

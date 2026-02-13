@@ -10,11 +10,11 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { z } from 'zod';
 
-const ForgotPasswordSchema = z.object({
+const forgotPasswordSchema = z.object({
   email: z.string().email('Por favor ingresa un email válido'),
 });
 
-type ForgotPasswordInputs = z.infer<typeof ForgotPasswordSchema>;
+type ForgotPasswordInputs = z.infer<typeof forgotPasswordSchema>;
 
 interface ForgotPasswordFormProps {
   onBack?: () => void;
@@ -31,12 +31,12 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
     formState: { errors },
     watch,
   } = useForm<ForgotPasswordInputs>({
-    resolver: zodResolver(ForgotPasswordSchema),
+    resolver: zodResolver(forgotPasswordSchema),
   });
 
   const email = watch('email');
 
-  const onSubmit = async (data: ForgotPasswordInputs) => {
+  const handleFormSubmit = async (data: ForgotPasswordInputs) => {
     setIsSubmitting(true);
     setError(null);
     try {
@@ -81,7 +81,7 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
       {error && (
         <Alert variant="destructive">
           <AlertDescription>{error}</AlertDescription>

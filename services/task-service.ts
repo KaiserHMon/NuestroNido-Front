@@ -1,42 +1,34 @@
 import { fetchClient } from '@/lib/api-client';
-import { Tarea } from '@/lib/types';
+import { Task } from '@/lib/types';
 
 export const TaskService = {
-  async getTasks(filter?: string): Promise<Tarea[]> {
-    const params = new URLSearchParams();
-    if (filter) params.append('filter_by', filter);
-
-    // Using string concat for query params as fetchClient helper doesn't auto-handle object params yet
-    const queryString = params.toString() ? `?${params.toString()}` : '';
-    return fetchClient<Tarea[]>(`/api/v1/tasks/${queryString}`);
+  async getTasks(): Promise<Task[]> {
+    return fetchClient<Task[]>('/api/v1/tasks/');
   },
 
-  async create(task: {
-    title: string;
-    family_id: string;
-    assigned_to_user_id?: string;
-    recurrence_type: 'none' | 'daily' | 'weekly' | 'monthly';
-    week_days?: string | null;
-    status?: string;
-    due_date: string;
-    end_date?: string | null;
-  }): Promise<Tarea> {
-    return fetchClient<Tarea>('/api/v1/tasks/', {
+  async createTask(data: Partial<Task>): Promise<Task> {
+    return fetchClient<Task>('/api/v1/tasks/', {
       method: 'POST',
-      body: task,
+      body: data,
     });
   },
 
-  async update(taskId: string, updates: Record<string, unknown>): Promise<Tarea> {
-    return fetchClient<Tarea>(`/api/v1/tasks/${taskId}`, {
+  async updateTask(taskId: string, data: Partial<Task>): Promise<Task> {
+    return fetchClient<Task>(`/api/v1/tasks/${taskId}`, {
       method: 'PUT',
-      body: updates,
+      body: data,
     });
   },
 
-  async delete(taskId: string): Promise<void> {
+  async deleteTask(taskId: string): Promise<void> {
     return fetchClient(`/api/v1/tasks/${taskId}`, {
       method: 'DELETE',
+    });
+  },
+
+  async toggleTask(taskId: string): Promise<Task> {
+    return fetchClient<Task>(`/api/v1/tasks/${taskId}/toggle`, {
+      method: 'POST',
     });
   },
 };

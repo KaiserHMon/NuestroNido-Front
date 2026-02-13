@@ -1,12 +1,12 @@
 'use client';
 
 import { DashboardLayout } from '@/components/dashboard-layout';
-import { CalendarioSection } from '@/components/calendario-section';
+import { CalendarSection } from '@/components/calendar-section';
 
-export default function CalendarioPage() {
+export default function CalendarPage() {
   return (
-    <DashboardLayout activeSection="calendario">
-      <CalendarioSection />
+    <DashboardLayout activeSection="calendar">
+      <CalendarSection />
     </DashboardLayout>
   );
 }

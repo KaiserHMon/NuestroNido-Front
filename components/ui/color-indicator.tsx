@@ -1,10 +1,10 @@
 'use client';
 
-import { ColorMiembro } from '@/lib/types';
+import { MemberColor } from '@/lib/types';
 import { getColorInlineStyle } from '@/lib/colors';
 
 interface ColorIndicatorProps {
-  color: ColorMiembro;
+  color: MemberColor;
   size?: 'sm' | 'md' | 'lg';
   variant?: 'dot' | 'square' | 'bar';
   className?: string;
@@ -38,7 +38,7 @@ export function ColorIndicator({
           minHeight: '4px',
         }}
         role="img"
-        aria-label={`Indicador de color ${color.nombre}`}
+        aria-label={`Indicador de color ${color.name}`}
       />
     );
   }
@@ -48,7 +48,7 @@ export function ColorIndicator({
       className={`${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
       style={getColorInlineStyle(color.id)}
       role="img"
-      aria-label={`Indicador de color ${color.nombre}`}
+      aria-label={`Indicador de color ${color.name}`}
     />
   );
 }

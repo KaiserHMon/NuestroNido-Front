@@ -1,62 +1,58 @@
 'use client';
 
-import { Miembro } from '@/lib/types';
+import { Member, Level } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { MiembroAvatar } from '@/components/ui/miembro-avatar';
+import { MemberAvatar } from '@/components/ui/member-avatar';
 import { Medal } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Progress } from '@/components/ui/progress';
 
 interface LeaderboardProps {
-  miembros: Miembro[];
+  members: Member[];
 }
 
-const getDistintivo = (posicion: number) => {
-  switch (posicion) {
+const getDistinction = (position: number) => {
+  switch (position) {
     case 1:
-      return { emoji: '🥇', label: 'oro' };
+      return { emoji: '🥇', label: 'gold' };
     case 2:
-      return { emoji: '🥈', label: 'plata' };
+      return { emoji: '🥈', label: 'silver' };
     case 3:
-      return { emoji: '🥉', label: 'bronce' };
+      return { emoji: '🥉', label: 'bronze' };
     default:
       return null;
   }
 };
 
-export function Leaderboard({ miembros }: LeaderboardProps) {
+export function Leaderboard({ members }: LeaderboardProps) {
   const { levels } = useAuth();
   
-  // Ordenar miembros por experiencia descendente
-  const miembrosOrdenados = [...miembros].sort((a, b) => (b.experience_points || 0) - (a.experience_points || 0));
+  // Sort members by experience descending
+  const sortedMembers = [...members].sort((a, b) => (b.experience_points || 0) - (a.experience_points || 0));
 
-  const entries = miembrosOrdenados.map((m, index) => {
-    const distintivo = getDistintivo(index + 1);
+  const entries = sortedMembers.map((m, index) => {
+    const distinction = getDistinction(index + 1);
     
     const currentXP = m.experience_points || 0;
-    const currentLevelNum = m.nivel?.level_number || 1;
-    // Assuming levels are sorted or we find the specific one. 
-    // Optimization: we could sort levels once. But explicit find is safe.
-    const nextLevel = levels.find(l => l.level_number === currentLevelNum + 1);
+    const currentLevelNum = m.level?.level_number || 1;
+    const nextLevel = levels.find((l: Level) => l.level_number === currentLevelNum + 1);
     
-    // If no next level, we are at max.
     const nextLevelXP = nextLevel?.required_progress || currentXP; 
     const isMaxLevel = !nextLevel;
     
     const progressPercent = isMaxLevel ? 100 : (nextLevelXP > 0 ? Math.min(100, (currentXP / nextLevelXP) * 100) : 0);
 
     return {
-      puesto: index + 1,
-      miembro: {
+      rank: index + 1,
+      member: {
         id: m.id,
-        nombre: m.nombre,
+        name: m.name,
         color: m.color,
-        imageUrl: m.nivel?.image_url,
+        imageUrl: m.level?.image_url,
       },
       experience_points: currentXP,
-      nivel: m.nivel || { name: 'Huevo', level_number: 1, required_progress: 0 }, // Fallback
-      distintivo: distintivo ? (distintivo.label as 'oro' | 'plata' | 'bronce') : undefined,
-      // Extra UI helpers
+      level: m.level || { name: 'Huevo', level_number: 1, required_progress: 0 },
+      distinction: distinction ? (distinction.label as 'gold' | 'silver' | 'bronze') : undefined,
       nextLevelXP,
       progressPercent,
       isMaxLevel
@@ -91,19 +87,19 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
               <tbody>
                 {entries.map((entry) => (
                   <tr
-                    key={entry.miembro.id}
+                    key={entry.member.id}
                     className={`border-b border-border last:border-0 ${
-                      entry.puesto <= 3 ? 'bg-primary/5' : ''
+                      entry.rank <= 3 ? 'bg-primary/5' : ''
                     }`}
                   >
                     <td className="py-3 px-2 font-bold text-foreground">
                       <div className="flex items-center gap-2">
-                        <span>{`#${entry.puesto}`}</span>
-                        {entry.distintivo && (
-                          <span title={`Medalla de ${entry.distintivo}`}>
-                            {entry.distintivo === 'oro'
+                        <span>{`#${entry.rank}`}</span>
+                        {entry.distinction && (
+                          <span title={`Medalla de ${entry.distinction}`}>
+                            {entry.distinction === 'gold'
                               ? '🥇'
-                              : entry.distintivo === 'plata'
+                              : entry.distinction === 'silver'
                                 ? '🥈'
                                 : '🥉'}
                           </span>
@@ -112,13 +108,13 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
                     </td>
                     <td className="py-3 px-2">
                       <div className="flex items-center gap-3">
-                        <MiembroAvatar
-                          nombre={entry.miembro.nombre}
-                          color={entry.miembro.color}
-                          imageUrl={entry.miembro.imageUrl}
+                        <MemberAvatar
+                          name={entry.member.name}
+                          color={entry.member.color}
+                          imageUrl={entry.member.imageUrl}
                           size="sm"
                         />
-                        <span className="text-foreground font-medium">{entry.miembro.nombre}</span>
+                        <span className="text-foreground font-medium">{entry.member.name}</span>
                       </div>
                     </td>
                     <td className="py-3 px-2">
@@ -130,7 +126,7 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
                          <Progress value={entry.progressPercent} className="h-1.5" />
                       </div>
                     </td>
-                    <td className="py-3 px-2 text-muted-foreground">{entry.nivel.name}</td>
+                    <td className="py-3 px-2 text-muted-foreground">{entry.level.name}</td>
                   </tr>
                 ))}
               </tbody>
@@ -141,31 +137,31 @@ export function Leaderboard({ miembros }: LeaderboardProps) {
           <div className="md:hidden space-y-2">
             {entries.map((entry) => (
               <div
-                key={entry.miembro.id}
+                key={entry.member.id}
                 className={`p-3 rounded-lg border ${
-                  entry.puesto <= 3 ? 'border-primary/30 bg-primary/5' : 'border-border bg-card'
+                  entry.rank <= 3 ? 'border-primary/30 bg-primary/5' : 'border-border bg-card'
                 }`}
               >
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <div className="flex items-center gap-2 flex-1">
                     <div className="text-lg font-bold text-foreground">
-                      {entry.distintivo
-                        ? entry.distintivo === 'oro'
+                      {entry.distinction
+                        ? entry.distinction === 'gold'
                           ? '🥇'
-                          : entry.distintivo === 'plata'
+                          : entry.distinction === 'silver'
                             ? '🥈'
                             : '🥉'
-                        : `#${entry.puesto}`}
+                        : `#${entry.rank}`}
                     </div>
-                    <MiembroAvatar
-                      nombre={entry.miembro.nombre}
-                      color={entry.miembro.color}
-                      imageUrl={entry.miembro.imageUrl}
+                    <MemberAvatar
+                      name={entry.member.name}
+                      color={entry.member.color}
+                      imageUrl={entry.member.imageUrl}
                       size="md"
                     />
                     <div className="flex-1">
-                      <p className="font-medium text-foreground">{entry.miembro.nombre}</p>
-                      <p className="text-xs text-muted-foreground">{entry.nivel.name}</p>
+                      <p className="font-medium text-foreground">{entry.member.name}</p>
+                      <p className="text-xs text-muted-foreground">{entry.level.name}</p>
                     </div>
                   </div>
                 </div>

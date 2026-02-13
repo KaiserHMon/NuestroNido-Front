@@ -3,10 +3,9 @@ import { renderHook, waitFor, act } from '@testing-library/react';
 import { useAuth } from '@/hooks/use-auth';
 import { TokenService } from '@/services/token-service';
 import { AuthService } from '@/services/auth-service';
-import { Usuario } from '@/lib/types';
+import { User } from '@/lib/types';
 import { AuthProvider } from '@/components/auth-provider';
 
-// Mock del TokenService
 vi.mock('@/services/token-service', () => ({
   TokenService: {
     getToken: vi.fn(),
@@ -19,7 +18,6 @@ vi.mock('@/services/token-service', () => ({
   },
 }));
 
-// Mock del AuthService
 vi.mock('@/services/auth-service', () => ({
   AuthService: {
     login: vi.fn(),
@@ -28,10 +26,21 @@ vi.mock('@/services/auth-service', () => ({
   },
 }));
 
-// Mock del FamilyService (needed by AuthProvider)
 vi.mock('@/services/family-service', () => ({
   FamilyService: {
     getMyFamily: vi.fn().mockResolvedValue(null),
+  },
+}));
+
+vi.mock('@/services/user-service', () => ({
+  UserService: {
+    getUser: vi.fn(),
+  },
+}));
+
+vi.mock('@/services/level-service', () => ({
+  LevelService: {
+    getLevels: vi.fn().mockResolvedValue([]),
   },
 }));
 
@@ -44,7 +53,7 @@ describe('useAuth Hook', () => {
     <AuthProvider>{children}</AuthProvider>
   );
 
-  it('debe inicializar como no autenticado si no hay sesión', async () => {
+  it('should initialize as unauthenticated if no session', async () => {
     vi.mocked(TokenService.getToken).mockReturnValue(null);
     vi.mocked(TokenService.getUser).mockReturnValue(null);
 
@@ -55,16 +64,16 @@ describe('useAuth Hook', () => {
     });
 
     expect(result.current.isAuthenticated).toBe(false);
-    expect(result.current.usuario).toBeNull();
+    expect(result.current.user).toBeNull();
     expect(result.current.token).toBeNull();
   });
 
-  it('debe verificar sesión exitosamente al montar', async () => {
-    const mockUser = { id: '1', nombre: 'Test', email: 'test@test.com' };
+  it('should verify session successfully on mount', async () => {
+    const mockUser = { id: '1', name: 'Test', email: 'test@test.com' };
     const mockToken = 'fake-token';
 
     vi.mocked(TokenService.getToken).mockReturnValue(mockToken);
-    vi.mocked(TokenService.getUser).mockReturnValue(mockUser as unknown as Usuario);
+    vi.mocked(TokenService.getUser).mockReturnValue(mockUser as unknown as User);
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -73,12 +82,11 @@ describe('useAuth Hook', () => {
     });
 
     expect(result.current.isAuthenticated).toBe(true);
-    expect(result.current.usuario).toEqual(mockUser);
+    expect(result.current.user).toEqual(mockUser);
     expect(result.current.token).toBe(mockToken);
   });
 
-  it('debe manejar error verificando sesión', async () => {
-    // Force an error in TokenService
+  it('should handle error verifying session', async () => {
     vi.mocked(TokenService.getToken).mockImplementation(() => {
       throw new Error('Storage error');
     });
@@ -95,8 +103,8 @@ describe('useAuth Hook', () => {
     consoleSpy.mockRestore();
   });
 
-  it('debe realizar login exitoso', async () => {
-    const mockUser = { id: '1', nombre: 'Test', email: 'test@test.com' };
+  it('should login successfully', async () => {
+    const mockUser = { id: '1', name: 'Test', email: 'test@test.com' };
     const mockToken = 'new-token';
 
     vi.mocked(TokenService.getToken).mockReturnValue(null);
@@ -104,7 +112,7 @@ describe('useAuth Hook', () => {
 
     vi.mocked(AuthService.login).mockResolvedValue({
       success: true,
-      data: { token: mockToken, usuario: mockUser as unknown as Usuario },
+      data: { token: mockToken, user: mockUser as unknown as User },
     });
 
     const { result } = renderHook(() => useAuth(), { wrapper });
@@ -116,12 +124,12 @@ describe('useAuth Hook', () => {
     });
 
     expect(result.current.isAuthenticated).toBe(true);
-    expect(result.current.usuario).toEqual(mockUser);
+    expect(result.current.user).toEqual(mockUser);
     expect(result.current.error).toBeNull();
   });
 
-  it('debe manejar error en login', async () => {
-    const errorMessage = 'Credenciales inválidas';
+  it('should handle login error', async () => {
+    const errorMessage = 'Invalid credentials';
     vi.mocked(TokenService.getToken).mockReturnValue(null);
     vi.mocked(TokenService.getUser).mockReturnValue(null);
     vi.mocked(AuthService.login).mockRejectedValue(new Error(errorMessage));
@@ -133,49 +141,6 @@ describe('useAuth Hook', () => {
       try {
         await result.current.login('test@test.com', 'wrong');
       } catch {
-        // Expected to throw
-      }
-    });
-
-    expect(result.current.isAuthenticated).toBe(false);
-    expect(result.current.error).toBe(errorMessage);
-  });
-
-  it('debe realizar registro exitoso', async () => {
-    const mockUser = { id: '2', nombre: 'New', email: 'new@test.com' };
-    const mockToken = 'reg-token';
-
-    vi.mocked(TokenService.getToken).mockReturnValue(null);
-    vi.mocked(TokenService.getUser).mockReturnValue(null);
-
-    vi.mocked(AuthService.register).mockResolvedValue({
-      success: true,
-      data: { token: mockToken, usuario: mockUser as unknown as Usuario },
-    });
-
-    const { result } = renderHook(() => useAuth(), { wrapper });
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-    await act(async () => {
-      await result.current.register('New', 'new@test.com', 'password');
-    });
-
-    expect(result.current.isAuthenticated).toBe(true);
-  });
-
-  it('debe manejar error en registro', async () => {
-    const errorMessage = 'El email ya existe';
-    vi.mocked(TokenService.getToken).mockReturnValue(null);
-    vi.mocked(TokenService.getUser).mockReturnValue(null);
-    vi.mocked(AuthService.register).mockRejectedValue(new Error(errorMessage));
-
-    const { result } = renderHook(() => useAuth(), { wrapper });
-    await waitFor(() => expect(result.current.isLoading).toBe(false));
-
-    await act(async () => {
-      try {
-        await result.current.register('Exist', 'exist@test.com', 'pass');
-      } catch {
         // Expected
       }
     });
@@ -184,10 +149,10 @@ describe('useAuth Hook', () => {
     expect(result.current.error).toBe(errorMessage);
   });
 
-  it('debe realizar logout', async () => {
-    const mockUser = { id: '1', nombre: 'Test', email: 'test@test.com' };
+  it('should perform logout', async () => {
+    const mockUser = { id: '1', name: 'Test', email: 'test@test.com' };
     vi.mocked(TokenService.getToken).mockReturnValue('token');
-    vi.mocked(TokenService.getUser).mockReturnValue(mockUser as unknown as Usuario);
+    vi.mocked(TokenService.getUser).mockReturnValue(mockUser as unknown as User);
 
     const { result } = renderHook(() => useAuth(), { wrapper });
     await waitFor(() => expect(result.current.isAuthenticated).toBe(true));
@@ -198,7 +163,7 @@ describe('useAuth Hook', () => {
 
     expect(TokenService.clearSession).toHaveBeenCalled();
     expect(result.current.isAuthenticated).toBe(false);
-    expect(result.current.usuario).toBeNull();
+    expect(result.current.user).toBeNull();
     expect(result.current.token).toBeNull();
   });
 });

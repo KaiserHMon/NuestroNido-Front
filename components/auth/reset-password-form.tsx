@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { z } from 'zod';
 import Link from 'next/link';
 
-const ResetPasswordSchema = z
+const resetPasswordSchema = z
   .object({
     password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres'),
     confirmPassword: z.string(),
@@ -21,7 +21,7 @@ const ResetPasswordSchema = z
     path: ['confirmPassword'],
   });
 
-type ResetPasswordInputs = z.infer<typeof ResetPasswordSchema>;
+type ResetPasswordInputs = z.infer<typeof resetPasswordSchema>;
 
 interface ResetPasswordFormProps {
   token?: string;
@@ -39,10 +39,10 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     handleSubmit,
     formState: { errors },
   } = useForm<ResetPasswordInputs>({
-    resolver: zodResolver(ResetPasswordSchema),
+    resolver: zodResolver(resetPasswordSchema),
   });
 
-  const onSubmit = async (data: ResetPasswordInputs) => {
+  const handleFormSubmit = async (data: ResetPasswordInputs) => {
     if (!token) {
       setError('Token inválido o expirado');
       return;
@@ -112,7 +112,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
       {error && (
         <Alert variant="destructive">
           <AlertDescription>{error}</AlertDescription>

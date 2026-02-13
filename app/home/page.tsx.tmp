@@ -1,0 +1,74 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
+import { useAuth } from '@/hooks/use-auth';
+import { useFamily } from '@/hooks/use-family';
+import { Button } from '@/components/ui/button';
+import { CrearFamiliaCard } from '@/components/familia/crear-familia-card';
+import { UnirseAFamiliaCard } from '@/components/familia/unirse-familia-card';
+import { SupportDialog } from '@/components/dialogs/support-dialog';
+import { SettingsDialog } from '@/components/dialogs/settings-dialog';
+import { FamilyService } from '@/services/family-service';
+import { toast } from 'sonner';
+
+export default function HomePage() {
+  const router = useRouter();
+  const { isAuthenticated, user, isLoading: authLoading, joinFamily: joinFamilyViaAuth } = useAuth();
+  const { family, isLoading: familyLoading } = useFamily();
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [isCheckingFamily, setIsCheckingFamily] = useState(true);
+
+  useEffect(() => {
+    const checkStatus = async () => {
+      if (authLoading) return;
+
+      if (!isAuthenticated) {
+        router.push('/login');
+        return;
+      }
+
+      if (family) {
+        router.push('/dashboard');
+        return;
+      }
+
+      // Check for pending invitation by link (Token)
+      const pendingToken = sessionStorage.getItem('pendingInviteToken');
+      if (pendingToken) {
+        sessionStorage.removeItem('pendingInviteToken'); // Remove to prevent loop, InvitePage will handle param
+        router.push(`/invite/${pendingToken}`);
+        return;
+      }
+
+      // Check for pending invitation by code
+      const pendingCode = sessionStorage.getItem('pendingInvitationCode');
+      if (pendingCode) {
+        try {
+          // Use joinFamilyViaAuth if it exists or use context directly. 
+          // Based on use-auth refactor, it might be unirseAFamilia or joinFamily.
+          // Let's assume the context's joinFamily is exposed as joinFamily in useAuth too if I refactored it there.
+          // Actually use-auth.ts I wrote earlier:
+          /*
+          return {
+            user: context.user,
+            ...
+            login,
+            register,
+            logout: context.logout,
+            refreshFamily: context.refreshFamily,
+            error,
+          };
+          */
+          // Wait, I didn't expose joinFamily in useAuth. I should use useFamily for that.
+          
+          // Actually, unirseAFamilia was in useAuth before my refactor. 
+          // Let's check use-auth.ts content again.
+        } catch (error) {
+          console.error('Error joining with pending code:', error);
+        }
+      }
+    };
+  }, []); // Placeholder to check use-auth.ts

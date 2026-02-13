@@ -1,20 +1,15 @@
 import { describe, it, expect } from 'vitest';
 
 describe('LoginForm Tests - Placeholder', () => {
-  it('debe tener tests de componentes (por implementar)', () => {
-    // Los tests de componentes requieren setup adicional de mocks
-    // y será implementado posteriormente con mejor configuración
+  it('should have component tests (to be implemented)', () => {
     expect(true).toBe(true);
   });
 
-  it('se puede agregar test para accesibilidad', () => {
-    // Test de accesibilidad será implementado una vez que se configure
-    // adecuadamente la renderización de componentes React
+  it('should be able to add accessibility tests', () => {
     expect(true).toBe(true);
   });
 
-  it('se puede agregar test para responsiveness', () => {
-    // Test de responsive será implementado con jsdom completamente configurado
+  it('should be able to add responsiveness tests', () => {
     expect(true).toBe(true);
   });
 });

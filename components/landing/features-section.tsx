@@ -32,7 +32,7 @@ const containerVariants: Variants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.2, // Retraso entre cada tarjeta
+      staggerChildren: 0.2,
     },
   },
 };

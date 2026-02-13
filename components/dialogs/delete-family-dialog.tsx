@@ -7,54 +7,53 @@ import { AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useFamilia } from '@/hooks/use-familia';
-import { Familia } from '@/lib/types';
+import { useFamily } from '@/hooks/use-family';
+import { Family } from '@/lib/types';
 import { BaseDialog } from './base-dialog';
 
-interface EliminarFamiliaDialogProps {
-  familia: Familia;
+interface DeleteFamilyDialogProps {
+  family: Family;
   trigger?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
 
-export function EliminarFamiliaDialog({
-  familia,
+export function DeleteFamilyDialog({
+  family,
   trigger,
   open: externalOpen,
   onOpenChange: externalOnOpenChange,
-}: EliminarFamiliaDialogProps) {
+}: DeleteFamilyDialogProps) {
   const router = useRouter();
   const [internalOpen, setInternalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { eliminarFamilia, error } = useFamilia();
+  const { deleteFamily, error } = useFamily();
 
   const open = externalOpen !== undefined ? externalOpen : internalOpen;
   const setOpen = externalOnOpenChange !== undefined ? externalOnOpenChange : setInternalOpen;
 
-  const { register, handleSubmit, reset, watch } = useForm<{ confirmacionTexto: string }>({
+  const { register, handleSubmit, reset, watch } = useForm<{ confirmationText: string }>({
     defaultValues: {
-      confirmacionTexto: '',
+      confirmationText: '',
     },
   });
 
-  const confirmacionTexto = watch('confirmacionTexto');
-  const confirmacionValida = confirmacionTexto === familia.nombre;
+  const confirmationText = watch('confirmationText');
+  const isConfirmationValid = confirmationText === family.name;
 
-  const onSubmit = async () => {
-    if (!confirmacionValida) {
+  const handleFormSubmit = async () => {
+    if (!isConfirmationValid) {
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await eliminarFamilia(familia.id);
+      await deleteFamily(family.id);
       setOpen(false);
       reset();
-
       router.push('/home');
     } catch (error) {
-      console.error('Error eliminando familia:', error);
+      console.error('Error deleting family:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -88,10 +87,10 @@ export function EliminarFamiliaDialog({
       }
       isSubmitting={isSubmitting}
       error={error}
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(handleFormSubmit)}
       submitButtonLabel="Eliminar Permanentemente"
       submitButtonVariant="destructive"
-      isSubmitDisabled={!confirmacionValida}
+      isSubmitDisabled={!isConfirmationValid}
     >
       <div className="flex items-start gap-3 mb-4">
         <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-1" />
@@ -109,17 +108,17 @@ export function EliminarFamiliaDialog({
 
       <div className="space-y-2">
         <Label htmlFor="confirmacion" className="text-foreground font-medium">
-          Confirma escribiendo: <strong>{familia.nombre}</strong>
+          Confirma escribiendo: <strong>{family.name}</strong>
         </Label>
         <Input
           id="confirmacion"
           type="text"
-          placeholder={`Escribe "${familia.nombre}"`}
+          placeholder={`Escribe "${family.name}"`}
           className="bg-background border-input text-foreground placeholder:text-muted-foreground"
-          {...register('confirmacionTexto')}
+          {...register('confirmationText')}
           disabled={isSubmitting}
         />
-        {!confirmacionValida && confirmacionTexto && (
+        {!isConfirmationValid && confirmationText && (
           <p className="text-sm text-destructive">El nombre no coincide</p>
         )}
       </div>

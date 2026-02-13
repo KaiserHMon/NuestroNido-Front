@@ -1,28 +1,27 @@
 'use client';
 
-import { Familia } from '@/lib/types';
-import { EditarFamiliaDialog } from '@/components/dialogs/editar-familia-dialog';
-import { EliminarFamiliaDialog } from '@/components/dialogs/eliminar-familia-dialog';
+import { Family } from '@/lib/types';
+import { EditFamilyDialog } from '@/components/dialogs/edit-family-dialog';
+import { DeleteFamilyDialog } from '@/components/dialogs/delete-family-dialog';
 import { Button } from '@/components/ui/button';
 import { Edit2, Trash2 } from 'lucide-react';
 
-interface FamiliaActionsProps {
-  familia: Familia;
-  esCreador: boolean;
-  onFamiliaActualizada?: () => void;
-  onFamiliaEliminada?: () => void;
+interface FamilyActionsProps {
+  family: Family;
+  isCreator: boolean;
+  onFamilyUpdated?: () => void;
+  onFamilyDeleted?: () => void;
   variant?: 'header' | 'nav';
 }
 
-export function FamiliaActions({
-  familia,
-  esCreador,
-  onFamiliaActualizada,
-  onFamiliaEliminada: _onFamiliaEliminada,
+export function FamilyActions({
+  family,
+  isCreator,
+  onFamilyUpdated,
+  onFamilyDeleted: _onFamilyDeleted,
   variant = 'header',
-}: FamiliaActionsProps) {
-  // Si no es creador, no mostrar nada
-  if (!esCreador) {
+}: FamilyActionsProps) {
+  if (!isCreator) {
     return null;
   }
 
@@ -36,12 +35,11 @@ export function FamiliaActions({
   const editIconColor = variant === 'nav' ? '' : 'text-primary';
   const deleteIconColor = variant === 'nav' ? '' : 'text-destructive';
 
-  // Mostrar botones siempre, sin dropdown
   return (
     <div className="flex items-center gap-1">
-      <EditarFamiliaDialog
-        familia={familia}
-        onSuccess={onFamiliaActualizada}
+      <EditFamilyDialog
+        family={family}
+        onSuccess={onFamilyUpdated}
         trigger={
           <Button variant="ghost" size="sm" className={buttonClass} title="Editar nombre" aria-label="Editar nombre">
             <Edit2 className={`${editIconClass} ${editIconColor}`} />
@@ -49,8 +47,8 @@ export function FamiliaActions({
         }
       />
 
-      <EliminarFamiliaDialog
-        familia={familia}
+      <DeleteFamilyDialog
+        family={family}
         trigger={
           <Button variant="ghost" size="sm" className={buttonClass} title="Eliminar familia" aria-label="Eliminar familia">
             <Trash2 className={`${deleteIconClass} ${deleteIconColor}`} />

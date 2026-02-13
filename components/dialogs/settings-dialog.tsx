@@ -28,17 +28,17 @@ import { toast } from 'sonner';
 
 export function SettingsDialog() {
   const router = useRouter();
-  const { usuario, logout } = useAuth();
+  const { user, logout } = useAuth();
   const [open, setOpen] = useState(false);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDeleteAccount = async () => {
-    if (!usuario) return;
+    if (!user) return;
 
     setIsDeleting(true);
     try {
-      await UserService.deleteUser(usuario.id);
+      await UserService.deleteUser(user.id);
       await logout();
       toast.success('Cuenta eliminada correctamente');
       router.push('/');

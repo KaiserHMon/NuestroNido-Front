@@ -1,10 +1,5 @@
-/**
- * Validaciones y esquemas para formularios usando Zod
- */
-
 import { z } from 'zod';
 
-// ============ AUTENTICACIÓN ============
 export const LoginSchema = z.object({
   email: z.string().email('Email inválido').min(1, 'El email es requerido'),
   password: z
@@ -15,7 +10,7 @@ export const LoginSchema = z.object({
 
 export const RegisterSchema = z
   .object({
-    nombre: z
+    name: z
       .string()
       .min(2, 'El nombre debe tener al menos 2 caracteres')
       .max(100, 'El nombre no puede exceder 100 caracteres')
@@ -38,9 +33,8 @@ export const RegisterSchema = z
 export type LoginFormInputs = z.infer<typeof LoginSchema>;
 export type RegisterFormInputs = z.infer<typeof RegisterSchema>;
 
-// ============ FAMILIA ============
-export const CrearFamiliaSchema = z.object({
-  nombre: z
+export const CreateFamilySchema = z.object({
+  name: z
     .string()
     .min(2, 'El nombre debe tener al menos 2 caracteres')
     .max(50, 'El nombre no puede exceder 50 caracteres')
@@ -48,8 +42,8 @@ export const CrearFamiliaSchema = z.object({
     .min(1, 'El nombre es requerido'),
 });
 
-export const UnirseAFamiliaSchema = z.object({
-  codigoInvitacion: z
+export const JoinFamilySchema = z.object({
+  invitationCode: z
     .string()
     .min(6, 'El código debe tener al menos 6 caracteres')
     .max(8, 'El código no puede exceder 8 caracteres')
@@ -57,8 +51,8 @@ export const UnirseAFamiliaSchema = z.object({
     .min(1, 'El código es requerido'),
 });
 
-export const ActualizarFamiliaSchema = z.object({
-  nuevoNombre: z
+export const UpdateFamilySchema = z.object({
+  newName: z
     .string()
     .min(2, 'El nombre debe tener al menos 2 caracteres')
     .max(50, 'El nombre no puede exceder 50 caracteres')
@@ -66,24 +60,23 @@ export const ActualizarFamiliaSchema = z.object({
     .min(1, 'El nombre es requerido'),
 });
 
-export const EliminarFamiliaSchema = z
+export const DeleteFamilySchema = z
   .object({
-    confirmacionTexto: z.string().min(1, 'Debes confirmar escribiendo el nombre de la familia'),
-    nombreFamilia: z.string(),
+    confirmationText: z.string().min(1, 'Debes confirmar escribiendo el nombre de la familia'),
+    familyName: z.string(),
   })
-  .refine((data) => data.confirmacionTexto === data.nombreFamilia, {
+  .refine((data) => data.confirmationText === data.familyName, {
     message: 'El nombre de la familia no coincide',
-    path: ['confirmacionTexto'],
+    path: ['confirmationText'],
   });
 
-export type CrearFamiliaFormInputs = z.infer<typeof CrearFamiliaSchema>;
-export type UnirseAFamiliaFormInputs = z.infer<typeof UnirseAFamiliaSchema>;
-export type ActualizarFamiliaFormInputs = z.infer<typeof ActualizarFamiliaSchema>;
-export type EliminarFamiliaFormInputs = z.infer<typeof EliminarFamiliaSchema>;
+export type CreateFamilyFormInputs = z.infer<typeof CreateFamilySchema>;
+export type JoinFamilyFormInputs = z.infer<typeof JoinFamilySchema>;
+export type UpdateFamilyFormInputs = z.infer<typeof UpdateFamilySchema>;
+export type DeleteFamilyFormInputs = z.infer<typeof DeleteFamilySchema>;
 
-// ============ MIEMBROS ============
-export const CrearMiembroSchema = z.object({
-  nombre: z
+export const CreateMemberSchema = z.object({
+  name: z
     .string()
     .min(2, 'El nombre debe tener al menos 2 caracteres')
     .max(100, 'El nombre no puede exceder 100 caracteres')
@@ -91,60 +84,44 @@ export const CrearMiembroSchema = z.object({
     .min(1, 'El nombre es requerido'),
 });
 
-export type CrearMiembroFormInputs = z.infer<typeof CrearMiembroSchema>;
+export type CreateMemberFormInputs = z.infer<typeof CreateMemberSchema>;
 
-// ============ NOTAS ============
-export const CrearNotaSchema = z.object({
-  titulo: z
+export const CreateNoteSchema = z.object({
+  title: z
     .string()
     .min(1, 'El título es requerido')
     .max(50, 'El título no puede exceder 50 caracteres'),
-  contenido: z
+  content: z
     .string()
     .min(1, 'El contenido es requerido')
     .max(500, 'El contenido no puede exceder 500 caracteres'),
 });
 
-export type CrearNotaFormInputs = z.infer<typeof CrearNotaSchema>;
+export type CreateNoteFormInputs = z.infer<typeof CreateNoteSchema>;
 
-// ============ VALIDACIONES PERSONALIZADAS ============
-/**
- * Validar fortaleza de contraseña
- * Retorna: 'weak' | 'medium' | 'strong'
- */
-export const validarFortalezaContraseña = (password: string): 'weak' | 'medium' | 'strong' => {
+export const validatePasswordStrength = (password: string): 'weak' | 'medium' | 'strong' => {
   let strength = 0;
-
   if (password.length >= 8) strength++;
   if (password.length >= 12) strength++;
   if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
   if (/[0-9]/.test(password)) strength++;
   if (/[^a-zA-Z0-9]/.test(password)) strength++;
-
   if (strength <= 2) return 'weak';
   if (strength <= 3) return 'medium';
   return 'strong';
 };
 
-/**
- * Validar formato de código de invitación
- */
-export const validarFormatoCodigoInvitacion = (codigo: string): boolean => {
+export const validateInvitationCodeFormat = (code: string): boolean => {
   const regex = /^[A-Z0-9]{6,8}$/;
-  return regex.test(codigo.toUpperCase());
+  return regex.test(code.toUpperCase());
 };
 
-/**
- * Generar código de invitación aleatorio
- */
-export const generarCodigoInvitacion = (): string => {
-  const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let codigo = '';
-  const longitud = 7;
-
-  for (let i = 0; i < longitud; i++) {
-    codigo += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+export const generateInvitationCode = (): string => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let code = '';
+  const length = 7;
+  for (let i = 0; i < length; i++) {
+    code += characters.charAt(Math.floor(Math.random() * characters.length));
   }
-
-  return codigo;
+  return code;
 };

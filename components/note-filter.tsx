@@ -1,29 +1,29 @@
 'use client';
 
-import { Miembro } from '@/lib/types';
+import { Member } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
-interface NotaFilterProps {
-  miembros: Miembro[];
-  filtrosActivos: string[];
-  onFilterChange: (miembroIds: string[]) => void;
+interface NoteFilterProps {
+  members: Member[];
+  activeFilters: string[];
+  onFilterChange: (memberIds: string[]) => void;
 }
 
-export function NotaFilter({ miembros, filtrosActivos, onFilterChange }: NotaFilterProps) {
-  const getMiembroColor = (miembro: Miembro) => {
-    return miembro.color.bg || '#9CA3AF';
+export function NoteFilter({ members, activeFilters, onFilterChange }: NoteFilterProps) {
+  const getMemberColor = (member: Member) => {
+    return member.color.bg || '#9CA3AF';
   };
 
-  const handleToggleFiltro = (miembroId: string) => {
-    if (filtrosActivos.includes(miembroId)) {
-      onFilterChange(filtrosActivos.filter((id) => id !== miembroId));
+  const handleToggleFilter = (memberId: string) => {
+    if (activeFilters.includes(memberId)) {
+      onFilterChange(activeFilters.filter((id) => id !== memberId));
     } else {
-      onFilterChange([...filtrosActivos, miembroId]);
+      onFilterChange([...activeFilters, memberId]);
     }
   };
 
-  const handleLimpiarFiltros = () => {
+  const handleClearFilters = () => {
     onFilterChange([]);
   };
 
@@ -31,11 +31,11 @@ export function NotaFilter({ miembros, filtrosActivos, onFilterChange }: NotaFil
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium text-foreground">Filtrar por miembro</p>
-        {filtrosActivos.length > 0 && (
+        {activeFilters.length > 0 && (
           <Button
             variant="ghost"
             size="sm"
-            onClick={handleLimpiarFiltros}
+            onClick={handleClearFilters}
             className="text-xs text-primary hover:text-primary"
           >
             Limpiar filtros
@@ -44,20 +44,20 @@ export function NotaFilter({ miembros, filtrosActivos, onFilterChange }: NotaFil
       </div>
 
       <div className="flex flex-wrap gap-2">
-        {miembros.map((miembro) => {
-          const colorBg = getMiembroColor(miembro);
-          const isActive = filtrosActivos.includes(miembro.id);
+        {members.map((member) => {
+          const colorBg = getMemberColor(member);
+          const isActive = activeFilters.includes(member.id);
           
           return (
             <Badge
-              key={miembro.id}
+              key={member.id}
               variant={isActive ? 'default' : 'outline'}
               className={`cursor-pointer transition-all ${
                 isActive
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-white text-foreground border-2'
               }`}
-              onClick={() => handleToggleFiltro(miembro.id)}
+              onClick={() => handleToggleFilter(member.id)}
               style={
                 !isActive
                   ? {
@@ -73,16 +73,16 @@ export function NotaFilter({ miembros, filtrosActivos, onFilterChange }: NotaFil
                   backgroundColor: colorBg,
                 }}
               />
-              {miembro.nombre}
+              {member.name}
             </Badge>
           );
         })}
       </div>
 
-      {filtrosActivos.length > 0 && (
+      {activeFilters.length > 0 && (
         <p className="text-xs text-muted-foreground">
-          Mostrando {filtrosActivos.length} filtro{filtrosActivos.length > 1 ? 's' : ''} activo
-          {filtrosActivos.length > 1 ? 's' : ''}
+          Mostrando {activeFilters.length} filtro{activeFilters.length > 1 ? 's' : ''} activo
+          {activeFilters.length > 1 ? 's' : ''}
         </p>
       )}
     </div>

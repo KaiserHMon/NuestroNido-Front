@@ -6,10 +6,10 @@ import { useAuth } from '@/hooks/use-auth';
 import { Bird } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function JoinPage() {
+export default function JoinByCodePage() {
   const params = useParams();
   const router = useRouter();
-  const { isAuthenticated, isLoading, unirseAFamilia, familia } = useAuth();
+  const { isAuthenticated, isLoading, joinFamily, family } = useAuth();
   const [isJoining, setIsJoining] = useState(false);
   const code = params.code as string;
 
@@ -25,18 +25,18 @@ export default function JoinPage() {
     }
 
     // If already in a family, redirect silently to dashboard
-    if (familia) {
+    if (family) {
       router.push('/dashboard');
       return;
     }
 
-    const join = async () => {
+    const performJoin = async () => {
       setIsJoining(true);
       try {
-        await unirseAFamilia(code);
+        await joinFamily(code);
         toast.success('¡Te has unido a la familia!');
         
-        // Pequeño delay para asegurar que los datos del perfil se carguen correctamente
+        // Small delay to ensure profile data loads correctly
         setTimeout(() => {
           router.push('/dashboard');
         }, 1500);
@@ -48,8 +48,8 @@ export default function JoinPage() {
       }
     };
 
-    join();
-  }, [isAuthenticated, isLoading, familia, unirseAFamilia, code, router]);
+    performJoin();
+  }, [isAuthenticated, isLoading, family, joinFamily, code, router]);
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
@@ -58,7 +58,7 @@ export default function JoinPage() {
           <Bird className="w-8 h-8 text-primary-foreground animate-bounce" />
         </div>
         <p className="text-foreground text-lg font-medium">
-          {isJoining ? 'Uniéndote al nido...' : 'Procesando invitación...'}
+          {isJoining ? 'Joining the nest...' : 'Processing invitation...'}
         </p>
       </div>
     </div>

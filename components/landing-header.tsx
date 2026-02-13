@@ -8,14 +8,14 @@ import { useAuth } from '@/hooks/use-auth';
 
 export function LandingHeader() {
   const router = useRouter();
-  const { isAuthenticated, isLoading, logout, usuario, familia } = useAuth();
+  const { isAuthenticated, isLoading, logout, user, family } = useAuth();
 
   const handleLogout = async () => {
     await logout();
     router.push('/');
   };
 
-  const dashboardRoute = (usuario?.familiaId || familia) ? '/dashboard' : '/home';
+  const dashboardRoute = (user?.familyId || family) ? '/dashboard' : '/home';
 
   if (isLoading) {
     return (

@@ -2,12 +2,12 @@
 
 import { Bird } from 'lucide-react';
 
-interface ErrorProps {
-  _error?: Error;
-  _reset?: () => void;
+interface ErrorPageProps {
+  error: Error;
+  reset: () => void;
 }
 
-export default function Error({ _error, _reset }: ErrorProps) {
+export default function ErrorPage({ error: _error, reset: _reset }: ErrorPageProps) {
   return (
     <main className="min-h-screen bg-background flex items-center justify-center">
       <section className="w-full">
@@ -22,10 +22,10 @@ export default function Error({ _error, _reset }: ErrorProps) {
               500
             </h1>
             <p className="mb-4 text-3xl md:text-4xl tracking-tight font-bold text-foreground">
-              Error en el servidor.
+              Error del servidor.
             </p>
             <p className="mb-6 text-lg font-light text-muted-foreground">
-              Lo sentimos, algo salió mal. Estamos trabajando para resolver este problema.
+              Lo sentimos, ha ocurrido un error. Estamos trabajando para solucionar este problema.
             </p>
           </div>
         </div>

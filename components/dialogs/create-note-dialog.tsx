@@ -25,57 +25,55 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 
-const crearNotaSchema = z.object({
-  titulo: z.string().min(1, 'El título es requerido').max(50, 'Máximo 50 caracteres'),
-  contenido: z.string().min(1, 'El contenido es requerido').max(500, 'Máximo 500 caracteres'),
+const createNoteSchema = z.object({
+  title: z.string().min(1, 'El título es requerido').max(50, 'Máximo 50 caracteres'),
+  content: z.string().min(1, 'El contenido es requerido').max(500, 'Máximo 500 caracteres'),
 });
 
-type CrearNotaFormValues = z.infer<typeof crearNotaSchema>;
+type CreateNoteFormValues = z.infer<typeof createNoteSchema>;
 
-interface CrearNotaDialogProps {
+interface CreateNoteDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: CrearNotaFormValues) => void;
-  notaAEditar?: CrearNotaFormValues;
+  onSubmit: (data: CreateNoteFormValues) => void;
+  noteToEdit?: CreateNoteFormValues;
 }
 
-export function CrearNotaDialog({ open, onOpenChange, onSubmit, notaAEditar }: CrearNotaDialogProps) {
+export function CreateNoteDialog({ open, onOpenChange, onSubmit, noteToEdit }: CreateNoteDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const form = useForm<CrearNotaFormValues>({
-    resolver: zodResolver(crearNotaSchema),
+  const form = useForm<CreateNoteFormValues>({
+    resolver: zodResolver(createNoteSchema),
     defaultValues: {
-      titulo: '',
-      contenido: '',
+      title: '',
+      content: '',
     },
   });
 
-  // Effect to reset form when dialog opens or notaAEditar changes
   useEffect(() => {
     if (open) {
-      if (notaAEditar) {
+      if (noteToEdit) {
         form.reset({
-          titulo: notaAEditar.titulo,
-          contenido: notaAEditar.contenido,
+          title: noteToEdit.title,
+          content: noteToEdit.content,
         });
       } else {
         form.reset({
-          titulo: '',
-          contenido: '',
+          title: '',
+          content: '',
         });
       }
     }
-  }, [open, notaAEditar, form]);
+  }, [open, noteToEdit, form]);
 
-  const handleSubmit = async (data: CrearNotaFormValues) => {
+  const handleFormSubmit = async (data: CreateNoteFormValues) => {
     setIsSubmitting(true);
     try {
       await onSubmit(data);
-      if (!notaAEditar) { // Only reset form if creating a new note
+      if (!noteToEdit) {
         form.reset();
       }
       onOpenChange(false);
-      // Success toast handled by parent
     } catch (error) {
       console.error('Error saving note:', error);
       toast.error('Error al guardar la nota');
@@ -84,8 +82,8 @@ export function CrearNotaDialog({ open, onOpenChange, onSubmit, notaAEditar }: C
     }
   };
 
-  const dialogTitle = notaAEditar ? 'Editar Nota' : 'Nueva Nota';
-  const submitButtonText = notaAEditar ? 'Guardar Cambios' : 'Crear Nota';
+  const dialogTitle = noteToEdit ? 'Editar Nota' : 'Nueva Nota';
+  const submitButtonText = noteToEdit ? 'Guardar Cambios' : 'Crear Nota';
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -93,15 +91,15 @@ export function CrearNotaDialog({ open, onOpenChange, onSubmit, notaAEditar }: C
         <DialogHeader>
           <DialogTitle>{dialogTitle}</DialogTitle>
           <DialogDescription className="sr-only">
-            Formulario para {notaAEditar ? 'editar la' : 'crear una nueva'} nota familiar
+            Formulario para {noteToEdit ? 'editar la' : 'crear una nueva'} nota familiar
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="titulo"
+              name="title"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Título</FormLabel>
@@ -115,7 +113,7 @@ export function CrearNotaDialog({ open, onOpenChange, onSubmit, notaAEditar }: C
 
             <FormField
               control={form.control}
-              name="contenido"
+              name="content"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Contenido</FormLabel>

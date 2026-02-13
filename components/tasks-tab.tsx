@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Tarea, Miembro } from '@/lib/types';
+import { Task, Member } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -16,73 +16,72 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-interface TareasTabProps {
-  tareas: Tarea[];
-  miembros?: Miembro[];
-  filtroInicial?: 'unicas' | 'recurrentes';
-  onFiltroChange?: (filtro: 'unicas' | 'recurrentes') => void;
-  onEditar?: (tarea: Tarea) => void;
-  onEliminar?: (tareaId: string) => void;
-  onToggleCompletada?: (tareaId: string, completada: boolean) => void;
+interface TasksTabProps {
+  tasks: Task[];
+  members?: Member[];
+  initialFilter?: 'unicas' | 'recurrentes';
+  onFilterChange?: (filter: 'unicas' | 'recurrentes') => void;
+  onEdit?: (task: Task) => void;
+  onDelete?: (taskId: string) => void;
+  onToggleCompleted?: (taskId: string, completed: boolean) => void;
 }
 
-export function TareasTab({
-  tareas,
-  miembros = [],
-  filtroInicial = 'unicas',
-  onFiltroChange,
-  onEditar,
-  onEliminar,
-  onToggleCompletada: _onToggleCompletada,
-}: TareasTabProps) {
-  const [filtro, setFiltro] = useState<'unicas' | 'recurrentes'>(filtroInicial);
-  const [usuarioFiltro, setUsuarioFiltro] = useState<string>('todos');
+export function TasksTab({
+  tasks,
+  members = [],
+  initialFilter = 'unicas',
+  onFilterChange,
+  onEdit,
+  onDelete,
+  onToggleCompleted: _onToggleCompleted,
+}: TasksTabProps) {
+  const [filter, setFilter] = useState<'unicas' | 'recurrentes'>(initialFilter);
+  const [userFilter, setUserFilter] = useState<string>('todos');
 
-  const handleFiltro = (nuevoFiltro: 'unicas' | 'recurrentes') => {
-    setFiltro(nuevoFiltro);
-    onFiltroChange?.(nuevoFiltro);
+  const handleFilter = (newFilter: 'unicas' | 'recurrentes') => {
+    setFilter(newFilter);
+    onFilterChange?.(newFilter);
   };
 
-  const tareasFiltradas = useMemo(() => {
-    return tareas
-      .filter((tarea) => {
+  const filteredTasks = useMemo(() => {
+    return tasks
+      .filter((task) => {
         // Filtro por tipo (Unica vs Recurrente)
-        // Ahora 'unicas' son solo las de recurrence_type === 'none'
-        const esRecurrente = tarea.recurrence_type !== 'none';
+        const isRecurrent = task.recurrence_type !== 'none';
         
-        if (filtro === 'unicas') {
-          if (esRecurrente) return false;
+        if (filter === 'unicas') {
+          if (isRecurrent) return false;
         } else {
-          if (!esRecurrente) return false;
+          if (!isRecurrent) return false;
         }
 
         // Filtro por usuario asignado
-        if (usuarioFiltro !== 'todos') {
-          if (tarea.creadorId !== usuarioFiltro) return false;
+        if (userFilter !== 'todos') {
+          if (task.creatorId !== userFilter) return false;
         }
 
         return true;
       })
       .sort((a, b) => {
         // Sort completed tasks to bottom
-        if (a.completada !== b.completada) {
-          return a.completada ? 1 : -1;
+        if (a.completed !== b.completed) {
+          return a.completed ? 1 : -1;
         }
-        if (filtro === 'unicas') {
+        if (filter === 'unicas') {
           // Sort by date if available
-          if (a.fecha && b.fecha) {
-            return new Date(a.fecha).getTime() - new Date(b.fecha).getTime();
+          if (a.date && b.date) {
+            return new Date(a.date).getTime() - new Date(b.date).getTime();
           }
         }
-        return (a.titulo || '').localeCompare(b.titulo || '');
+        return (a.title || '').localeCompare(b.title || '');
       });
-  }, [tareas, filtro, usuarioFiltro]);
+  }, [tasks, filter, userFilter]);
 
-  const contadores = useMemo(() => {
+  const counters = useMemo(() => {
     return {
-      total: tareasFiltradas.length,
+      total: filteredTasks.length,
     };
-  }, [tareasFiltradas]);
+  }, [filteredTasks]);
 
   return (
     <div className="space-y-4">
@@ -91,16 +90,16 @@ export function TareasTab({
         <div className="flex gap-2 bg-muted p-1 rounded-lg">
           <Button
             size="sm"
-            variant={filtro === 'unicas' ? 'default' : 'ghost'}
-            onClick={() => handleFiltro('unicas')}
+            variant={filter === 'unicas' ? 'default' : 'ghost'}
+            onClick={() => handleFilter('unicas')}
             className="text-xs sm:text-sm px-3"
           >
             Únicas
           </Button>
           <Button
             size="sm"
-            variant={filtro === 'recurrentes' ? 'default' : 'ghost'}
-            onClick={() => handleFiltro('recurrentes')}
+            variant={filter === 'recurrentes' ? 'default' : 'ghost'}
+            onClick={() => handleFilter('recurrentes')}
             className="text-xs sm:text-sm px-3"
           >
             Recurrentes
@@ -108,20 +107,20 @@ export function TareasTab({
         </div>
 
         <div className="w-full sm:w-auto min-w-[200px]">
-          <Select value={usuarioFiltro} onValueChange={setUsuarioFiltro}>
+          <Select value={userFilter} onValueChange={setUserFilter}>
             <SelectTrigger className="h-9">
               <SelectValue placeholder="Filtrar por miembro" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="todos">Todos los miembros</SelectItem>
-              {miembros.map((miembro) => (
-                <SelectItem key={miembro.id} value={miembro.id}>
+              {members.map((member) => (
+                <SelectItem key={member.id} value={member.id}>
                   <div className="flex items-center gap-2">
                     <div
                       className="w-2 h-2 rounded-full"
-                      style={{ backgroundColor: miembro.color.bg }}
+                      style={{ backgroundColor: member.color.bg }}
                     />
-                    {miembro.nombre}
+                    {member.name}
                   </div>
                 </SelectItem>
               ))}
@@ -131,26 +130,26 @@ export function TareasTab({
       </div>
 
       {/* Contador */}
-      {contadores.total > 0 && (
+      {counters.total > 0 && (
         <div className="text-sm text-muted-foreground flex items-center gap-2">
-          {usuarioFiltro !== 'todos' && <Filter className="w-3 h-3" />}
+          {userFilter !== 'todos' && <Filter className="w-3 h-3" />}
           <span className="font-medium text-foreground">
-            {contadores.total} tarea{contadores.total > 1 ? 's' : ''}
+            {counters.total} tarea{counters.total > 1 ? 's' : ''}
           </span>
         </div>
       )}
 
       {/* Lista de tareas */}
-      {tareasFiltradas.length === 0 ? (
+      {filteredTasks.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-center border border-dashed rounded-lg bg-muted/10">
           <p className="font-medium text-foreground">Sin tareas</p>
           <p className="text-sm text-muted-foreground mt-1">
-            No hay tareas {filtro} {usuarioFiltro !== 'todos' ? 'asignadas a este miembro' : ''}
+            No hay tareas {filter} {userFilter !== 'todos' ? 'asignadas a este miembro' : ''}
           </p>
-          {usuarioFiltro !== 'todos' && (
+          {userFilter !== 'todos' && (
             <Button
               variant="link"
-              onClick={() => setUsuarioFiltro('todos')}
+              onClick={() => setUserFilter('todos')}
               className="mt-2 text-xs"
             >
               Ver tareas de todos
@@ -159,42 +158,42 @@ export function TareasTab({
         </div>
       ) : (
         <div className="space-y-2">
-          {tareasFiltradas.map((tarea) => (
-            <Card key={tarea.id} className={`border border-border bg-card transition-colors ${tarea.completada ? 'opacity-60' : ''}`}>
+          {filteredTasks.map((task) => (
+            <Card key={task.id} className={`border border-border bg-card transition-colors ${task.completed ? 'opacity-60' : ''}`}>
               <CardContent className="p-3">
                 <div className="flex items-center justify-between gap-3">
                   {/* Left side: Dot + Info */}
                   <div className="flex items-start gap-3 flex-1 min-w-0">
                     <div
                       className="w-3 h-3 rounded-full flex-shrink-0 mt-1.5"
-                      style={{ backgroundColor: tarea.colorCreador.bg }}
-                      title={`Asignada a ${tarea.colorCreador.nombre}`}
+                      style={{ backgroundColor: task.creatorColor.bg }}
+                      title={`Asignada a ${task.creatorColor.name}`}
                     />
 
                     <div className="flex-1 min-w-0 space-y-1">
-                      <h4 className={`font-medium text-sm truncate text-foreground ${tarea.completada ? 'line-through text-muted-foreground' : ''}`}>
-                        {tarea.titulo}
+                      <h4 className={`font-medium text-sm truncate text-foreground ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
+                        {task.title}
                       </h4>
 
                       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                        {filtro === 'unicas' ? (
+                        {filter === 'unicas' ? (
                           <span className="flex items-center">
-                            {tarea.fecha
-                              ? format(new Date(tarea.fecha), "d 'de' MMMM", {
+                            {task.date
+                              ? format(new Date(task.date), "d 'de' MMMM", {
                                   locale: es,
                                 })
                               : 'Sin fecha'}
                           </span>
                         ) : (
                           <div className="flex flex-wrap gap-1.5 items-center">
-                            {tarea.frecuencia && (
+                            {task.frequency && (
                               <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-5 capitalize font-medium">
-                                {tarea.frecuencia === 'unica' ? 'Puntual' : tarea.frecuencia}
+                                {task.frequency === 'once' ? 'Puntual' : task.frequency}
                               </Badge>
                             )}
                             <div className="flex gap-1">
-                              {tarea.diasSemana && (
-                                tarea.diasSemana.map((d) => (
+                              {task.daysOfWeek && (
+                                task.daysOfWeek.map((d) => (
                                   <Badge
                                     key={d}
                                     variant="outline"
@@ -205,7 +204,7 @@ export function TareasTab({
                                 ))
                               )}
                             </div>
-                            {!tarea.diasSemana && !tarea.frecuencia && (
+                            {!task.daysOfWeek && !task.frequency && (
                               <span>Recurrente</span>
                             )}
                           </div>
@@ -220,7 +219,7 @@ export function TareasTab({
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                      onClick={() => onEditar?.(tarea)}
+                      onClick={() => onEdit?.(task)}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -229,7 +228,7 @@ export function TareasTab({
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                      onClick={() => onEliminar?.(tarea.id)}
+                      onClick={() => onDelete?.(task.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

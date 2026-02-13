@@ -38,15 +38,15 @@ const shortcuts = [
   },
 ];
 
-export default function DashboardPage() {
-  const { usuario } = useAuth();
+export default function DashboardOverviewPage() {
+  const { user } = useAuth();
 
   return (
     <DashboardLayout activeSection="overview">
       <div className="space-y-8">
         <div className="space-y-2">
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
-            Bienvenido, {usuario?.nombre}
+            Bienvenido, {user?.name}
           </h2>
           <p className="text-muted-foreground">Selecciona una sección para empezar</p>
         </div>
