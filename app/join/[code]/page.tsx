@@ -35,11 +35,7 @@ export default function JoinByCodePage() {
       try {
         await joinFamily(code);
         toast.success('¡Te has unido a la familia!');
-        
-        // Small delay to ensure profile data loads correctly
-        setTimeout(() => {
-          router.push('/dashboard');
-        }, 1500);
+        router.push('/dashboard');
       } catch (error) {
         console.error('Error joining family:', error);
         toast.error('Error al unirse a la familia. Verifica el código o si ya eres miembro.');
@@ -52,14 +48,17 @@ export default function JoinByCodePage() {
   }, [isAuthenticated, isLoading, family, joinFamily, code, router]);
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center">
-      <div className="text-center">
-        <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mx-auto mb-4">
-          <Bird className="w-8 h-8 text-primary-foreground animate-bounce" />
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="text-center space-y-4">
+        <div className="w-20 h-20 rounded-full bg-primary flex items-center justify-center mx-auto animate-bounce">
+          <Bird className="w-10 h-10 text-primary-foreground" />
         </div>
-        <p className="text-foreground text-lg font-medium">
-          {isJoining ? 'Joining the nest...' : 'Processing invitation...'}
-        </p>
+        <div className="space-y-2">
+          <p className="text-foreground text-xl font-bold">
+            {isJoining ? 'Uniéndote al nido...' : 'Procesando invitación...'}
+          </p>
+          <p className="text-muted-foreground">Estamos preparando tu nuevo espacio familiar</p>
+        </div>
       </div>
     </div>
   );

@@ -1,19 +1,19 @@
 import { fetchClient } from '@/lib/api-client';
-import { Task } from '@/lib/types';
+import { Task, CreateTaskRequest, UpdateTaskRequest } from '@/lib/types';
 
 export const TaskService = {
   async getTasks(): Promise<Task[]> {
     return fetchClient<Task[]>('/api/v1/tasks/');
   },
 
-  async createTask(data: Partial<Task>): Promise<Task> {
+  async createTask(data: CreateTaskRequest): Promise<Task> {
     return fetchClient<Task>('/api/v1/tasks/', {
       method: 'POST',
       body: data,
     });
   },
 
-  async updateTask(taskId: string, data: Partial<Task>): Promise<Task> {
+  async updateTask(taskId: string, data: UpdateTaskRequest): Promise<Task> {
     return fetchClient<Task>(`/api/v1/tasks/${taskId}`, {
       method: 'PUT',
       body: data,

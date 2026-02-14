@@ -61,11 +61,11 @@ function cleanToken(token: string): string {
 }
 
 export const FamilyService = {
-  async getMyFamily(): Promise<Family | null> {
+  async getMyFamily(force: boolean = false): Promise<Family | null> {
     try {
       const [apiFamily, members] = await Promise.all([
-        fetchClient<ApiFamily>('/api/v1/families/me'),
-        this.getMembers(),
+        fetchClient<ApiFamily>(`/api/v1/families/me${force ? '?t=' + Date.now() : ''}`),
+        this.getMembers(force),
       ]);
 
       if (!apiFamily) return null;
@@ -77,8 +77,8 @@ export const FamilyService = {
     }
   },
 
-  async getMembers(): Promise<Member[]> {
-    const response = await fetchClient<ApiMember[]>('/api/v1/family-members/');
+  async getMembers(force: boolean = false): Promise<Member[]> {
+    const response = await fetchClient<ApiMember[]>(`/api/v1/family-members/${force ? '?t=' + Date.now() : ''}`);
 
     return response.map((apiMember) => {
       const user = apiMember.user || {};
@@ -155,14 +155,14 @@ export const FamilyService = {
   },
 
   async leave(newOwnerId?: string): Promise<void> {
-    return fetchClient('/api/family-members/me', {
+    return fetchClient('/api/v1/family-members/me', {
       method: 'DELETE',
       body: newOwnerId ? { new_owner_id: newOwnerId } : undefined,
     });
   },
 
   async removeMember(memberId: string): Promise<void> {
-    return fetchClient(`/api/family-members/${memberId}`, {
+    return fetchClient(`/api/v1/family-members/${memberId}`, {
       method: 'DELETE',
     });
   },

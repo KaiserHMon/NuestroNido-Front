@@ -35,10 +35,7 @@ export function InvitePageContent({ token }: InvitePageContentProps) {
     try {
       await joinByLink(token);
       toast.success('¡Te has unido a la familia!');
-      
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 1500);
+      router.push('/dashboard');
     } catch (error) {
       console.error('Error joining family by link:', error);
       toast.error('El enlace de invitación ha expirado o no es válido.');
@@ -65,10 +62,13 @@ export function InvitePageContent({ token }: InvitePageContentProps) {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       {isJoining ? (
         <div className="text-center space-y-4">
-          <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mx-auto animate-bounce">
-            <Bird className="w-8 h-8 text-primary-foreground" />
+          <div className="w-20 h-20 rounded-full bg-primary flex items-center justify-center mx-auto animate-bounce">
+            <Bird className="w-10 h-10 text-primary-foreground" />
           </div>
-          <p className="text-foreground text-lg font-medium">Uniéndote al nido...</p>
+          <div className="space-y-2">
+            <p className="text-foreground text-xl font-bold">Uniéndote al nido...</p>
+            <p className="text-muted-foreground">Estamos preparando tu nuevo espacio familiar</p>
+          </div>
         </div>
       ) : (
         <InvitationPreview 

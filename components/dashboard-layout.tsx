@@ -70,11 +70,11 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
     <div className="min-h-screen bg-background">
       <header className="border-b border-card bg-card/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 py-2">
-          <div className="flex items-start justify-between w-full">
+          <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-3">
               <img src="/logo.png" alt="NuestroNido Logo" className="h-8 sm:h-10 w-auto object-contain" />
-              <div className="hidden xs:block w-px h-6 bg-border/60 mx-1" />
-              <p className="text-base sm:text-lg font-bold text-foreground leading-none truncate max-w-[150px] sm:max-w-[300px]">
+              <div className="hidden xs:block w-px h-6 bg-foreground/20 mx-1" />
+              <p className="text-base sm:text-lg font-bold text-foreground leading-none truncate max-w-[150px] sm:max-w-[300px] mt-0.5">
                 {family.name}
               </p>
             </div>

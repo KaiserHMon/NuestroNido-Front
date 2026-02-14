@@ -36,7 +36,11 @@ export function CreateFamilyCard({ onSuccess }: CreateFamilyCardProps) {
     setError(null);
     try {
       await createFamily(data.name);
-      onSuccess?.();
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Error al crear la familia';
       
@@ -49,10 +53,23 @@ export function CreateFamilyCard({ onSuccess }: CreateFamilyCardProps) {
       }
 
       setError(message);
-    } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (isSubmitting) {
+    return (
+      <Card className="border border-border bg-card flex flex-col items-center justify-center p-12 text-center space-y-4">
+        <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center animate-bounce">
+          <Loader2 className="w-8 h-8 text-primary-foreground animate-spin" />
+        </div>
+        <div className="space-y-2">
+          <p className="text-foreground text-lg font-medium">Creando tu nuevo nido...</p>
+          <p className="text-muted-foreground text-sm">Estamos preparando todo para tu familia</p>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="border border-border bg-card hover:border-primary/50 transition-colors">

@@ -173,11 +173,33 @@ export interface CreateNoteRequest {
   title: string;
   content: string;
   family_id: string;
+  user_id: string;
 }
 
 export interface UpdateNoteRequest {
   title?: string;
   content?: string;
+}
+
+export interface CreateTaskRequest {
+  title: string;
+  family_id: string;
+  assigned_to_user_id?: string;
+  recurrence_type: 'none' | 'daily' | 'weekly' | 'monthly';
+  week_days?: string;
+  due_date: string;
+  end_date?: string;
+  status?: 'pending' | 'completed';
+}
+
+export interface UpdateTaskRequest {
+  title?: string;
+  assigned_to_user_id?: string;
+  recurrence_type?: 'none' | 'daily' | 'weekly' | 'monthly';
+  week_days?: string;
+  due_date?: string;
+  end_date?: string;
+  status?: 'pending' | 'completed';
 }
 
 export interface Task {
