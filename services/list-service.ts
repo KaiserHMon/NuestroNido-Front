@@ -1,4 +1,4 @@
-import { fetchClient } from '@/lib/api-client';
+import { fetchClient, ApiError } from '@/lib/api-client';
 
 export interface ListItem {
   id: string;
@@ -45,5 +45,20 @@ export const ListService = {
     return fetchClient(`/api/v1/lists/items/${itemId}`, {
       method: 'DELETE',
     });
+  },
+
+  async deleteBatch(itemIds: string[]): Promise<void> {
+    try {
+      return await fetchClient(`/api/v1/lists/items/batch`, {
+        method: 'POST',
+        body: { ids: itemIds },
+      });
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        await Promise.all(itemIds.map((id) => ListService.delete(id)));
+        return;
+      }
+      throw error;
+    }
   },
 };
