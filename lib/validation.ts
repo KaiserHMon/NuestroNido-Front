@@ -118,10 +118,13 @@ export const validateInvitationCodeFormat = (code: string): boolean => {
 
 export const generateInvitationCode = (): string => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let code = '';
   const length = 7;
+  const array = new Uint32Array(length);
+  globalThis.crypto.getRandomValues(array);
+
+  let code = '';
   for (let i = 0; i < length; i++) {
-    code += characters.charAt(Math.floor(Math.random() * characters.length));
+    code += characters.charAt(array[i] % characters.length);
   }
   return code;
 };
