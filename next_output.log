@@ -1,0 +1,20 @@
+
+> my-v0-project@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+- Environments: .env
+- Experiments (use with caution):
+  · optimizePackageImports
+
+✓ Starting...
+✓ Ready in 738ms
+ GET /dashboard/lista 200 in 964ms (compile: 433ms, render: 531ms)
+ GET /api/api/v1/levels 404 in 1509ms (compile: 1385ms, render: 124ms)
+ GET / 200 in 2.4s (compile: 2.4s, render: 36ms)
+ GET /dashboard/lista 200 in 85ms (compile: 7ms, render: 78ms)
+ GET /api/api/v1/levels 404 in 86ms (compile: 15ms, render: 72ms)
+ GET /dashboard/lista 200 in 73ms (compile: 5ms, render: 69ms)
+ GET /api/api/v1/levels 404 in 73ms (compile: 8ms, render: 65ms)
