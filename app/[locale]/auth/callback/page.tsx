@@ -1,16 +1,19 @@
 'use client';
 
 import { useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from '@/i18n/routing';
 import { TokenService } from '@/services/token-service';
 import { fetchClient } from '@/lib/api-client';
 import { User, Family } from '@/lib/types';
 import { UserService } from '@/services/user-service';
 import { parseJwt } from '@/lib/jwt-utils';
+import { useTranslations } from 'next-intl';
 
 function AuthCallbackPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations('Common');
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -85,7 +88,7 @@ function AuthCallbackPageContent() {
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="flex flex-col items-center gap-4">
         <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-        <p className="text-muted-foreground">Autenticando...</p>
+        <p className="text-muted-foreground">{t('authenticating')}</p>
       </div>
     </div>
   );

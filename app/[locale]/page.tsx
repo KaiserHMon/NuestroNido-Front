@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { useRouter, Link } from '@/i18n/routing';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,12 +12,14 @@ import { SupportDialog } from '@/components/dialogs/support-dialog';
 import { AnimatedHeroText } from '@/components/animated-hero-text';
 import { FeaturesSection } from '@/components/landing/features-section';
 import { HowItWorksSection } from '@/components/landing/how-it-works-section';
+import { useTranslations } from 'next-intl';
 
 function LandingPageContent() {
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isAuthenticated, user, family } = useAuth();
+  const t = useTranslations('Landing');
 
   useEffect(() => {
     const code = searchParams.get('code');
@@ -97,10 +99,10 @@ function LandingPageContent() {
               className="max-w-4xl mx-auto text-center bg-gradient-to-br from-card/80 via-card/50 to-primary/10 rounded-2xl sm:rounded-3xl p-8 sm:p-12 shadow-2xl border border-primary/10"
             >
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-heading text-primary mb-3 sm:mb-4">
-              Comienza a organizar tu familia hoy
+              {t('cta_section.title')}
             </h2>
             <p className="text-base sm:text-lg md:text-xl text-foreground/80 mb-6 sm:mb-10">
-              Únete a las familias que ya están disfrutando de un hogar con más armonía.
+              {t('cta_section.subtitle')}
             </p>
             <div className="flex flex-col items-center">
               {isAuthenticated ? (
@@ -109,7 +111,7 @@ function LandingPageContent() {
                     size="lg"
                     className="bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-10 sm:px-12 w-full sm:w-auto shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
                   >
-                    Ir a mi Nido
+                     {t('hero.cta_dashboard')}
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
                   </Button>
                 </Link>
@@ -119,7 +121,7 @@ function LandingPageContent() {
                     size="lg"
                     className="bg-gradient-to-br from-primary via-primary to-primary/80 text-primary-foreground hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-10 sm:px-12 w-full sm:w-auto shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
                   >
-                    Comenzar gratis
+                     {t('hero.cta_primary')}
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
                   </Button>
                 </Link>
@@ -141,16 +143,16 @@ function LandingPageContent() {
                   onClick={() => setIsSupportOpen(true)}
                   className="text-primary hover:underline text-sm font-medium transition-colors"
                 >
-                  ¿Necesitas ayuda?
+                  {t('footer.help')}
                 </button>
                 <Link href="/privacy-policy" className="text-primary hover:underline text-sm font-medium transition-colors">
-                  Política de Privacidad
+                  {t('footer.privacy')}
                 </Link>
               </div>
 
               <div className="border-t border-card/50 w-full max-w-md pt-6">
                 <p className="text-xs sm:text-sm text-foreground/60">
-                  © 2025 NuestroNido. Todos los derechos reservados.
+                  © 2025 NuestroNido. {t('footer.rights')}
                 </p>
               </div>
             </div>

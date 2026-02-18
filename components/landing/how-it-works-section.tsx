@@ -1,23 +1,12 @@
 "use client";
 
 import { motion, Variants } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 const steps = [
-  {
-    number: "1",
-    title: "Crea tu Nido",
-    description: "Regístrate y crea tu grupo familiar en segundos.",
-  },
-  {
-    number: "2",
-    title: "Invita a tu familia",
-    description: "Comparte el código de invitación con tus familiares para que se unan al nido.",
-  },
-  {
-    number: "3",
-    title: "Organízate y colabora",
-    description: "Asigna tareas, comparte listas y mantén a toda la familia sincronizada.",
-  },
+  { number: "1" },
+  { number: "2" },
+  { number: "3" },
 ];
 
 const containerVariants: Variants = {
@@ -40,6 +29,8 @@ const itemVariants: Variants = {
 };
 
 export function HowItWorksSection() {
+  const t = useTranslations('Landing.how_it_works');
+
   return (
     <section className="w-full py-12 sm:py-20 bg-card/80 backdrop-blur-sm border-y border-card/10 overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6">
@@ -52,10 +43,10 @@ export function HowItWorksSection() {
             transition={{ duration: 0.8 }}
           >
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-heading text-primary mb-3 sm:mb-4">
-              Cómo funciona
+              {t('title')}
             </h2>
             <p className="text-base sm:text-lg md:text-xl text-foreground">
-              En pocos minutos, tu hogar empieza a funcionar de manera más organizada.
+              {t('description')}
             </p>
           </motion.div>
         </div>
@@ -77,10 +68,10 @@ export function HowItWorksSection() {
               
               <div className="pt-1">
                 <h3 className="text-xl sm:text-2xl font-bold font-heading text-primary mb-2">
-                  {step.title}
+                  {t(`steps.${step.number}.title`)}
                 </h3>
                 <p className="text-foreground text-base sm:text-lg leading-relaxed">
-                  {step.description}
+                  {t(`steps.${step.number}.description`)}
                 </p>
               </div>
             </motion.div>

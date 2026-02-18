@@ -1,0 +1,92 @@
+{
+  "Landing": {
+    "header": {
+      "dashboard": "Dashboard",
+      "logout": "Logout",
+      "login": "Login",
+      "start": "Start"
+    },
+    "hero": {
+      "subtitle": "Organize your home and motivate everyone to participate,\nwithout friction or arguments.",
+      "cta_primary": "Start for free",
+      "cta_dashboard": "Go to my Nest",
+      "img_alt": "NuestroNido App Mockup"
+    },
+    "features": {
+      "title": "Everything your family needs",
+      "description": "Tools designed to make family life easier and more organized",
+      "items": {
+        "calendar": {
+          "title": "Task Calendar",
+          "description": "Organize household chores in a simple and intuitive calendar."
+        },
+        "shopping": {
+          "title": "Shared Lists",
+          "description": "Create shopping lists by categories and keep the house always stocked."
+        },
+        "notes": {
+          "title": "Family Notes",
+          "description": "Share reminders and important messages so everyone is aligned."
+        },
+        "gamification": {
+          "title": "Gamification",
+          "description": "Motivate collaboration with points and family rankings."
+        }
+      }
+    },
+    "how_it_works": {
+      "title": "How it works",
+      "description": "In just a few minutes, your home starts running more smoothly.",
+      "steps": {
+        "1": {
+          "title": "Create your Nest",
+          "description": "Sign up and create your family group in seconds."
+        },
+        "2": {
+          "title": "Invite your family",
+          "description": "Share the invitation code with your family members to join the nest."
+        },
+        "3": {
+          "title": "Get organized and collaborate",
+          "description": "Assign tasks, share lists, and keep the whole family synchronized."
+        }
+      }
+    },
+    "cta_section": {
+        "title": "Start organizing your family today",
+        "subtitle": "Join the families who are already enjoying a more harmonious home."
+    },
+    "footer": {
+        "help": "Need help?",
+        "privacy": "Privacy Policy",
+        "rights": "All rights reserved."
+    }
+  },
+  "Dashboard": {
+    "welcome": "Welcome, {name}",
+    "subtitle": "Select a section to begin",
+    "open": "Open",
+    "shortcuts": {
+      "members": {
+        "title": "Members",
+        "description": "See your family members and their ranking in the household."
+      },
+      "tasks": {
+        "title": "Task Calendar",
+        "description": "Plan tasks, turns and family events in a single calendar."
+      },
+      "shopping": {
+        "title": "Shopping List",
+        "description": "Organize pending items and keep the house up to date."
+      },
+      "notes": {
+        "title": "Notes",
+        "description": "Share reminders, messages and family agreements."
+      }
+    }
+  },
+  "Common": {
+    "loading": "Loading...",
+    "authenticating": "Authenticating..."
+  }
+}

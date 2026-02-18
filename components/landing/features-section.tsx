@@ -3,27 +3,24 @@
 import { motion, Variants } from "framer-motion";
 import { Calendar, ShoppingCart, StickyNote, Trophy } from "lucide-react";
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTranslations } from "next-intl";
 
 const features = [
   {
+    id: 'calendar',
     icon: Calendar,
-    title: "Calendario de Tareas",
-    description: "Organiza las tareas del hogar en un calendario simple e intuitivo.",
   },
   {
+    id: 'shopping',
     icon: ShoppingCart,
-    title: "Listas Compartidas",
-    description: "Crea listas de compras por categorías y mantén la casa siempre abastecida.",
   },
   {
+    id: 'notes',
     icon: StickyNote,
-    title: "Notas Familiares",
-    description: "Comparte recordatorios y mensajes importantes para que todos estén alineados.",
   },
   {
+    id: 'gamification',
     icon: Trophy,
-    title: "Gamificación",
-    description: "Motiva la colaboración con puntos y rankings familiares.",
   },
 ];
 
@@ -47,6 +44,8 @@ const itemVariants: Variants = {
 };
 
 export function FeaturesSection() {
+  const t = useTranslations('Landing.features');
+
   return (
     <section className="w-full py-12 sm:py-20 bg-card/30 backdrop-blur-sm border-y border-card/10">
       <div className="container mx-auto px-4 sm:px-6">
@@ -59,10 +58,10 @@ export function FeaturesSection() {
             transition={{ duration: 0.8 }}
           >
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold font-heading text-primary mb-3 sm:mb-4">
-              Todo lo que tu familia necesita
+              {t('title')}
             </h2>
             <p className="text-base sm:text-lg md:text-xl text-foreground max-w-2xl mx-auto">
-              Herramientas diseñadas para hacer la vida familiar más fácil y organizada
+              {t('description')}
             </p>
           </motion.div>
         </div>
@@ -82,10 +81,10 @@ export function FeaturesSection() {
                     <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
                   </div>
                   <CardTitle className="text-lg sm:text-xl font-heading text-primary">
-                    {feature.title}
+                    {t(`items.${feature.id}.title`)}
                   </CardTitle>
                   <CardDescription className="text-sm sm:text-base text-foreground">
-                    {feature.description}
+                    {t(`items.${feature.id}.description`)}
                   </CardDescription>
                 </CardHeader>
               </Card>
