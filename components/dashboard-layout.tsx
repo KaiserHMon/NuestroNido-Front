@@ -80,11 +80,6 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
         <div className="container mx-auto px-4 sm:px-6 py-2">
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-3">
-<<<<<<< HEAD
-              <img src="/logo.png" alt="NuestroNido Logo" className="h-8 sm:h-10 w-auto object-contain" />
-              <div className="hidden xs:block w-px h-6 bg-foreground/20 mx-1" />
-              <p className="text-base sm:text-lg font-bold text-foreground leading-none truncate max-w-[150px] sm:max-w-[300px] mt-0.5">
-=======
               <Image
                 src="/logo.png"
                 alt="NuestroNido Logo"
@@ -95,7 +90,6 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
               />
               <div className="hidden xs:block w-px h-6 bg-border/60 mx-1" />
               <p className="text-base sm:text-lg font-bold text-foreground leading-none truncate max-w-[150px] sm:max-w-[300px]">
->>>>>>> f4270363c654b6614dcbd07e20f44354ce559592
                 {family.name}
               </p>
             </div>

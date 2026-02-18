@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { Buffer } from 'buffer';
 import { parseJwt } from '@/lib/jwt-utils';
 
 describe('parseJwt', () => {

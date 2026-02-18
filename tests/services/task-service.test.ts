@@ -19,7 +19,7 @@ describe('TaskService', () => {
   });
 
   it('getTasks calls fetchClient with correct endpoint', async () => {
-    (fetchClient as any).mockResolvedValue([]);
+    vi.mocked(fetchClient).mockResolvedValue([]);
     await TaskService.getTasks();
     expect(fetchClient).toHaveBeenCalledWith('/api/v1/tasks/');
   });

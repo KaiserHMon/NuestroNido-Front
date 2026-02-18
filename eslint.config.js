@@ -52,6 +52,7 @@ export default [
         HTMLFormElement: 'readonly',
         HTMLSelectElement: 'readonly',
         HTMLTextAreaElement: 'readonly',
+        HTMLImageElement: 'readonly',
         // Events
         KeyboardEvent: 'readonly',
         MouseEvent: 'readonly',

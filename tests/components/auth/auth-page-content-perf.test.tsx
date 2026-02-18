@@ -4,7 +4,9 @@ import { vi, describe, it, expect } from 'vitest';
 
 // Mock next/image
 vi.mock('next/image', () => ({
-  default: (props: any) => <img {...props} data-testid="next-image" />
+  default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => (
+    <img alt="" {...props} data-testid="next-image" />
+  ),
 }));
 
 // Mock hooks
