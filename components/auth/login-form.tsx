@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { LoginSchema, LoginFormInputs } from '@/lib/validation';
@@ -18,7 +19,6 @@ interface LoginFormProps {
 }
 
 export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
-  const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, error: authError } = useAuth();
 
@@ -123,25 +123,13 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
           <Label htmlFor="password" className="text-foreground font-medium">
             Contraseña
           </Label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              id="password"
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Ingresa tu contraseña"
-              className="pl-10 pr-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
-              {...register('password')}
-              disabled={isSubmitting}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-            >
-              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
-          </div>
+          <PasswordInput
+            id="password"
+            placeholder="Ingresa tu contraseña"
+            className="bg-background border-input text-foreground placeholder:text-muted-foreground"
+            {...register('password')}
+            disabled={isSubmitting}
+          />
           {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
         </div>
 

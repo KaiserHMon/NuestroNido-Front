@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Lock, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { z } from 'zod';
@@ -31,8 +32,6 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     register,
@@ -123,25 +122,13 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         <Label htmlFor="password" className="text-foreground font-medium">
           Nueva Contraseña
         </Label>
-        <div className="relative">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            id="password"
-            type={showPassword ? 'text' : 'password'}
-            placeholder="••••••••"
-            className="pl-10 pr-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
-            {...register('password')}
-            disabled={isSubmitting}
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-            tabIndex={-1}
-          >
-            {showPassword ? 'Ocultar' : 'Mostrar'}
-          </button>
-        </div>
+        <PasswordInput
+          id="password"
+          placeholder="••••••••"
+          className="bg-background border-input text-foreground placeholder:text-muted-foreground"
+          {...register('password')}
+          disabled={isSubmitting}
+        />
         {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
       </div>
 
@@ -149,25 +136,13 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         <Label htmlFor="confirmPassword" className="text-foreground font-medium">
           Confirmar Contraseña
         </Label>
-        <div className="relative">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            id="confirmPassword"
-            type={showConfirmPassword ? 'text' : 'password'}
-            placeholder="••••••••"
-            className="pl-10 pr-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
-            {...register('confirmPassword')}
-            disabled={isSubmitting}
-          />
-          <button
-            type="button"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-            tabIndex={-1}
-          >
-            {showConfirmPassword ? 'Ocultar' : 'Mostrar'}
-          </button>
-        </div>
+        <PasswordInput
+          id="confirmPassword"
+          placeholder="••••••••"
+          className="bg-background border-input text-foreground placeholder:text-muted-foreground"
+          {...register('confirmPassword')}
+          disabled={isSubmitting}
+        />
         {errors.confirmPassword && (
           <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
         )}

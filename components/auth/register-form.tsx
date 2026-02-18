@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, EyeOff, User, Mail, Lock } from 'lucide-react';
+import { User, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Checkbox as _Checkbox } from '@/components/ui/checkbox';
@@ -18,8 +19,6 @@ interface RegisterFormProps {
 }
 
 export function RegisterForm({ onSuccess }: RegisterFormProps) {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { register: registerUser, error: authError } = useAuth();
 
@@ -145,25 +144,13 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           <Label htmlFor="password" className="text-foreground font-medium">
             Contraseña
           </Label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              id="password"
-              type={showPassword ? 'text' : 'password'}
-              placeholder="Ingresa tu contraseña"
-              className="pl-10 pr-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
-              {...register('password')}
-              disabled={isSubmitting}
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              tabIndex={-1}
-            >
-              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
-          </div>
+          <PasswordInput
+            id="password"
+            placeholder="Ingresa tu contraseña"
+            className="bg-background border-input text-foreground placeholder:text-muted-foreground"
+            {...register('password')}
+            disabled={isSubmitting}
+          />
           {errors.password ? <p className="text-xs text-destructive">{errors.password.message}</p> : null}
           {!password ? (
             <p className="text-xs text-muted-foreground">
@@ -176,25 +163,13 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           <Label htmlFor="passwordConfirm" className="text-foreground font-medium">
             Confirmar Contraseña
           </Label>
-          <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input
-              id="passwordConfirm"
-              type={showConfirmPassword ? 'text' : 'password'}
-              placeholder="Confirma tu contraseña"
-              className="pl-10 pr-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
-              {...register('passwordConfirm')}
-              disabled={isSubmitting}
-            />
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              tabIndex={-1}
-            >
-              {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
-          </div>
+          <PasswordInput
+            id="passwordConfirm"
+            placeholder="Confirma tu contraseña"
+            className="bg-background border-input text-foreground placeholder:text-muted-foreground"
+            {...register('passwordConfirm')}
+            disabled={isSubmitting}
+          />
           {errors.passwordConfirm && (
             <p className="text-sm text-destructive">{errors.passwordConfirm.message}</p>
           )}
