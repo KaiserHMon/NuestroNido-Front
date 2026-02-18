@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { LinkIcon, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,11 +13,15 @@ import { JoinFamilySchema, JoinFamilyFormInputs } from '@/lib/validation';
 import { useFamily } from '@/hooks/use-family';
 import { ValidateCodeResponse } from '@/lib/types';
 
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+
 interface JoinFamilyCardProps {
   onSuccess?: () => void;
 }
 
 export function JoinFamilyCard({ onSuccess }: JoinFamilyCardProps) {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [codeValidation, setCodeValidation] = useState<ValidateCodeResponse | null>(null);
@@ -27,12 +31,15 @@ export function JoinFamilyCard({ onSuccess }: JoinFamilyCardProps) {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
+    control,
   } = useForm<JoinFamilyFormInputs>({
     resolver: zodResolver(JoinFamilySchema),
   });
 
-  const invitationCode = watch('invitationCode');
+  const invitationCode = useWatch({
+    control,
+    name: 'invitationCode',
+  });
 
   useEffect(() => {
     const validate = async () => {
@@ -57,14 +64,32 @@ export function JoinFamilyCard({ onSuccess }: JoinFamilyCardProps) {
     setError(null);
     try {
       await joinFamily(data.invitationCode);
-      onSuccess?.();
+      toast.success('¡Te has unido a la familia!');
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error al unirse a la familia';
       setError(message);
-    } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (isSubmitting) {
+    return (
+      <Card className="border border-border bg-card flex flex-col items-center justify-center p-12 text-center space-y-4">
+        <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center animate-bounce">
+          <Loader2 className="w-8 h-8 text-primary-foreground animate-spin" />
+        </div>
+        <div className="space-y-2">
+          <p className="text-foreground text-lg font-medium">Uniéndote al nido...</p>
+          <p className="text-muted-foreground text-sm">Estamos preparando tu nuevo espacio familiar</p>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="border border-border bg-card hover:border-primary/50 transition-colors">

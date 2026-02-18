@@ -3,18 +3,9 @@
 import { useState, useEffect, useCallback, useMemo, createElement } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
 import { getCategoryIcon, getCategoryLabel } from '@/lib/category-utils';
 import { AddItemDialog } from '@/components/add-item-dialog';
 import { ListItemRow } from '@/components/list-item-row';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ListService, ListItem } from '@/services/list-service';

@@ -20,7 +20,7 @@ export function AnimatedHeroText() {
   }, []);
 
   return (
-    <h1 className="flex flex-col text-left text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-heading leading-tight mb-6">
+    <h1 className="flex flex-col text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-heading leading-tight mb-6">
       <span className="text-primary">Un hogar más</span>
       <div className="h-[1.3em] relative overflow-hidden">
         <AnimatePresence mode="popLayout">
@@ -30,7 +30,7 @@ export function AnimatedHeroText() {
             animate={{ y: "0%", opacity: 1 }}
             exit={{ y: "-100%", opacity: 0 }}
             transition={{ duration: 0.6, ease: "easeInOut" }}
-            className="absolute left-0 text-white drop-shadow-md"
+            className="absolute left-0 right-0 text-white drop-shadow-md"
           >
             {words[index]}
           </motion.span>

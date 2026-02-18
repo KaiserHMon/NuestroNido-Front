@@ -43,61 +43,43 @@ function LandingPageContent() {
         <LandingHeader />
 
         {/* Hero Section */}
-        <section className="w-full pt-10 sm:pt-6 md:pt-8 pb-12 sm:pb-20 md:pb-32">
+        <section className="w-full pt-10 sm:pt-16 md:pt-24 pb-12 sm:pb-20 md:pb-32">
           <div className="container mx-auto px-4 sm:px-6">
-            <div className="grid lg:grid-cols-2 gap-6 lg:gap-12 items-center">
-                      <div className="text-left">
-                        <AnimatedHeroText />
-                        
-                        <p className="text-base sm:text-lg md:text-xl text-foreground mb-8 sm:mb-10 text-pretty max-w-2xl font-medium whitespace-pre-line">
-                          {t('hero.subtitle')}
-                        </p>
-                        
-                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-start items-center">
-                          <div className="flex flex-col items-center w-full sm:w-auto">
-                            {isAuthenticated ? (
-                              <Link href={dashboardRoute} className="w-full sm:w-auto">
-                                <Button
-                                  size="lg"
-                                  className="w-full sm:w-auto bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-8 sm:px-10 shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
-                                >
-                                  {t('hero.cta_dashboard')}
-                                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-                                </Button>
-                              </Link>
-                            ) : (
-                              <Link href="/register" className="w-full sm:w-auto">
-                                <Button
-                                  size="lg"
-                                  className="w-full sm:w-auto bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-8 sm:px-10 shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
-                                >
-                                  {t('hero.cta_primary')}
-                                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
-                                </Button>
-                              </Link>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-              className="relative w-full flex items-center justify-center pt-2 lg:pt-0"
-            >
-              <img
-                src="\family.png"
-                alt={t('hero.img_alt')}
-                className="w-full h-auto object-contain rounded-lg shadow-2xl shadow-primary/30 max-w-xl"
-                style={{
-                  boxShadow: '0 15px 30px -5px rgba(var(--primary-rgb), 0.20), 0 0px 50px rgba(var(--primary-rgb), 0.10)',
-                }}
-                loading="eager"
-              />
-            </motion.div>
+            <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
+              <AnimatedHeroText />
+              
+              <p className="text-base sm:text-lg md:text-xl text-foreground mb-8 sm:mb-10 text-pretty max-w-2xl font-medium mx-auto">
+                Organizá el hogar y motivá a todos a participar,
+                <br className="hidden sm:block" /> sin fricción ni discusiones.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full">
+                <div className="flex flex-col items-center w-full sm:w-auto">
+                  {isAuthenticated ? (
+                    <Link href={dashboardRoute} className="w-full sm:w-auto">
+                      <Button
+                        size="lg"
+                        className="w-full sm:w-auto bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-8 sm:px-10 shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
+                      >
+                        Ir a mi Nido
+                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Link href="/register" className="w-full sm:w-auto">
+                      <Button
+                        size="lg"
+                        className="w-full sm:w-auto bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-8 sm:px-10 shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
+                      >
+                        Comenzar gratis
+                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
         </section>
 
         {/* Features Section */}

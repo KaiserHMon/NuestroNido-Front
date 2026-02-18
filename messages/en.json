@@ -62,6 +62,29 @@
         "rights": "All rights reserved."
     }
   },
+  "Dashboard": {
+    "welcome": "Welcome, {name}",
+    "subtitle": "Select a section to begin",
+    "open": "Open",
+    "shortcuts": {
+      "members": {
+        "title": "Members",
+        "description": "See your family members and their ranking in the household."
+      },
+      "tasks": {
+        "title": "Task Calendar",
+        "description": "Plan tasks, turns and family events in a single calendar."
+      },
+      "shopping": {
+        "title": "Shopping List",
+        "description": "Organize pending items and keep the house up to date."
+      },
+      "notes": {
+        "title": "Notes",
+        "description": "Share reminders, messages and family agreements."
+      }
+    }
+  },
   "Common": {
     "loading": "Loading...",
     "authenticating": "Authenticating..."

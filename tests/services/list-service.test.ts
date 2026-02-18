@@ -6,8 +6,8 @@ vi.mock('@/lib/api-client', () => ({
   fetchClient: vi.fn(),
   ApiError: class ApiError extends Error {
     status: number;
-    constructor(status: number) {
-      super();
+    constructor(status: number, message: string) {
+      super(message);
       this.status = status;
     }
   },
@@ -19,7 +19,7 @@ describe('ListService', () => {
   });
 
   it('deleteBatch calls batch endpoint', async () => {
-    (fetchClient as any).mockResolvedValue({});
+    vi.mocked(fetchClient).mockResolvedValue({});
     await ListService.deleteBatch(['1', '2']);
     expect(fetchClient).toHaveBeenCalledWith('/api/v1/lists/items/batch', {
       method: 'POST',
@@ -29,8 +29,8 @@ describe('ListService', () => {
 
   it('deleteBatch falls back to delete on 404', async () => {
     // Mock fetchClient to throw 404 for batch, succeed for single
-    (fetchClient as any).mockImplementation((url: string) => {
-      if (url.includes('batch')) return Promise.reject(new ApiError(404));
+    vi.mocked(fetchClient).mockImplementation((url: string) => {
+      if (url.includes('batch')) return Promise.reject(new ApiError(404, 'Not Found'));
       return Promise.resolve({});
     });
 

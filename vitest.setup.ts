@@ -2,6 +2,10 @@ import '@testing-library/jest-dom';
 import { afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 
+// Set environment variables for tests
+process.env.NEXT_PUBLIC_API_URL = 'http://localhost:3000';
+process.env.NEXT_PUBLIC_SUPPORT_EMAIL = 'support@example.com';
+
 afterEach(() => {
   cleanup();
 });

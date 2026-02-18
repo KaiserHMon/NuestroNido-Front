@@ -583,7 +583,11 @@ function SidebarMenuSkeleton({
   showIcon?: boolean;
 }) {
   // Usar useState con inicializador para generar el ancho una sola vez (puro)
-  const [width] = React.useState(() => `${Math.floor(Math.random() * 40) + 50}%`);
+  const [width, setWidth] = React.useState('70%');
+
+  React.useEffect(() => {
+    setWidth(`${Math.floor(Math.random() * 40) + 50}%`);
+  }, []);
 
   return (
     <div

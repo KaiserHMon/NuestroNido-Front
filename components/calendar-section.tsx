@@ -190,14 +190,14 @@ export function CalendarSection() {
     try {
       await TaskService.createTask({
         title: data.title,
-        familyId: family.id,
-        creatorId: data.assignedTo || user.id,
+        family_id: family.id,
+        assigned_to_user_id: data.assignedTo || user.id,
         recurrence_type: recurrence_type,
-        daysOfWeek: data.dateType === 'days' && data.daysOfWeek ? data.daysOfWeek : undefined,
-        completed: false,
-        date: due_date,
-        endDate: end_date || undefined,
-      } as any);
+        week_days: data.dateType === 'days' && data.daysOfWeek ? data.daysOfWeek.join(',') : undefined,
+        status: 'pending',
+        due_date: due_date,
+        end_date: end_date || undefined,
+      });
       fetchTasks();
       setIsNewTaskOpen(false);
       toast.success('Tarea creada');
@@ -227,13 +227,13 @@ export function CalendarSection() {
     try {
       await TaskService.updateTask(taskToEdit.id, {
         title: data.title,
-        creatorId: data.assignedTo,
+        assigned_to_user_id: data.assignedTo,
         recurrence_type: recurrence_type,
-        daysOfWeek: data.dateType === 'days' && data.daysOfWeek ? data.daysOfWeek : undefined,
-        completed: taskToEdit.completed,
-        date: due_date,
-        endDate: end_date || undefined,
-      } as any);
+        week_days: data.dateType === 'days' && data.daysOfWeek ? data.daysOfWeek.join(',') : undefined,
+        status: taskToEdit.completed ? 'completed' : 'pending',
+        due_date: due_date,
+        end_date: end_date || undefined,
+      });
       fetchTasks();
       setTaskToEdit(undefined);
       setIsNewTaskOpen(false);
@@ -264,8 +264,8 @@ export function CalendarSection() {
     try {
       setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, completed } : t)));
       await TaskService.updateTask(taskId, {
-        completed,
-      } as any);
+        status: completed ? 'completed' : 'pending',
+      });
       refreshFamily();
     } catch (error) {
       console.error('Error toggling task:', error);
@@ -405,7 +405,7 @@ export function CalendarSection() {
                 dateType: taskToEdit.dateType || 'date',
                 date: taskToEdit.date ? new Date(taskToEdit.date) : undefined,
                 daysOfWeek: taskToEdit.daysOfWeek,
-                recurrence: (taskToEdit.frequency === 'weekly' || !taskToEdit.frequency ? 'once' : taskToEdit.frequency) as any,
+                recurrence: (taskToEdit.frequency === 'weekly' || !taskToEdit.frequency ? 'once' : taskToEdit.frequency) as 'once' | 'monthly' | 'yearly',
                 assignedTo: taskToEdit.creatorId,
               }
             : undefined

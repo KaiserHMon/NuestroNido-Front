@@ -8,6 +8,7 @@ import { TokenService } from '@/services/token-service';
 import { FamilyService } from '@/services/family-service';
 import { LevelService } from '@/services/level-service';
 import { UserService } from '@/services/user-service';
+import { subscribeToPushNotifications } from '@/services/push-notification-service';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -18,6 +19,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [levels, setLevels] = useState<Level[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Subscribe to push notifications when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Delay slightly to ensure browser is ready and not blocking initial load
+      const timer = setTimeout(() => {
+        subscribeToPushNotifications();
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     LevelService.getLevels().then(data => {
@@ -139,29 +151,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const createFamily = useCallback(async (name: string) => {
-     const newFam = await FamilyService.create(name);
-     setFamily(newFam);
-     if (user) {
-       const updatedUser = { ...user, familyId: newFam.id };
-       setUser(updatedUser);
-       TokenService.setUser(updatedUser);
-     }
+    try {
+      const newFam = await FamilyService.create(name);
+      // Force refresh to get latest state from DB
+      const refreshedFam = await FamilyService.getMyFamily(true);
+      setFamily(refreshedFam || newFam);
+      
+      if (user) {
+        const updatedUserFromApi = await UserService.getUser(user.id);
+        const userWithFamily = { ...updatedUserFromApi, familyId: (refreshedFam || newFam).id };
+        setUser(userWithFamily);
+        TokenService.setUser(userWithFamily);
+      }
+    } catch (error) {
+      console.error('Error creating family in provider:', error);
+      throw error;
+    }
   }, [user]);
 
   const joinByCode = useCallback(async (code: string) => {
     try {
       const newFam = await FamilyService.joinByCode(code);
-      setFamily(newFam);
+      const refreshedFam = await FamilyService.getMyFamily(true);
+      setFamily(refreshedFam || newFam);
       if (user) {
         const updatedUserFromApi = await UserService.getUser(user.id);
-        const userWithFamily = { ...updatedUserFromApi, familyId: newFam.id };
+        const userWithFamily = { ...updatedUserFromApi, familyId: (refreshedFam || newFam).id };
         setUser(userWithFamily);
         TokenService.setUser(userWithFamily);
       }
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : '';
       if (errorMsg.toLowerCase().includes('already member') || errorMsg.toLowerCase().includes('ya eres miembro')) {
-        const fam = await FamilyService.getMyFamily();
+        const fam = await FamilyService.getMyFamily(true);
         if (fam) {
           setFamily(fam);
           if (user) {
@@ -180,17 +202,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const joinByLink = useCallback(async (token: string) => {
     try {
       const newFam = await FamilyService.joinByLink(token);
-      setFamily(newFam);
+      const refreshedFam = await FamilyService.getMyFamily(true);
+      setFamily(refreshedFam || newFam);
       if (user) {
         const updatedUserFromApi = await UserService.getUser(user.id);
-        const userWithFamily = { ...updatedUserFromApi, familyId: newFam.id };
+        const userWithFamily = { ...updatedUserFromApi, familyId: (refreshedFam || newFam).id };
         setUser(userWithFamily);
         TokenService.setUser(userWithFamily);
       }
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : '';
       if (errorMsg.toLowerCase().includes('already member') || errorMsg.toLowerCase().includes('ya eres miembro')) {
-        const fam = await FamilyService.getMyFamily();
+        const fam = await FamilyService.getMyFamily(true);
         if (fam) {
           setFamily(fam);
           if (user) {

@@ -3,52 +3,54 @@
 import { DashboardLayout } from '@/components/dashboard-layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, Calendar, ShoppingCart, StickyNote, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/i18n/routing';
 import { useAuth } from '@/hooks/use-auth';
-
-const shortcuts = [
-  {
-    title: 'Miembros',
-    description: 'Observa a los miembros de tu familia y su ranking en el hogar.',
-    icon: Users,
-    href: '/dashboard/miembros',
-    color: 'bg-primary text-primary-foreground',
-  },
-  {
-    icon: Calendar,
-    title: 'Calendario de Tareas',
-    description: 'Planifica tareas, turnos y eventos familiares en un solo calendario.',
-    href: '/dashboard/tareas',
-    color: 'bg-primary text-primary-foreground',
-    borderColor: 'border-blue-200 dark:border-blue-800',
-  },
-  {
-    title: 'Lista de Compras',
-    description: 'Organiza lo pendiente y mantén la casa siempre al día.',
-    icon: ShoppingCart,
-    href: '/dashboard/lista',
-    color: 'bg-primary text-primary-foreground',
-  },
-  {
-    title: 'Notas',
-    description: 'Comparte recordatorios, mensajes y acuerdos familiares.',
-    icon: StickyNote,
-    href: '/dashboard/notas',
-    color: 'bg-primary text-primary-foreground',
-  },
-];
+import { useTranslations } from 'next-intl';
 
 export default function DashboardOverviewPage() {
   const { user } = useAuth();
+  const t = useTranslations('Dashboard');
+
+  const shortcuts = [
+    {
+      title: t('shortcuts.members.title'),
+      description: t('shortcuts.members.description'),
+      icon: Users,
+      href: '/dashboard/miembros' as const,
+      color: 'bg-primary text-primary-foreground',
+    },
+    {
+      icon: Calendar,
+      title: t('shortcuts.tasks.title'),
+      description: t('shortcuts.tasks.description'),
+      href: '/dashboard/tareas' as const,
+      color: 'bg-primary text-primary-foreground',
+      borderColor: 'border-blue-200 dark:border-blue-800',
+    },
+    {
+      title: t('shortcuts.shopping.title'),
+      description: t('shortcuts.shopping.description'),
+      icon: ShoppingCart,
+      href: '/dashboard/lista' as const,
+      color: 'bg-primary text-primary-foreground',
+    },
+    {
+      title: t('shortcuts.notes.title'),
+      description: t('shortcuts.notes.description'),
+      icon: StickyNote,
+      href: '/dashboard/notas' as const,
+      color: 'bg-primary text-primary-foreground',
+    },
+  ];
 
   return (
     <DashboardLayout activeSection="overview">
       <div className="space-y-8">
         <div className="space-y-2">
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
-            Bienvenido, {user?.name}
+            {t('welcome', { name: user?.name || '' })}
           </h2>
-          <p className="text-muted-foreground">Selecciona una sección para empezar</p>
+          <p className="text-muted-foreground">{t('subtitle')}</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -74,7 +76,7 @@ export default function DashboardOverviewPage() {
                       {shortcut.description}
                     </p>
                     <div className="flex items-center text-primary text-xs font-medium">
-                      Abrir <ArrowRight className="w-3 h-3 ml-1" />
+                      {t('open')} <ArrowRight className="w-3 h-3 ml-1" />
                     </div>
                   </CardContent>
                 </Card>

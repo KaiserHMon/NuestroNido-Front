@@ -62,6 +62,29 @@
         "rights": "Todos los derechos reservados."
     }
   },
+  "Dashboard": {
+    "welcome": "Bienvenido, {name}",
+    "subtitle": "Selecciona una sección para empezar",
+    "open": "Abrir",
+    "shortcuts": {
+      "members": {
+        "title": "Miembros",
+        "description": "Observa a los miembros de tu familia y su ranking en el hogar."
+      },
+      "tasks": {
+        "title": "Calendario de Tareas",
+        "description": "Planifica tareas, turnos y eventos familiares en un solo calendario."
+      },
+      "shopping": {
+        "title": "Lista de Compras",
+        "description": "Organiza lo pendiente y mantén la casa siempre al día."
+      },
+      "notes": {
+        "title": "Notas",
+        "description": "Comparte recordatorios, mensajes y acuerdos familiares."
+      }
+    }
+  },
   "Common": {
     "loading": "Cargando...",
     "authenticating": "Autenticando..."

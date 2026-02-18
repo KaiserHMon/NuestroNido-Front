@@ -69,6 +69,7 @@ export function NotesSection() {
         title: data.title,
         content: data.content,
         family_id: family.id,
+        user_id: user.id,
       });
 
       setNotes((prev) => [newNote, ...prev]);
