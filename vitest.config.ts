@@ -8,6 +8,9 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
+    env: {
+      NEXT_PUBLIC_API_URL: 'http://localhost:3000/api',
+    },
     exclude: ['node_modules', 'dist', '.idea', '.git', '.cache', 'tests/e2e/**'],
     coverage: {
       provider: 'v8',

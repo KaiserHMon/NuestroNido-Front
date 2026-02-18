@@ -3,17 +3,9 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Plus, Check, X } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import { getCategoryIcon, getCategoryLabel } from '@/lib/category-utils';
-import { AddItemForm } from '@/components/add-item-form';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { AddItemDialog } from '@/components/add-item-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ListService, ListItem } from '@/services/list-service';
@@ -183,21 +175,12 @@ export function ListSection() {
               Limpiar Comprados
             </Button>
           ) : null}
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="gap-2 text-xs sm:text-sm h-9 sm:h-10 bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground shadow-md shadow-primary/30 transition-all duration-300 active:scale-95">
-                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
-                Agregar Item
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Agregar Item a la Lista</DialogTitle>
-                <DialogDescription>Añade un nuevo producto a tu lista de compras</DialogDescription>
-              </DialogHeader>
-              <AddItemForm categories={categories} onAddItem={handleAddItem} />
-            </DialogContent>
-          </Dialog>
+          <AddItemDialog
+            open={dialogOpen}
+            onOpenChange={setDialogOpen}
+            categories={categories}
+            onAddItem={handleAddItem}
+          />
         </div>
       </div>
 
