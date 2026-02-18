@@ -27,7 +27,7 @@ export function SupportDialog({ open, onOpenChange }: SupportDialogProps) {
 
     setIsSubmitting(true);
     
-    const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'segundohardoym@gmail.com';
+    const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@example.com';
     const subject = encodeURIComponent('Consulta Soporte - NuestroNido');
     const body = encodeURIComponent(message);
     const mailtoUrl = `mailto:${supportEmail}?subject=${subject}&body=${body}`;
