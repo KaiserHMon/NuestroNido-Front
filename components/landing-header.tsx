@@ -2,9 +2,11 @@
 
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { LogOut, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
+import logo from '@/app/assets/logo.png';
 
 export function LandingHeader() {
   const router = useRouter();
@@ -15,7 +17,7 @@ export function LandingHeader() {
     router.push('/');
   };
 
-  const dashboardRoute = (user?.familyId || family) ? '/dashboard' : '/home';
+  const dashboardRoute = user?.familyId || family ? '/dashboard' : '/home';
 
   if (isLoading) {
     return (
@@ -23,7 +25,12 @@ export function LandingHeader() {
         <div className="container mx-auto px-4 sm:px-6 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <img src="/logo.png" alt="NuestroNido Logo" className="h-8 sm:h-12 w-auto object-contain" />
+              <Image
+                src={logo}
+                alt="NuestroNido Logo"
+                className="h-8 sm:h-12 w-auto object-contain"
+                priority
+              />
             </div>
           </div>
         </div>
@@ -35,14 +42,12 @@ export function LandingHeader() {
     <header className="border-b border-card bg-card/80 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 sm:px-6 py-3">
         <div className="flex items-center justify-between">
-          <Link
-            href="/"
-            className="flex items-center hover:opacity-80 transition-opacity shrink-0"
-          >
-            <img 
-              src="/logo.png" 
-              alt="NuestroNido Logo" 
-              className="h-8 sm:h-12 w-auto object-contain" 
+          <Link href="/" className="flex items-center hover:opacity-80 transition-opacity shrink-0">
+            <Image
+              src={logo}
+              alt="NuestroNido Logo"
+              className="h-8 sm:h-12 w-auto object-contain"
+              priority
             />
           </Link>
 
