@@ -1,9 +1,9 @@
 import { fetchClient } from '@/lib/api-client';
-import { Task } from '@/lib/types';
+import { Task, ApiTask } from '@/lib/types';
 
 export const TaskService = {
-  async getTasks(): Promise<Task[]> {
-    return fetchClient<Task[]>('/api/v1/tasks/');
+  async getTasks(): Promise<ApiTask[]> {
+    return fetchClient<ApiTask[]>('/api/v1/tasks/');
   },
 
   async createTask(data: Partial<Task>): Promise<Task> {
