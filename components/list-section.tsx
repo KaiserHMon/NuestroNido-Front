@@ -143,7 +143,7 @@ export function ListSection() {
   const clearPurchased = useCallback(async () => {
     const purchased = items.filter((i) => i.purchased);
     try {
-      await Promise.all(purchased.map((i) => ListService.delete(i.id)));
+      await ListService.deleteBatch(purchased.map((i) => i.id));
       setItems((prev) => prev.filter((item) => !item.purchased));
       setLastActionMsg('Purchased items cleared');
       setTimeout(() => setLastActionMsg(''), 1500);
