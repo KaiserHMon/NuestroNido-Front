@@ -222,6 +222,20 @@ export interface Task {
   updatedAt?: string;
 }
 
+export interface ApiTask {
+  id: string;
+  title: string;
+  family_id: string;
+  assigned_to_user_id: string | null;
+  recurrence_type: 'none' | 'daily' | 'weekly' | 'monthly';
+  week_days: string | null;
+  status: 'pending' | 'completed';
+  due_date: string;
+  end_date: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface CalendarEvent {
   id: string;
   noteId: string;

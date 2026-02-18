@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback, ChangeEvent, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, createElement } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Plus, Check, X, ShoppingBasket, Pill, Home, Wrench, Sparkles, ShoppingCart, Dog } from 'lucide-react';
+import { Plus } from 'lucide-react';
+import { getCategoryIcon, getCategoryLabel } from '@/lib/category-utils';
+import { AddItemForm } from '@/components/add-item-form';
+import { ListItemRow } from '@/components/list-item-row';
 import {
   Dialog,
   DialogContent,
@@ -14,35 +15,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ListService, ListItem } from '@/services/list-service';
 import { useFamily } from '@/hooks/use-family';
 import { toast } from 'sonner';
 import { SectionSkeleton } from '@/components/ui/section-skeleton';
-
-const getCategoryIcon = (categoryName: string | undefined) => {
-  const lower = (categoryName || '').toLowerCase();
-  if (lower.includes('aliment') || lower.includes('comida')) return ShoppingBasket;
-  if (lower.includes('farmacia') || lower.includes('medicin')) return Pill;
-  if (lower.includes('ferreter') || lower.includes('herramient')) return Wrench;
-  if (lower.includes('limpieza') || lower.includes('aseo')) return Sparkles;
-  if (lower.includes('hogar') || lower.includes('casa')) return Home;
-  if (lower.includes('mascota') || lower.includes('perro') || lower.includes('gato')) return Dog;
-  return ShoppingCart;
-};
-
-const getCategoryLabel = (categoryValue: string | undefined) => {
-  if (!categoryValue) return '';
-  return categoryValue.charAt(0).toUpperCase() + categoryValue.slice(1);
-};
 
 export function ListSection() {
   const { family } = useFamily();
@@ -53,20 +31,11 @@ export function ListSection() {
   const [lastActionMsg, setLastActionMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const [newItem, setNewItem] = useState({
-    title: '',
-    category: '',
-    quantity: '1',
-  });
-
   const fetchItems = useCallback(async () => {
     if (!family) return;
     try {
       setLoading(true);
-      const [data, cats] = await Promise.all([
-        ListService.getItems(),
-        ListService.getCategories()
-      ]);
+      const [data, cats] = await Promise.all([ListService.getItems(), ListService.getCategories()]);
       setItems(data);
       setCategories(cats);
     } catch (error) {
@@ -80,79 +49,72 @@ export function ListSection() {
     fetchItems();
   }, [fetchItems]);
 
-  const filteredItems = useMemo(() => 
-    activeCategory === 'all'
-      ? items
-      : items.filter((item) => item.category === activeCategory),
+  const filteredItems = useMemo(
+    () =>
+      activeCategory === 'all' ? items : items.filter((item) => item.category === activeCategory),
     [items, activeCategory]
   );
 
-  const pendingItems = useMemo(() => 
-    filteredItems.filter((item) => !item.purchased),
+  const pendingItems = useMemo(
+    () => filteredItems.filter((item) => !item.purchased),
     [filteredItems]
   );
 
-  const purchasedItems = useMemo(() => 
-    filteredItems.filter((item) => item.purchased),
+  const purchasedItems = useMemo(
+    () => filteredItems.filter((item) => item.purchased),
     [filteredItems]
   );
 
-  const globalPendingCount = useMemo(() => 
-    items.filter((i) => !i.purchased).length,
-    [items]
-  );
+  const globalPendingCount = useMemo(() => items.filter((i) => !i.purchased).length, [items]);
 
-  const handleAddItem = useCallback(async () => {
-    if (!family) return;
+  const handleAddItem = useCallback(
+    async (newItemData: { title: string; category: string; quantity: string }) => {
+      if (!family) return;
 
-    const cleanTitle = newItem.title
-      .replace(/\s{2,}/g, ' ')
-      .trim()
-      .slice(0, 100);
-    const categoryToUse = newItem.category || categories[0] || '';
-    const cleanQuantity = parseInt(newItem.quantity.trim().slice(0, 50)) || 1;
+      const cleanTitle = newItemData.title
+        .replace(/\s{2,}/g, ' ')
+        .trim()
+        .slice(0, 100);
+      const categoryToUse = newItemData.category || categories[0] || '';
+      const cleanQuantity = parseInt(newItemData.quantity.trim().slice(0, 50)) || 1;
 
-    if (cleanTitle && categoryToUse) {
-      try {
-        const createdItem = await ListService.create({
-          title: cleanTitle,
-          family_id: family.id,
-          category: categoryToUse,
-          quantity: cleanQuantity,
-          purchased: false,
-        });
+      if (cleanTitle && categoryToUse) {
+        try {
+          const createdItem = await ListService.create({
+            title: cleanTitle,
+            family_id: family.id,
+            category: categoryToUse,
+            quantity: cleanQuantity,
+            purchased: false,
+          });
 
-        setItems((prev) => [...prev, createdItem]);
-        setNewItem({ title: '', category: categories[0] || '', quantity: '1' });
-        setDialogOpen(false);
-        setLastActionMsg('Item added to list');
-        setTimeout(() => setLastActionMsg(''), 1500);
-        toast.success('Producto agregado');
-      } catch (error) {
-        console.error('Error creating item:', error);
-        toast.error('Error al crear el producto');
+          setItems((prev) => [...prev, createdItem]);
+          setDialogOpen(false);
+          setLastActionMsg('Item added to list');
+          setTimeout(() => setLastActionMsg(''), 1500);
+          toast.success('Producto agregado');
+        } catch (error) {
+          console.error('Error creating item:', error);
+          toast.error('Error al crear el producto');
+          throw error;
+        }
       }
-    }
-  }, [newItem, family, categories]);
+    },
+    [family, categories]
+  );
 
   const togglePurchased = useCallback(async (item: ListItem) => {
-    setItems((prev) =>
-      prev.map((i) => (i.id === item.id ? { ...i, purchased: !i.purchased } : i))
-    );
+    setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, purchased: !i.purchased } : i)));
 
     try {
       const updatedItem = await ListService.update(item.id, {
         purchased: !item.purchased,
       });
-      setItems((prev) =>
-          prev.map((i) => (i.id === item.id ? updatedItem : i))
-      );
+      setItems((prev) => prev.map((i) => (i.id === item.id ? updatedItem : i)));
     } catch (error) {
       console.error('Error updating item:', error);
       toast.error('Error al actualizar el producto');
-      setItems((prev) =>
-        prev.map((i) => (i.id === item.id ? item : i))
-      );
+      setItems((prev) => prev.map((i) => (i.id === item.id ? item : i)));
     }
   }, []);
 
@@ -172,7 +134,7 @@ export function ListSection() {
   const clearPurchased = useCallback(async () => {
     const purchased = items.filter((i) => i.purchased);
     try {
-      await Promise.all(purchased.map((i) => ListService.delete(i.id)));
+      await ListService.deleteBatch(purchased.map((i) => i.id));
       setItems((prev) => prev.filter((item) => !item.purchased));
       setLastActionMsg('Purchased items cleared');
       setTimeout(() => setLastActionMsg(''), 1500);
@@ -183,12 +145,15 @@ export function ListSection() {
     }
   }, [items]);
 
-  const countByCategory = useCallback((category: string | undefined) => {
-    return items.filter((item) => item.category === category && !item.purchased).length;
-  }, [items]);
+  const countByCategory = useCallback(
+    (category: string | undefined) => {
+      return items.filter((item) => item.category === category && !item.purchased).length;
+    },
+    [items]
+  );
 
   if (loading && items.length === 0) {
-      return <SectionSkeleton />;
+    return <SectionSkeleton />;
   }
 
   return (
@@ -212,76 +177,12 @@ export function ListSection() {
               Limpiar Comprados
             </Button>
           ) : null}
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="gap-2 text-xs sm:text-sm h-9 sm:h-10 bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground shadow-md shadow-primary/30 transition-all duration-300 active:scale-95">
-                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
-                Agregar Item
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Agregar Item a la Lista</DialogTitle>
-                <DialogDescription>Añade un nuevo producto a tu lista de compras</DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4 pt-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Nombre del producto</Label>
-                  <Input
-                    id="title"
-                    placeholder="Ej: Leche"
-                    value={newItem.title}
-                    onChange={(e) => setNewItem({ ...newItem, title: e.target.value })}
-                    onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="category">Categoría</Label>
-                  <Select
-                    value={newItem.category}
-                    onValueChange={(value) => setNewItem({ ...newItem, category: value })}
-                  >
-                    <SelectTrigger id="category">
-                      <SelectValue placeholder="Selecciona una categoría" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((cat) => {
-                        const Icon = getCategoryIcon(cat);
-                        return (
-                          <SelectItem key={cat} value={cat}>
-                            <div className="flex items-center gap-2">
-                              <Icon className="w-4 h-4" aria-hidden="true" />
-                              {getCategoryLabel(cat)}
-                            </div>
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="quantity">Cantidad</Label>
-                  <Input
-                    id="quantity"
-                    placeholder="Ej: 1"
-                    type="number"
-                    value={newItem.quantity}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setNewItem((prev) => ({ ...prev, quantity: e.target.value.slice(0, 50) }))
-                    }
-                    aria-label="Cantidad del producto"
-                    maxLength={50}
-                  />
-                </div>
-
-                <Button onClick={handleAddItem} className="w-full">
-                  Agregar a la Lista
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <AddItemDialog
+            open={dialogOpen}
+            onOpenChange={setDialogOpen}
+            categories={categories}
+            onAddItem={handleAddItem}
+          />
         </div>
       </div>
 
@@ -300,7 +201,7 @@ export function ListSection() {
             ) : null}
           </TabsTrigger>
           {categories.map((cat) => {
-            const Icon = getCategoryIcon(cat);
+            const iconComponent = getCategoryIcon(cat);
             const count = countByCategory(cat);
             return (
               <TabsTrigger
@@ -309,7 +210,10 @@ export function ListSection() {
                 aria-label={getCategoryLabel(cat)}
                 className="gap-0.5 sm:gap-1 text-xs sm:text-sm px-1 sm:px-3 py-2"
               >
-                <Icon className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
+                {createElement(iconComponent, {
+                  className: 'w-3 h-3 sm:w-4 sm:h-4',
+                  'aria-hidden': 'true',
+                })}
                 <span className="hidden lg:inline">{getCategoryLabel(cat)}</span>
                 {count > 0 ? (
                   <Badge
@@ -324,7 +228,10 @@ export function ListSection() {
           })}
         </TabsList>
 
-        <TabsContent value={activeCategory} className="mt-4 sm:mt-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <TabsContent
+          value={activeCategory}
+          className="mt-4 sm:mt-6 animate-in fade-in slide-in-from-bottom-2 duration-300"
+        >
           {filteredItems.length === 0 ? (
             <Card>
               <CardContent className="pt-6">
@@ -349,57 +256,14 @@ export function ListSection() {
                     </p>
                   ) : (
                     <div className="space-y-2">
-                      {pendingItems.map((item) => {
-                        const Icon = getCategoryIcon(item.category);
-                        return (
-                          <div
-                            key={item.id}
-                            className="flex items-center gap-3 p-3 rounded-lg border bg-card"
-                          >
-                            <Button
-                              size="icon"
-                              variant="outline"
-                              className="shrink-0 bg-transparent"
-                              onClick={() => togglePurchased(item)}
-                              aria-label={`Marcar ${item.title} como comprado`}
-                              title={`Marcar ${item.title} como comprado`}
-                            >
-                              <div className="w-4 h-4" />
-                            </Button>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-start justify-between gap-2">
-                                <div className="flex-1">
-                                  <p className="font-medium">{item.title}</p>
-                                  <div className="flex items-center gap-2 mt-1">
-                                    <div className="flex items-center gap-1">
-                                      <Icon
-                                        className="w-3 h-3 text-muted-foreground"
-                                        aria-hidden="true"
-                                      />
-                                      <span className="text-xs text-muted-foreground">
-                                        {getCategoryLabel(item.category)}
-                                      </span>
-                                    </div>
-                                    <span className="text-xs text-muted-foreground">
-                                      • {item.quantity}
-                                    </span>
-                                  </div>
-                                </div>
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  className="shrink-0"
-                                  onClick={() => handleDeleteItem(item.id)}
-                                  aria-label={`Eliminar ${item.title}`}
-                                  title={`Eliminar ${item.title}`}
-                                >
-                                  <X className="w-4 h-4" aria-hidden="true" />
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
+                      {pendingItems.map((item) => (
+                        <ListItemRow
+                          key={item.id}
+                          item={item}
+                          onToggle={togglePurchased}
+                          onDelete={handleDeleteItem}
+                        />
+                      ))}
                     </div>
                   )}
                 </CardContent>
@@ -417,54 +281,14 @@ export function ListSection() {
                     <p className="text-center text-muted-foreground py-8">No hay items comprados</p>
                   ) : (
                     <div className="space-y-2">
-                      {purchasedItems.map((item) => {
-                        const Icon = getCategoryIcon(item.category);
-                        return (
-                          <div
-                            key={item.id}
-                            className="flex items-center gap-3 p-3 rounded-lg border bg-muted/50 opacity-60"
-                          >
-                            <Button
-                              size="icon"
-                              variant="secondary"
-                              className="shrink-0"
-                              onClick={() => togglePurchased(item)}
-                              aria-label={`Marcar ${item.title} como no comprado`}
-                              title={`Marcar ${item.title} como no comprado`}
-                            >
-                              <Check className="w-4 h-4" aria-hidden="true" />
-                            </Button>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-start justify-between gap-2">
-                                <div className="flex-1">
-                                  <p className="font-medium line-through">{item.title}</p>
-                                  <div className="flex items-center gap-2 mt-1">
-                                    <div className="flex items-center gap-1">
-                                      <Icon className="w-3 h-3 text-muted-foreground" />
-                                      <span className="text-xs text-muted-foreground">
-                                        {getCategoryLabel(item.category)}
-                                      </span>
-                                    </div>
-                                    <span className="text-xs text-muted-foreground">
-                                      • {item.quantity}
-                                    </span>
-                                  </div>
-                                </div>
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  className="shrink-0"
-                                  onClick={() => handleDeleteItem(item.id)}
-                                  aria-label={`Eliminar ${item.title}`}
-                                  title={`Eliminar ${item.title}`}
-                                >
-                                  <X className="w-4 h-4" aria-hidden="true" />
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
+                      {purchasedItems.map((item) => (
+                        <ListItemRow
+                          key={item.id}
+                          item={item}
+                          onToggle={togglePurchased}
+                          onDelete={handleDeleteItem}
+                        />
+                      ))}
                     </div>
                   )}
                 </CardContent>

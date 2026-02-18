@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import { useAuth } from '@/hooks/use-auth';
 import { useFamily } from '@/hooks/use-family'; // Corrected import
 
@@ -71,7 +72,14 @@ export function AuthPageContent() {
       <div className="w-full max-w-md">
         <div className="text-center mb-4">
           <div className="flex items-center justify-center mb-2">
-            <img src="/logo.png" alt="NuestroNido Logo" className="h-16 w-auto object-contain" />
+            <Image
+              src="/logo.png"
+              alt="NuestroNido Logo"
+              width={261}
+              height={64}
+              className="h-16 w-auto object-contain"
+              priority
+            />
           </div>
           <p className="text-muted-foreground text-xs sm:text-sm">
             Gestiona tu hogar de manera fácil y divertida

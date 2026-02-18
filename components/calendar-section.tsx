@@ -41,20 +41,6 @@ interface ColorDot {
   name: string;
 }
 
-interface ApiTask {
-  id: string;
-  title: string;
-  family_id: string;
-  assigned_to_user_id: string | null;
-  recurrence_type: 'none' | 'daily' | 'weekly' | 'monthly';
-  week_days: string | null;
-  status: 'pending' | 'completed';
-  due_date: string;
-  end_date: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
 interface CreateTaskFormValues {
   title: string;
   dateType: 'date' | 'days';
@@ -84,7 +70,7 @@ export function CalendarSection() {
     if (!family) return;
     try {
       setLoading(true);
-      const data = await TaskService.getTasks() as unknown as ApiTask[];
+      const data = await TaskService.getTasks();
 
       const mappedTasks: Task[] = data
         .filter((t) => t.assigned_to_user_id && membersMap.has(t.assigned_to_user_id))
