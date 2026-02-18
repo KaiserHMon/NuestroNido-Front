@@ -48,7 +48,7 @@ export function TasksTab({
       .filter((task) => {
         // Filtro por tipo (Unica vs Recurrente)
         const isRecurrent = task.recurrence_type !== 'none';
-        
+
         if (filter === 'unicas') {
           if (isRecurrent) return false;
         } else {
@@ -62,6 +62,18 @@ export function TasksTab({
 
         return true;
       })
+      .map((task) => {
+        const dateObj = task.date ? new Date(task.date) : null;
+        return {
+          ...task,
+          dateTimestamp: dateObj ? dateObj.getTime() : 0,
+          formattedDate: dateObj
+            ? format(dateObj, "d 'de' MMMM", {
+                locale: es,
+              })
+            : 'Sin fecha',
+        };
+      })
       .sort((a, b) => {
         // Sort completed tasks to bottom
         if (a.completed !== b.completed) {
@@ -70,7 +82,7 @@ export function TasksTab({
         if (filter === 'unicas') {
           // Sort by date if available
           if (a.date && b.date) {
-            return new Date(a.date).getTime() - new Date(b.date).getTime();
+            return a.dateTimestamp - b.dateTimestamp;
           }
         }
         return (a.title || '').localeCompare(b.title || '');
@@ -178,11 +190,7 @@ export function TasksTab({
                       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                         {filter === 'unicas' ? (
                           <span className="flex items-center">
-                            {task.date
-                              ? format(new Date(task.date), "d 'de' MMMM", {
-                                  locale: es,
-                                })
-                              : 'Sin fecha'}
+                            {task.formattedDate}
                           </span>
                         ) : (
                           <div className="flex flex-wrap gap-1.5 items-center">
