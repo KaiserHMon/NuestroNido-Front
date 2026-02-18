@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, FormEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Loader2 } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -21,17 +22,34 @@ interface AddItemFormProps {
 export function AddItemForm({ categories, onAddItem }: AddItemFormProps) {
   const [newItem, setNewItem] = useState({
     title: '',
-    category: '',
+    category: categories[0] || '',
     quantity: '1',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleAddItem = async () => {
-    await onAddItem(newItem);
-    setNewItem({ title: '', category: categories[0] || '', quantity: '1' });
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!newItem.title.trim() || isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      await onAddItem(newItem);
+      setNewItem({
+        title: '',
+        category: categories[0] || '',
+        quantity: '1',
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
+  const isFormValid = newItem.title.trim().length > 0;
+
   return (
-    <div className="space-y-4 pt-4">
+    <form onSubmit={handleSubmit} className="space-y-4 pt-4">
       <div className="space-y-2">
         <Label htmlFor="title">Nombre del producto</Label>
         <Input
@@ -39,7 +57,7 @@ export function AddItemForm({ categories, onAddItem }: AddItemFormProps) {
           placeholder="Ej: Leche"
           value={newItem.title}
           onChange={(e) => setNewItem({ ...newItem, title: e.target.value })}
-          onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
+          disabled={isSubmitting}
         />
       </div>
 
@@ -48,6 +66,7 @@ export function AddItemForm({ categories, onAddItem }: AddItemFormProps) {
         <Select
           value={newItem.category}
           onValueChange={(value) => setNewItem({ ...newItem, category: value })}
+          disabled={isSubmitting}
         >
           <SelectTrigger id="category">
             <SelectValue placeholder="Selecciona una categoría" />
@@ -80,12 +99,24 @@ export function AddItemForm({ categories, onAddItem }: AddItemFormProps) {
           }
           aria-label="Cantidad del producto"
           maxLength={50}
+          disabled={isSubmitting}
         />
       </div>
 
-      <Button onClick={handleAddItem} className="w-full">
-        Agregar a la Lista
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={!isFormValid || isSubmitting}
+      >
+        {isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Agregando...
+          </>
+        ) : (
+          'Agregar a la Lista'
+        )}
       </Button>
-    </div>
+    </form>
   );
 }
