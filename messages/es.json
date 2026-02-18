@@ -1,0 +1,69 @@
+{
+  "Landing": {
+    "header": {
+      "dashboard": "Dashboard",
+      "logout": "Salir",
+      "login": "Iniciar Sesión",
+      "start": "Comenzar"
+    },
+    "hero": {
+      "subtitle": "Organizá el hogar y motivá a todos a participar,\nsin fricción ni discusiones.",
+      "cta_primary": "Comenzar gratis",
+      "cta_dashboard": "Ir a mi Nido",
+      "img_alt": "NuestroNido App Mockup"
+    },
+    "features": {
+      "title": "Todo lo que tu familia necesita",
+      "description": "Herramientas diseñadas para hacer la vida familiar más fácil y organizada",
+      "items": {
+        "calendar": {
+          "title": "Calendario de Tareas",
+          "description": "Organiza las tareas del hogar en un calendario simple e intuitivo."
+        },
+        "shopping": {
+          "title": "Listas Compartidas",
+          "description": "Crea listas de compras por categorías y mantén la casa siempre abastecida."
+        },
+        "notes": {
+          "title": "Notas Familiares",
+          "description": "Comparte recordatorios y mensajes importantes para que todos estén alineados."
+        },
+        "gamification": {
+          "title": "Gamificación",
+          "description": "Motiva la colaboración con puntos y rankings familiares."
+        }
+      }
+    },
+    "how_it_works": {
+      "title": "Cómo funciona",
+      "description": "En pocos minutos, tu hogar empieza a funcionar de manera más organizada.",
+      "steps": {
+        "1": {
+          "title": "Crea tu Nido",
+          "description": "Regístrate y crea tu grupo familiar en segundos."
+        },
+        "2": {
+          "title": "Invita a tu familia",
+          "description": "Comparte el código de invitación con tus familiares para que se unan al nido."
+        },
+        "3": {
+          "title": "Organízate y colabora",
+          "description": "Asigna tareas, comparte listas y mantén a toda la familia sincronizada."
+        }
+      }
+    },
+    "cta_section": {
+        "title": "Comienza a organizar tu familia hoy",
+        "subtitle": "Únete a las familias que ya están disfrutando de un hogar con más armonía."
+    },
+    "footer": {
+        "help": "¿Necesitas ayuda?",
+        "privacy": "Política de Privacidad",
+        "rights": "Todos los derechos reservados."
+    }
+  },
+  "Common": {
+    "loading": "Cargando...",
+    "authenticating": "Autenticando..."
+  }
+}

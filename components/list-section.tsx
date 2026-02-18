@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { getCategoryIcon, getCategoryLabel } from '@/lib/category-utils';
-import { AddItemForm } from '@/components/add-item-form';
+import { AddItemDialog } from '@/components/add-item-dialog';
 import { ListItemRow } from '@/components/list-item-row';
 import {
   Dialog,

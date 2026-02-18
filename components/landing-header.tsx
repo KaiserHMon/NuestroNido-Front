@@ -1,16 +1,19 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useRouter } from '@/i18n/routing';
+import { Link } from '@/i18n/routing';
 import Image from 'next/image';
 import { LogOut, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
-import logo from '@/app/assets/logo.png';
+import logo from '@/assets/logo.png';
+import { useTranslations } from 'next-intl';
+import { LocaleSwitcher } from '@/components/locale-switcher';
 
 export function LandingHeader() {
   const router = useRouter();
   const { isAuthenticated, isLoading, logout, user, family } = useAuth();
+  const t = useTranslations('Landing.header');
 
   const handleLogout = async () => {
     await logout();
@@ -24,7 +27,7 @@ export function LandingHeader() {
       <header className="border-b border-card bg-card/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 py-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center">
+            <div className="flex items-center gap-4">
               <Image
                 src={logo}
                 alt="NuestroNido Logo"
@@ -32,6 +35,7 @@ export function LandingHeader() {
                 priority
               />
             </div>
+            {/* Minimal placeholder for locale switcher if loading? Or just hide it. */}
           </div>
         </div>
       </header>
@@ -52,6 +56,8 @@ export function LandingHeader() {
           </Link>
 
           <div className="flex items-center gap-2">
+            <LocaleSwitcher />
+
             {isAuthenticated ? (
               <>
                 <Link href={dashboardRoute}>
@@ -60,7 +66,7 @@ export function LandingHeader() {
                     className="text-primary text-sm sm:text-base px-3 sm:px-4 hover:bg-primary/10 flex items-center gap-2"
                   >
                     <LayoutDashboard className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span>Dashboard</span>
+                    <span>{t('dashboard')}</span>
                   </Button>
                 </Link>
 
@@ -70,7 +76,7 @@ export function LandingHeader() {
                   className="text-destructive text-sm sm:text-base px-3 sm:px-4 hover:bg-destructive/10 flex items-center gap-2"
                 >
                   <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span>Salir</span>
+                  <span>{t('logout')}</span>
                 </Button>
               </>
             ) : (
@@ -80,12 +86,12 @@ export function LandingHeader() {
                     variant="ghost"
                     className="text-foreground text-sm sm:text-lg px-3 sm:px-5 hover:bg-primary/10"
                   >
-                    Iniciar Sesión
+                    {t('login')}
                   </Button>
                 </Link>
                 <Link href="/register">
                   <Button className="bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-sm sm:text-lg px-4 sm:px-6 py-5 sm:py-6 shadow-md shadow-primary/30 transition-all duration-300 active:scale-95">
-                    Comenzar
+                    {t('start')}
                   </Button>
                 </Link>
               </>
