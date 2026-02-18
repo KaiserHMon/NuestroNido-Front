@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
+import logo from '@/public/logo.png';
 import { useAuth } from '@/hooks/use-auth';
 import { useFamily } from '@/hooks/use-family';
 import { Button } from '@/components/ui/button';
@@ -82,7 +84,7 @@ export default function HomeSelectionPage() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <img src="/logo.png" alt="Cargando..." className="h-16 w-auto object-contain mx-auto mb-4 animate-pulse" />
+          <Image src={logo} alt="Cargando..." className="h-16 w-auto object-contain mx-auto mb-4 animate-pulse" />
           <p className="text-foreground">Cargando...</p>
         </div>
       </div>
@@ -99,7 +101,7 @@ export default function HomeSelectionPage() {
         <div className="container mx-auto px-4 sm:px-6 py-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <img src="/logo.png" alt="NuestroNido Logo" className="h-10 sm:h-12 w-auto object-contain" />
+              <Image src={logo} alt="NuestroNido Logo" className="h-10 sm:h-12 w-auto object-contain" />
             </div>
 
             <div className="flex items-center gap-2">
