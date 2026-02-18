@@ -8,6 +8,7 @@ import { TokenService } from '@/services/token-service';
 import { FamilyService } from '@/services/family-service';
 import { LevelService } from '@/services/level-service';
 import { UserService } from '@/services/user-service';
+import { subscribeToPushNotifications } from '@/services/push-notification-service';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -18,6 +19,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [levels, setLevels] = useState<Level[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Subscribe to push notifications when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Delay slightly to ensure browser is ready and not blocking initial load
+      const timer = setTimeout(() => {
+        subscribeToPushNotifications();
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated]);
 
   useEffect(() => {
     LevelService.getLevels().then(data => {
