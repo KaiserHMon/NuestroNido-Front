@@ -1,6 +1,10 @@
 import { TokenService } from '@/services/token-service';
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://nuestro-nido.onrender.com';
+if (!process.env.NEXT_PUBLIC_API_URL) {
+  throw new Error('NEXT_PUBLIC_API_URL environment variable is not set');
+}
+
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
@@ -48,7 +52,7 @@ export async function fetchClient<T>(endpoint: string, options: FetchOptions = {
 
   if (response.status === 401 && requiresAuth) {
     const refreshToken = TokenService.getRefreshToken();
-    
+
     if (refreshToken) {
       try {
         const refreshResponse = await fetch(`${API_BASE_URL}/api/v1/auth/refresh`, {
@@ -61,21 +65,22 @@ export async function fetchClient<T>(endpoint: string, options: FetchOptions = {
 
         if (refreshResponse.ok) {
           const data = await refreshResponse.json();
-          
+
           TokenService.setToken(data.access_token);
           if (data.refresh_token) {
             TokenService.setRefreshToken(data.refresh_token);
           }
 
           if (config.headers) {
-             (config.headers as Record<string, string>)['Authorization'] = `Bearer ${data.access_token}`;
+            (config.headers as Record<string, string>)['Authorization'] =
+              `Bearer ${data.access_token}`;
           }
-          
+
           const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, config);
-          
+
           if (!retryResponse.ok) {
-             const retryData = await retryResponse.json().catch(() => ({}));
-             throw new ApiError(retryResponse.status, retryResponse.statusText, retryData);
+            const retryData = await retryResponse.json().catch(() => ({}));
+            throw new ApiError(retryResponse.status, retryResponse.statusText, retryData);
           }
 
           return retryResponse.json() as T;
