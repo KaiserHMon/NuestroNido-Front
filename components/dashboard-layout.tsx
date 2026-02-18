@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Calendar, ShoppingCart, Users, StickyNote, Bird, LogOut, Home, Trash2, Settings } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { DeleteFamilyDialog } from '@/components/dialogs/delete-family-dialog';
 import { EditFamilyDialog } from '@/components/dialogs/edit-family-dialog';
@@ -59,7 +60,14 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <img src="/logo.png" alt="Cargando..." className="h-16 w-auto object-contain mx-auto mb-4 animate-pulse" />
+          <Image
+            src="/logo.png"
+            alt="Cargando..."
+            width={261}
+            height={64}
+            className="h-16 w-auto object-contain mx-auto mb-4 animate-pulse"
+            priority
+          />
           <p className="text-foreground">Cargando...</p>
         </div>
       </div>
@@ -72,7 +80,14 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
         <div className="container mx-auto px-4 sm:px-6 py-2">
           <div className="flex items-start justify-between w-full">
             <div className="flex items-center gap-3">
-              <img src="/logo.png" alt="NuestroNido Logo" className="h-8 sm:h-10 w-auto object-contain" />
+              <Image
+                src="/logo.png"
+                alt="NuestroNido Logo"
+                width={163}
+                height={40}
+                className="h-8 sm:h-10 w-auto object-contain"
+                priority
+              />
               <div className="hidden xs:block w-px h-6 bg-border/60 mx-1" />
               <p className="text-base sm:text-lg font-bold text-foreground leading-none truncate max-w-[150px] sm:max-w-[300px]">
                 {family.name}
