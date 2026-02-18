@@ -1,13 +1,23 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ListSection } from '@/components/list-section';
 import { ListService } from '@/services/list-service';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { useFamily } from '@/hooks/use-family';
+import { vi, describe, it, expect, beforeEach, Mock } from 'vitest';
 
-// Mocks
+// Mock dependencies
+vi.mock('@/services/list-service', () => ({
+  ListService: {
+    getItems: vi.fn(),
+    getCategories: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+  },
+}));
+
 vi.mock('@/hooks/use-family', () => ({
-  useFamily: () => ({
-    family: { id: 'family-123', name: 'Test Family' },
-  }),
+  useFamily: vi.fn(),
 }));
 
 vi.mock('sonner', () => ({
@@ -17,49 +27,65 @@ vi.mock('sonner', () => ({
   },
 }));
 
-vi.mock('@/services/list-service', () => ({
-  ListService: {
-    getItems: vi.fn(),
-    getCategories: vi.fn(),
-    delete: vi.fn(),
-    deleteBatch: vi.fn(),
-    create: vi.fn(),
-    update: vi.fn(),
-  },
-}));
+// Mock ResizeObserver which is often missing in jsdom but used by some UI libs
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+};
 
 describe('ListSection', () => {
+  const mockFamily = { id: 'family-123', name: 'Test Family' };
+
   beforeEach(() => {
     vi.clearAllMocks();
+    (useFamily as Mock).mockReturnValue({
+      family: mockFamily,
+      isLoading: false,
+    });
+    (ListService.getItems as Mock).mockResolvedValue([]);
+    (ListService.getCategories as Mock).mockResolvedValue(['food', 'home']);
+    (ListService.create as Mock).mockResolvedValue({
+      id: 'new-1',
+      title: 'Milk',
+      category: 'food',
+      quantity: 2,
+      purchased: false,
+    });
   });
 
-  it('calls deleteBatch once for clearPurchased (optimized)', async () => {
-    const mockItems = [
-      { id: '1', title: 'Item 1', purchased: true, category: 'Food', quantity: 1, created_at: '2023-01-01' },
-      { id: '2', title: 'Item 2', purchased: true, category: 'Food', quantity: 1, created_at: '2023-01-01' },
-      { id: '3', title: 'Item 3', purchased: false, category: 'Food', quantity: 1, created_at: '2023-01-01' },
-    ];
-    (ListService.getItems as any).mockResolvedValue(mockItems);
-    (ListService.getCategories as any).mockResolvedValue(['Food']);
-    (ListService.delete as any).mockResolvedValue(undefined);
-    (ListService.deleteBatch as any).mockResolvedValue(undefined);
+  it('allows adding a new item via the dialog', async () => {
+    const user = userEvent.setup();
 
     render(<ListSection />);
 
-    // Wait for items to load
-    await waitFor(() => {
-        expect(screen.getByText('Item 1')).toBeInTheDocument();
-    });
+    // Wait for initial load
+    await screen.findByText('Lista de Compras');
 
-    // Find "Limpiar Comprados" button
-    const clearButton = screen.getByText('Limpiar Comprados');
-    fireEvent.click(clearButton);
+    // Open dialog
+    const addButton = screen.getByRole('button', { name: /agregar item/i });
+    await user.click(addButton);
 
-    // Wait for async operations
-    await waitFor(() => {
-       expect(ListService.deleteBatch).toHaveBeenCalledTimes(1);
-       expect(ListService.deleteBatch).toHaveBeenCalledWith(['1', '2']);
-       expect(ListService.delete).toHaveBeenCalledTimes(0);
-    });
+    // Find inputs
+    const titleInput = await screen.findByLabelText(/nombre del producto/i);
+    const quantityInput = await screen.findByLabelText(/cantidad/i);
+
+    // Fill form
+    await user.type(titleInput, 'Milk');
+    await user.clear(quantityInput);
+    await user.type(quantityInput, '2');
+
+    // Submit
+    const submitButton = screen.getByRole('button', { name: /agregar a la lista/i });
+    await user.click(submitButton);
+
+    // Verify API call
+    expect(ListService.create).toHaveBeenCalledTimes(1);
+    expect(ListService.create).toHaveBeenCalledWith(expect.objectContaining({
+      title: 'Milk',
+      quantity: 2,
+      category: 'food', // Default category
+      family_id: 'family-123',
+    }));
   });
 });

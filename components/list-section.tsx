@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback, ChangeEvent, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Plus, Check, X, ShoppingBasket, Pill, Home, Wrench, Sparkles, ShoppingCart, Dog } from 'lucide-react';
+import { Plus, Check, X } from 'lucide-react';
+import { getCategoryIcon, getCategoryLabel } from '@/lib/category-utils';
+import { AddItemForm } from '@/components/add-item-form';
 import {
   Dialog,
   DialogContent,
@@ -14,35 +14,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ListService, ListItem } from '@/services/list-service';
 import { useFamily } from '@/hooks/use-family';
 import { toast } from 'sonner';
 import { SectionSkeleton } from '@/components/ui/section-skeleton';
-
-const getCategoryIcon = (categoryName: string | undefined) => {
-  const lower = (categoryName || '').toLowerCase();
-  if (lower.includes('aliment') || lower.includes('comida')) return ShoppingBasket;
-  if (lower.includes('farmacia') || lower.includes('medicin')) return Pill;
-  if (lower.includes('ferreter') || lower.includes('herramient')) return Wrench;
-  if (lower.includes('limpieza') || lower.includes('aseo')) return Sparkles;
-  if (lower.includes('hogar') || lower.includes('casa')) return Home;
-  if (lower.includes('mascota') || lower.includes('perro') || lower.includes('gato')) return Dog;
-  return ShoppingCart;
-};
-
-const getCategoryLabel = (categoryValue: string | undefined) => {
-  if (!categoryValue) return '';
-  return categoryValue.charAt(0).toUpperCase() + categoryValue.slice(1);
-};
 
 export function ListSection() {
   const { family } = useFamily();
@@ -52,12 +29,6 @@ export function ListSection() {
   const [activeCategory, setActiveCategory] = useState('all');
   const [lastActionMsg, setLastActionMsg] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const [newItem, setNewItem] = useState({
-    title: '',
-    category: '',
-    quantity: '1',
-  });
 
   const fetchItems = useCallback(async () => {
     if (!family) return;
@@ -102,15 +73,15 @@ export function ListSection() {
     [items]
   );
 
-  const handleAddItem = useCallback(async () => {
+  const handleAddItem = useCallback(async (newItemData: { title: string; category: string; quantity: string }) => {
     if (!family) return;
 
-    const cleanTitle = newItem.title
+    const cleanTitle = newItemData.title
       .replace(/\s{2,}/g, ' ')
       .trim()
       .slice(0, 100);
-    const categoryToUse = newItem.category || categories[0] || '';
-    const cleanQuantity = parseInt(newItem.quantity.trim().slice(0, 50)) || 1;
+    const categoryToUse = newItemData.category || categories[0] || '';
+    const cleanQuantity = parseInt(newItemData.quantity.trim().slice(0, 50)) || 1;
 
     if (cleanTitle && categoryToUse) {
       try {
@@ -123,7 +94,6 @@ export function ListSection() {
         });
 
         setItems((prev) => [...prev, createdItem]);
-        setNewItem({ title: '', category: categories[0] || '', quantity: '1' });
         setDialogOpen(false);
         setLastActionMsg('Item added to list');
         setTimeout(() => setLastActionMsg(''), 1500);
@@ -131,9 +101,10 @@ export function ListSection() {
       } catch (error) {
         console.error('Error creating item:', error);
         toast.error('Error al crear el producto');
+        throw error;
       }
     }
-  }, [newItem, family, categories]);
+  }, [family, categories]);
 
   const togglePurchased = useCallback(async (item: ListItem) => {
     setItems((prev) =>
@@ -224,62 +195,7 @@ export function ListSection() {
                 <DialogTitle>Agregar Item a la Lista</DialogTitle>
                 <DialogDescription>Añade un nuevo producto a tu lista de compras</DialogDescription>
               </DialogHeader>
-              <div className="space-y-4 pt-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Nombre del producto</Label>
-                  <Input
-                    id="title"
-                    placeholder="Ej: Leche"
-                    value={newItem.title}
-                    onChange={(e) => setNewItem({ ...newItem, title: e.target.value })}
-                    onKeyDown={(e) => e.key === 'Enter' && handleAddItem()}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="category">Categoría</Label>
-                  <Select
-                    value={newItem.category}
-                    onValueChange={(value) => setNewItem({ ...newItem, category: value })}
-                  >
-                    <SelectTrigger id="category">
-                      <SelectValue placeholder="Selecciona una categoría" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((cat) => {
-                        const Icon = getCategoryIcon(cat);
-                        return (
-                          <SelectItem key={cat} value={cat}>
-                            <div className="flex items-center gap-2">
-                              <Icon className="w-4 h-4" aria-hidden="true" />
-                              {getCategoryLabel(cat)}
-                            </div>
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="quantity">Cantidad</Label>
-                  <Input
-                    id="quantity"
-                    placeholder="Ej: 1"
-                    type="number"
-                    value={newItem.quantity}
-                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setNewItem((prev) => ({ ...prev, quantity: e.target.value.slice(0, 50) }))
-                    }
-                    aria-label="Cantidad del producto"
-                    maxLength={50}
-                  />
-                </div>
-
-                <Button onClick={handleAddItem} className="w-full">
-                  Agregar a la Lista
-                </Button>
-              </div>
+              <AddItemForm categories={categories} onAddItem={handleAddItem} />
             </DialogContent>
           </Dialog>
         </div>
