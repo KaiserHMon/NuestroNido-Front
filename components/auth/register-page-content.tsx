@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 import { Bird } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import { useAuth } from '@/hooks/use-auth';
@@ -34,7 +35,10 @@ export function RegisterPageContent() {
   const searchParams = useSearchParams();
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { family, isLoading: familyLoading } = useFamily();
-  const [inviteInfo, setInviteInfo] = useState<{ family_name: string; inviter_name: string | null } | null>(null);
+  const [inviteInfo, setInviteInfo] = useState<{
+    family_name: string;
+    inviter_name: string | null;
+  } | null>(null);
 
   useEffect(() => {
     const code = searchParams.get('code');
@@ -47,7 +51,7 @@ export function RegisterPageContent() {
       // Try to fetch info to show a friendly message
       FamilyService.getInvitationInfo(invite)
         .then(setInviteInfo)
-        .catch(err => console.error('Could not fetch invite info', err));
+        .catch((err) => console.error('Could not fetch invite info', err));
     }
   }, [searchParams]);
 
@@ -70,7 +74,14 @@ export function RegisterPageContent() {
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
           <div className="flex items-center justify-center mb-2">
-            <img src="/logo.png" alt="NuestroNido Logo" className="h-16 w-auto object-contain" />
+            <Image
+              src="/logo.png"
+              alt="NuestroNido Logo"
+              width={1161}
+              height={285}
+              className="h-16 w-auto object-contain"
+              priority
+            />
           </div>
           <h2 className="text-lg font-semibold text-foreground mb-1">Crear Cuenta</h2>
           <p className="text-muted-foreground text-xs sm:text-sm">
@@ -82,7 +93,8 @@ export function RegisterPageContent() {
           <Alert className="mb-6 bg-primary/5 border-primary/20">
             <Bird className="h-4 w-4 text-primary" />
             <AlertDescription className="text-sm text-foreground">
-              Te estás registrando para unirte a la familia <strong>{inviteInfo.family_name}</strong>
+              Te estás registrando para unirte a la familia{' '}
+              <strong>{inviteInfo.family_name}</strong>
               {inviteInfo.inviter_name && <span> invitada por {inviteInfo.inviter_name}</span>}.
             </AlertDescription>
           </Alert>
