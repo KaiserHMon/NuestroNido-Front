@@ -3,76 +3,32 @@
  * Manages API calls for login and registration.
  */
 
-import { User, ApiResponse, Family } from '@/lib/types';
+import { User, ApiResponse } from '@/lib/types';
 import { fetchClient, ApiError } from '@/lib/api-client';
 import { TokenService } from './token-service';
-import { parseJwt } from '@/lib/jwt-utils';
-import { UserService } from './user-service';
 
-interface TokenResponse {
-  access_token: string;
-  token_type: string;
-  refresh_token: string;
-  expires_in: number;
+interface AuthResponse {
+  user: User;
 }
 
 export const AuthService = {
   async login(
     email: string,
     password: string
-  ): Promise<ApiResponse<{ token: string; user: User }>> {
+  ): Promise<ApiResponse<{ user: User }>> {
     try {
-      const tokenData = await fetchClient<TokenResponse>('/api/v1/auth/login', {
+      const data = await fetchClient<AuthResponse>('/api/v1/auth/login', {
         method: 'POST',
         body: { email, password },
         requiresAuth: false,
       });
 
-      const token = tokenData.access_token;
-      TokenService.setToken(token);
-
-      if (tokenData.refresh_token) {
-        TokenService.setRefreshToken(tokenData.refresh_token);
-      }
-
-      const decoded = parseJwt(token);
-      if (!decoded || !decoded.sub) {
-        throw new Error('Invalid token');
-      }
-
-      const userId = decoded.sub;
-
-      const [userResponse, familyResponse] = await Promise.allSettled([
-        UserService.getUser(userId),
-        fetchClient<Family>('/api/v1/families/me'),
-      ]);
-
-      let userData: User;
-
-      if (userResponse.status === 'fulfilled') {
-        userData = {
-          ...userResponse.value,
-        };
-      } else {
-        userData = {
-          id: userId,
-          name: email.split('@')[0],
-          experience_points: 0,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
-      }
-
-      if (familyResponse.status === 'fulfilled' && familyResponse.value) {
-        userData.familyId = familyResponse.value.id;
-      }
-
+      const userData = data.user;
       TokenService.setUser(userData);
 
       return {
         success: true,
         data: {
-          token,
           user: userData,
         },
       };
@@ -92,9 +48,9 @@ export const AuthService = {
     name: string,
     email: string,
     password: string
-  ): Promise<ApiResponse<{ token: string; user: User }>> {
+  ): Promise<ApiResponse<{ user: User }>> {
     try {
-      await fetchClient('/api/v1/auth/signup', {
+      const data = await fetchClient<AuthResponse>('/api/v1/auth/signup', {
         method: 'POST',
         body: {
           email,
@@ -104,7 +60,15 @@ export const AuthService = {
         requiresAuth: false,
       });
 
-      return this.login(email, password);
+      const userData = data.user;
+      TokenService.setUser(userData);
+
+      return {
+        success: true,
+        data: {
+          user: userData,
+        },
+      };
     } catch (error) {
       console.error('Register error:', error);
       let message = 'Error al registrar usuario';
@@ -127,6 +91,19 @@ export const AuthService = {
           message,
         },
       };
+    }
+  },
+
+  async logout(): Promise<void> {
+    try {
+      await fetchClient('/api/v1/auth/logout', {
+        method: 'POST',
+        requiresAuth: true,
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      TokenService.clearSession();
     }
   },
 };

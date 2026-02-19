@@ -17,6 +17,31 @@ interface ApiUserResponse {
 }
 
 export const UserService = {
+  async getMe(): Promise<User> {
+    const response = await fetchClient<ApiUserResponse>('/api/v1/users/me');
+    const colorData = mapColor(response.color, response.id);
+    const levelData = response.level;
+
+    return {
+      id: response.id,
+      name: response.name,
+      familyId: undefined, // Will be filled if needed or fetched separately
+      color: colorData,
+      experience_points: response.experience_points || 0,
+      level: levelData
+        ? {
+            id: levelData.id,
+            name: levelData.name,
+            level_number: levelData.level_number,
+            required_progress: levelData.required_progress,
+            image_url: levelData.image_url,
+          }
+        : undefined,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+  },
+
   async getUser(userId: string): Promise<User> {
     const response = await fetchClient<ApiUserResponse>(`/api/v1/users/${userId}`);
     const colorData = mapColor(response.color, response.id);

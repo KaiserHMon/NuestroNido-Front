@@ -1,51 +1,32 @@
 import { User } from '@/lib/types';
 
-const TOKEN_KEY = 'auth_token';
-const REFRESH_TOKEN_KEY = 'refresh_token';
 const USER_KEY = 'user_data';
 const FAMILY_KEY = 'family_data';
 
 export const TokenService = {
+  // Access tokens are now managed via HttpOnly cookies by the browser
   getToken(): string | null {
-    if (typeof window === 'undefined') return null;
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (token === 'undefined' || token === 'null' || !token) {
-      if (token) localStorage.removeItem(TOKEN_KEY);
-      return null;
-    }
-    return token;
+    return null;
   },
 
-  setToken(token: string): void {
-    if (typeof window === 'undefined' || !token || token === 'undefined' || token === 'null')
-      return;
-    localStorage.setItem(TOKEN_KEY, token);
+  setToken(_token: string): void {
+    // No-op: handled by browser cookies
   },
 
   removeToken(): void {
-    if (typeof window === 'undefined') return;
-    localStorage.removeItem(TOKEN_KEY);
+    // No-op: handled by browser cookies
   },
 
   getRefreshToken(): string | null {
-    if (typeof window === 'undefined') return null;
-    const token = localStorage.getItem(REFRESH_TOKEN_KEY);
-    if (token === 'undefined' || token === 'null' || !token) {
-      if (token) localStorage.removeItem(REFRESH_TOKEN_KEY);
-      return null;
-    }
-    return token;
+    return null;
   },
 
-  setRefreshToken(token: string): void {
-    if (typeof window === 'undefined' || !token || token === 'undefined' || token === 'null')
-      return;
-    localStorage.setItem(REFRESH_TOKEN_KEY, token);
+  setRefreshToken(_token: string): void {
+    // No-op: handled by browser cookies
   },
 
   removeRefreshToken(): void {
-    if (typeof window === 'undefined') return;
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
+    // No-op: handled by browser cookies
   },
 
   getUser(): User | null {
@@ -75,8 +56,8 @@ export const TokenService = {
 
   clearSession(): void {
     if (typeof window === 'undefined') return;
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('refresh_token');
     localStorage.removeItem(USER_KEY);
     localStorage.removeItem(FAMILY_KEY);
     localStorage.removeItem('auth_storage');

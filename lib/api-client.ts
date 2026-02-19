@@ -33,18 +33,13 @@ export async function fetchClient<T>(endpoint: string, options: FetchOptions = {
 
   const config: RequestInit = {
     method,
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
       ...headers,
     },
   };
-
-  if (requiresAuth) {
-    const token = TokenService.getToken();
-    if (token) {
-      (config.headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
-    }
-  }
 
   if (body) {
     config.body = JSON.stringify(body);
@@ -53,43 +48,28 @@ export async function fetchClient<T>(endpoint: string, options: FetchOptions = {
   const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
   if (response.status === 401 && requiresAuth) {
-    const refreshToken = TokenService.getRefreshToken();
+    try {
+      const refreshResponse = await fetch(`${API_BASE_URL}/api/v1/auth/refresh`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+      });
 
-    if (refreshToken) {
-      try {
-        const refreshResponse = await fetch(`${API_BASE_URL}/api/v1/auth/refresh`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ refresh_token: refreshToken }),
-        });
+      if (refreshResponse.ok) {
+        const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
-        if (refreshResponse.ok) {
-          const data = await refreshResponse.json();
-
-          TokenService.setToken(data.access_token);
-          if (data.refresh_token) {
-            TokenService.setRefreshToken(data.refresh_token);
-          }
-
-          if (config.headers) {
-            (config.headers as Record<string, string>)['Authorization'] =
-              `Bearer ${data.access_token}`;
-          }
-
-          const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, config);
-
-          if (!retryResponse.ok) {
-            const retryData = await retryResponse.json().catch(() => ({}));
-            throw new ApiError(retryResponse.status, retryResponse.statusText, retryData);
-          }
-
-          return retryResponse.json() as T;
+        if (!retryResponse.ok) {
+          const retryData = await retryResponse.json().catch(() => ({}));
+          throw new ApiError(retryResponse.status, retryResponse.statusText, retryData);
         }
-      } catch (error) {
-        console.error('Error refreshing token:', error);
+
+        return retryResponse.json() as T;
       }
+    } catch (error) {
+      console.error('Error refreshing token:', error);
     }
 
     TokenService.clearSession();

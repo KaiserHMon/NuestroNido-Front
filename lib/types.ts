@@ -284,13 +284,12 @@ export interface ApiResponse<T> {
 export interface AuthContextType {
   user: User | null;
   family: Family | null;
-  token: string | null;
   levels: Level[];
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   createFamily: (name: string) => Promise<void>;
   joinFamily: (code: string) => Promise<void>;
   joinByLink: (token: string) => Promise<void>;

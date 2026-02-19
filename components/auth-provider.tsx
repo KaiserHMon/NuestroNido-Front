@@ -1,6 +1,5 @@
 'use client';
 
-/* global StorageEvent */
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { User, AuthContextType, Family, Level } from '@/lib/types';
 import { AuthService } from '@/services/auth-service';
@@ -14,7 +13,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [family, setFamily] = useState<Family | null>(null);
   const [levels, setLevels] = useState<Level[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -23,7 +21,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Subscribe to push notifications when authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      // Delay slightly to ensure browser is ready and not blocking initial load
       const timer = setTimeout(() => {
         subscribeToPushNotifications();
       }, 2000);
@@ -42,20 +39,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkSession = useCallback(async () => {
     try {
-      const storedToken = TokenService.getToken();
+      // First check if there's a cached user to avoid showing a blank screen
       const storedUser = TokenService.getUser();
-
-      if (storedToken && storedUser) {
-        setToken(storedToken);
+      if (storedUser) {
         setUser(storedUser);
         setIsAuthenticated(true);
+      }
+
+      // Re-validate session with backend
+      const me = await UserService.getMe();
+      if (me) {
+        setUser(me);
+        setIsAuthenticated(true);
+        TokenService.setUser(me);
 
         try {
           const fam = await FamilyService.getMyFamily();
           if (fam) {
             setFamily(fam);
-            if (!storedUser.familyId) {
-              const updatedUser = { ...storedUser, familyId: fam.id };
+            if (!me.familyId) {
+              const updatedUser = { ...me, familyId: fam.id };
               setUser(updatedUser);
               TokenService.setUser(updatedUser);
             }
@@ -68,13 +71,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         TokenService.clearSession();
         setUser(null);
-        setToken(null);
         setFamily(null);
         setIsAuthenticated(false);
       }
     } catch (error) {
+      // If 401, clear session. Other errors might be network issues.
+      const status = error && typeof error === 'object' && 'status' in error ? error.status : null;
+      if (status === 401) {
+        TokenService.clearSession();
+        setUser(null);
+        setFamily(null);
+        setIsAuthenticated(false);
+      }
       console.error('Error checking session:', error);
-      TokenService.clearSession();
     } finally {
       setIsLoading(false);
     }
@@ -87,27 +96,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const performLogout = () => {
       setUser(null);
-      setToken(null);
       setFamily(null);
       setIsAuthenticated(false);
-    };
-
-    const handleStorageChange = (e: Event) => {
-      const storageEvent = e as StorageEvent;
-      if (storageEvent.key === 'auth_token' && !storageEvent.newValue) {
-        performLogout();
-      }
     };
 
     const handleAuthLogout = () => {
       performLogout();
     };
 
-    window.addEventListener('storage', handleStorageChange);
     window.addEventListener('auth-logout', handleAuthLogout);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('auth-logout', handleAuthLogout);
     };
   }, []);
@@ -115,8 +114,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     const response = await AuthService.login(email, password);
     if (response.success && response.data) {
-      const { token: newToken, user: newUser } = response.data;
-      setToken(newToken);
+      const { user: newUser } = response.data;
       setUser(newUser);
       setIsAuthenticated(true);
 
@@ -134,8 +132,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const register = useCallback(async (name: string, email: string, password: string) => {
     const response = await AuthService.register(name, email, password);
     if (response.success && response.data) {
-      const { token: newToken, user: newUser } = response.data;
-      setToken(newToken);
+      const { user: newUser } = response.data;
       setUser(newUser);
       setIsAuthenticated(true);
       setFamily(null);
@@ -144,10 +141,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const logout = useCallback(() => {
-    TokenService.clearSession();
+  const logout = useCallback(async () => {
+    await AuthService.logout();
     setUser(null);
-    setToken(null);
     setFamily(null);
     setIsAuthenticated(false);
   }, []);
@@ -156,12 +152,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     async (name: string) => {
       try {
         const newFam = await FamilyService.create(name);
-        // Force refresh to get latest state from DB
         const refreshedFam = await FamilyService.getMyFamily(true);
         setFamily(refreshedFam || newFam);
 
         if (user) {
-          const updatedUserFromApi = await UserService.getUser(user.id);
+          const updatedUserFromApi = await UserService.getMe();
           const userWithFamily = { ...updatedUserFromApi, familyId: (refreshedFam || newFam).id };
           setUser(userWithFamily);
           TokenService.setUser(userWithFamily);
@@ -181,7 +176,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const refreshedFam = await FamilyService.getMyFamily(true);
         setFamily(refreshedFam || newFam);
         if (user) {
-          const updatedUserFromApi = await UserService.getUser(user.id);
+          const updatedUserFromApi = await UserService.getMe();
           const userWithFamily = { ...updatedUserFromApi, familyId: (refreshedFam || newFam).id };
           setUser(userWithFamily);
           TokenService.setUser(userWithFamily);
@@ -196,7 +191,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (fam) {
             setFamily(fam);
             if (user) {
-              const updatedUserFromApi = await UserService.getUser(user.id);
+              const updatedUserFromApi = await UserService.getMe();
               const userWithFamily = { ...updatedUserFromApi, familyId: fam.id };
               setUser(userWithFamily);
               TokenService.setUser(userWithFamily);
@@ -217,7 +212,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const refreshedFam = await FamilyService.getMyFamily(true);
         setFamily(refreshedFam || newFam);
         if (user) {
-          const updatedUserFromApi = await UserService.getUser(user.id);
+          const updatedUserFromApi = await UserService.getMe();
           const userWithFamily = { ...updatedUserFromApi, familyId: (refreshedFam || newFam).id };
           setUser(userWithFamily);
           TokenService.setUser(userWithFamily);
@@ -232,7 +227,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (fam) {
             setFamily(fam);
             if (user) {
-              const updatedUserFromApi = await UserService.getUser(user.id);
+              const updatedUserFromApi = await UserService.getMe();
               const userWithFamily = { ...updatedUserFromApi, familyId: fam.id };
               setUser(userWithFamily);
               TokenService.setUser(userWithFamily);
@@ -277,7 +272,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
-        token,
         isAuthenticated,
         isLoading,
         family,

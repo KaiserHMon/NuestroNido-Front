@@ -25,7 +25,7 @@ describe('ChartStyle Security', () => {
   it('escapes malicious content in id', () => {
     const maliciousId = 'foo"] { color: red; } [data-chart="bar';
     const config = { test: { color: 'red' } };
-    const html = renderToStaticMarkup(<ChartStyle id={maliciousId} config={config} />);
+    renderToStaticMarkup(<ChartStyle id={maliciousId} config={config} />);
 
     // We expect the ID to be escaped, so it shouldn't close the attribute selector
     // The exact output depends on implementation, but it should NOT look like:
@@ -42,18 +42,18 @@ describe('ChartStyle Security', () => {
   it('escapes malicious content in config key', () => {
     const maliciousKey = 'test: red; } body { background: yellow; } .foo { --color-bar';
     const config = { [maliciousKey]: { color: 'blue' } };
-    const html = renderToStaticMarkup(<ChartStyle id="safe" config={config} />);
+    const htmlOutput = renderToStaticMarkup(<ChartStyle id="safe" config={config} />);
 
     // Should not break out of the rule
-    expect(html).not.toContain('} body {');
+    expect(htmlOutput).not.toContain('} body {');
   });
 
   it('escapes malicious content in color value', () => {
     const maliciousColor = 'red; } body { background: yellow; }';
     const config = { test: { color: maliciousColor } };
-    const html = renderToStaticMarkup(<ChartStyle id="safe" config={config} />);
+    const output = renderToStaticMarkup(<ChartStyle id="safe" config={config} />);
 
-    expect(html).not.toContain('} body {');
+    expect(output).not.toContain('} body {');
   });
 
   it('escapes </style>', () => {
