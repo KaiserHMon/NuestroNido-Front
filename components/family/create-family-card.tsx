@@ -43,10 +43,14 @@ export function CreateFamilyCard({ onSuccess }: CreateFamilyCardProps) {
       }
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Error al crear la familia';
-      
+
       if (
-        message.includes('User already belongs to a family') || 
-        (err && typeof err === 'object' && 'response' in err && (err as { response?: { status: number } }).response?.status === 400 && message.includes('belongs to a family'))
+        message.includes('User already belongs to a family') ||
+        (err &&
+          typeof err === 'object' &&
+          'response' in err &&
+          (err as { response?: { status: number } }).response?.status === 400 &&
+          message.includes('belongs to a family'))
       ) {
         router.push('/dashboard');
         return;

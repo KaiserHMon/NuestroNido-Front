@@ -35,11 +35,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useFamily } from '@/hooks/use-family';
 import { toast } from 'sonner';
 import { SectionSkeleton } from '@/components/ui/section-skeleton';
-
-interface ColorDot {
-  bg: string;
-  name: string;
-}
+import { CalendarGrid, ColorDot } from '@/components/calendar-grid';
 
 interface CreateTaskFormValues {
   title: string;
@@ -83,11 +79,11 @@ export function CalendarSection() {
           if (t.recurrence_type === 'daily') frequency = 'daily';
           else if (t.recurrence_type === 'weekly') frequency = 'weekly';
           else if (t.recurrence_type === 'monthly') frequency = 'monthly';
-          
+
           return {
             id: t.id,
             title: t.title,
-            dateType: dateType, 
+            dateType: dateType,
             date: t.due_date,
             endDate: t.end_date || undefined,
             frequency: frequency,
@@ -133,7 +129,8 @@ export function CalendarSection() {
 
     if (task.recurrence_type === 'none') return isSameDay(new Date(task.date!), day);
     if (task.recurrence_type === 'daily') return true;
-    if (task.recurrence_type === 'weekly' && task.daysOfWeek) return task.daysOfWeek.includes(dayOfWeek);
+    if (task.recurrence_type === 'weekly' && task.daysOfWeek)
+      return task.daysOfWeek.includes(dayOfWeek);
     if (task.recurrence_type === 'monthly') return new Date(task.date!).getDate() === day.getDate();
 
     return false;
@@ -141,31 +138,38 @@ export function CalendarSection() {
 
   const monthStart = useMemo(() => startOfMonth(currentMonth), [currentMonth]);
   const monthEnd = useMemo(() => endOfMonth(currentMonth), [currentMonth]);
-  const daysInMonth = useMemo(() => eachDayOfInterval({
-    start: monthStart,
-    end: monthEnd,
-  }), [monthStart, monthEnd]);
+  const daysInMonth = useMemo(
+    () =>
+      eachDayOfInterval({
+        start: monthStart,
+        end: monthEnd,
+      }),
+    [monthStart, monthEnd]
+  );
 
   const tasksByDay = useMemo(() => {
     const map = new Map<string, Task[]>();
-    daysInMonth.forEach(day => {
+    daysInMonth.forEach((day) => {
       const key = format(day, 'yyyy-MM-dd');
-      const filtered = tasks.filter(t => isTaskOnDay(t, day));
+      const filtered = tasks.filter((t) => isTaskOnDay(t, day));
       if (filtered.length > 0) map.set(key, filtered);
     });
     return map;
   }, [tasks, daysInMonth, isTaskOnDay]);
 
-  const getColorsForDay = useCallback((day: Date): ColorDot[] => {
-    const key = format(day, 'yyyy-MM-dd');
-    const dayTasks = tasksByDay.get(key) || [];
-    const colors = new Map<string, ColorDot>();
-    dayTasks.forEach((task) => {
-      const bg = task.creatorColor.bg;
-      if (!colors.has(bg)) colors.set(bg, { bg, name: task.creatorColor.name });
-    });
-    return Array.from(colors.values());
-  }, [tasksByDay]);
+  const getColorsForDay = useCallback(
+    (day: Date): ColorDot[] => {
+      const key = format(day, 'yyyy-MM-dd');
+      const dayTasks = tasksByDay.get(key) || [];
+      const colors = new Map<string, ColorDot>();
+      dayTasks.forEach((task) => {
+        const bg = task.creatorColor.bg;
+        if (!colors.has(bg)) colors.set(bg, { bg, name: task.creatorColor.name });
+      });
+      return Array.from(colors.values());
+    },
+    [tasksByDay]
+  );
 
   const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
   const prevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
@@ -180,7 +184,8 @@ export function CalendarSection() {
     let end_date = null;
     const baseDate = data.date || new Date();
     if (data.recurrence === 'once') {
-      if (recurrence_type === 'weekly') end_date = endOfWeek(baseDate, { weekStartsOn: 1 }).toISOString();
+      if (recurrence_type === 'weekly')
+        end_date = endOfWeek(baseDate, { weekStartsOn: 1 }).toISOString();
       else end_date = due_date;
     } else if (data.recurrence === 'yearly') {
       const yearEnd = new Date(baseDate.getFullYear(), 11, 31, 23, 59, 59, 999);
@@ -193,7 +198,8 @@ export function CalendarSection() {
         family_id: family.id,
         assigned_to_user_id: data.assignedTo || user.id,
         recurrence_type: recurrence_type,
-        week_days: data.dateType === 'days' && data.daysOfWeek ? data.daysOfWeek.join(',') : undefined,
+        week_days:
+          data.dateType === 'days' && data.daysOfWeek ? data.daysOfWeek.join(',') : undefined,
         status: 'pending',
         due_date: due_date,
         end_date: end_date || undefined,
@@ -217,7 +223,8 @@ export function CalendarSection() {
     let end_date = null;
     const baseDate = data.date || new Date();
     if (data.recurrence === 'once') {
-      if (recurrence_type === 'weekly') end_date = endOfWeek(baseDate, { weekStartsOn: 1 }).toISOString();
+      if (recurrence_type === 'weekly')
+        end_date = endOfWeek(baseDate, { weekStartsOn: 1 }).toISOString();
       else end_date = due_date;
     } else if (data.recurrence === 'yearly') {
       const yearEnd = new Date(baseDate.getFullYear(), 11, 31, 23, 59, 59, 999);
@@ -229,7 +236,8 @@ export function CalendarSection() {
         title: data.title,
         assigned_to_user_id: data.assignedTo,
         recurrence_type: recurrence_type,
-        week_days: data.dateType === 'days' && data.daysOfWeek ? data.daysOfWeek.join(',') : undefined,
+        week_days:
+          data.dateType === 'days' && data.daysOfWeek ? data.daysOfWeek.join(',') : undefined,
         status: taskToEdit.completed ? 'completed' : 'pending',
         due_date: due_date,
         end_date: end_date || undefined,
@@ -294,21 +302,40 @@ export function CalendarSection() {
 
       <Tabs defaultValue="calendario" className="w-full">
         <TabsList className="grid w-full grid-cols-2 bg-muted">
-          <TabsTrigger value="calendario" className="text-sm">Calendario de Tareas</TabsTrigger>
-          <TabsTrigger value="mis-tareas" className="text-sm">Nuestras Tareas</TabsTrigger>
+          <TabsTrigger value="calendario" className="text-sm">
+            Calendario de Tareas
+          </TabsTrigger>
+          <TabsTrigger value="mis-tareas" className="text-sm">
+            Nuestras Tareas
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="calendario" className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <TabsContent
+          value="calendario"
+          className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300"
+        >
           <Card className="bg-card border border-border">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
-                <Button variant="ghost" size="sm" onClick={prevMonth} className="h-8 w-8 p-0" aria-label="Mes anterior">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={prevMonth}
+                  className="h-8 w-8 p-0"
+                  aria-label="Mes anterior"
+                >
                   <ChevronLeft className="w-4 h-4" />
                 </Button>
                 <CardTitle className="text-sm capitalize">
                   {format(currentMonth, "MMMM 'de' yyyy", { locale: es })}
                 </CardTitle>
-                <Button variant="ghost" size="sm" onClick={nextMonth} className="h-8 w-8 p-0" aria-label="Mes siguiente">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={nextMonth}
+                  className="h-8 w-8 p-0"
+                  aria-label="Mes siguiente"
+                >
                   <ChevronRight className="w-4 h-4" />
                 </Button>
               </div>
@@ -329,48 +356,25 @@ export function CalendarSection() {
                   </div>
                 </div>
               )}
-              <div className="grid grid-cols-7 gap-0.5 mb-2">
-                {['D', 'L', 'M', 'X', 'J', 'V', 'S'].map((dia) => (
-                  <div key={dia} className="text-center text-xs font-semibold text-muted-foreground p-1">{dia}</div>
-                ))}
-              </div>
-              <div className="grid grid-cols-7 gap-0.5">
-                {Array.from({ length: monthStart.getDay() }).map((_, i) => (
-                  <div key={`empty-${i}`} className="h-12 sm:h-14 rounded-sm p-1 bg-muted/20" />
-                ))}
-                {daysInMonth.map((day) => {
-                  const dayColors = getColorsForDay(day);
-                  const isToday = isSameDay(day, new Date());
-                  const isSelected = selectedDate && isSameDay(day, selectedDate);
-                  const hasEvents = dayColors.length > 0;
-                  return (
-                    <button
-                      key={day.toISOString()}
-                      onClick={() => setSelectedDate(day)}
-                      className={`min-h-[48px] sm:h-28 rounded-md transition-all relative flex flex-col items-center sm:items-start justify-center sm:justify-start p-1 sm:p-2 border ${isSelected ? 'border-primary ring-1 ring-primary bg-primary/10 scale-[1.02] z-10' : isToday ? 'border-primary/40 bg-primary/5' : 'border-transparent sm:border-border hover:bg-muted/50'} ${hasEvents && !isSelected ? 'sm:bg-primary/5' : ''}`}
-                    >
-                      <div className={`text-sm sm:text-xs font-bold Gabriel leading-none mb-1 ${isToday ? 'text-primary' : 'text-foreground'} ${isSelected ? 'text-primary' : ''}`}>{format(day, 'd')}</div>
-                      {hasEvents ? (
-                        <div className="flex flex-wrap gap-0.5 sm:gap-1 mt-auto sm:mt-1 w-full justify-center sm:justify-start overflow-hidden">
-                          {dayColors.slice(0, 4).map((color, idx) => (
-                            <div key={`${color.bg}-${idx}`} className="w-1.5 h-1.5 sm:w-2.5 sm:h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color.bg }} />
-                          ))}
-                          {dayColors.length > 4 ? <span className="text-[8px] sm:text-[10px] text-muted-foreground leading-none self-center font-bold">+</span> : null}
-                        </div>
-                      ) : <div className="h-1.5 sm:h-2.5" />}
-                    </button>
-                  );
-                })}
-              </div>
+              <CalendarGrid
+                daysInMonth={daysInMonth}
+                startOffset={monthStart.getDay()}
+                selectedDate={selectedDate}
+                onSelectDate={setSelectedDate}
+                getColorsForDay={getColorsForDay}
+              />
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="mis-tareas" className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <TabsContent
+          value="mis-tareas"
+          className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300"
+        >
           <Card className="bg-card border border-border">
             <CardContent className="p-4">
-              <TasksTab 
-                tasks={tasks} 
+              <TasksTab
+                tasks={tasks}
                 members={family?.members || []}
                 initialFilter="unicas"
                 onEdit={handleEditTask}
@@ -405,7 +409,9 @@ export function CalendarSection() {
                 dateType: taskToEdit.dateType || 'date',
                 date: taskToEdit.date ? new Date(taskToEdit.date) : undefined,
                 daysOfWeek: taskToEdit.daysOfWeek,
-                recurrence: (taskToEdit.frequency === 'weekly' || !taskToEdit.frequency ? 'once' : taskToEdit.frequency) as 'once' | 'monthly' | 'yearly',
+                recurrence: (taskToEdit.frequency === 'weekly' || !taskToEdit.frequency
+                  ? 'once'
+                  : taskToEdit.frequency) as 'once' | 'monthly' | 'yearly',
                 assignedTo: taskToEdit.creatorId,
               }
             : undefined
@@ -418,11 +424,18 @@ export function CalendarSection() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-            <AlertDialogDescription>Esta acción no se puede deshacer. La tarea será eliminada permanentemente.</AlertDialogDescription>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. La tarea será eliminada permanentemente.
+            </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteTask} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Eliminar</AlertDialogAction>
+            <AlertDialogAction
+              onClick={handleDeleteTask}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Eliminar
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

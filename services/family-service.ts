@@ -35,7 +35,11 @@ function mapApiFamilyToFamily(apiFamily: ApiFamily, members: Member[] = []): Fam
   return {
     id: apiFamily.id,
     name: apiFamily.name,
-    invitationCode: apiFamily.invitation_code || ((apiFamily as unknown as Record<string, unknown>).invitationCode as string) || ((apiFamily as unknown as Record<string, unknown>).code as string) || '',
+    invitationCode:
+      apiFamily.invitation_code ||
+      ((apiFamily as unknown as Record<string, unknown>).invitationCode as string) ||
+      ((apiFamily as unknown as Record<string, unknown>).code as string) ||
+      '',
     creatorId: apiFamily.creator_id,
     members: members,
     active: true,
@@ -46,17 +50,17 @@ function mapApiFamilyToFamily(apiFamily: ApiFamily, members: Member[] = []): Fam
 
 function cleanToken(token: string): string {
   if (!token) return '';
-  
+
   if (token.includes('/invite/')) {
     const parts = token.split('/invite/');
     return parts[parts.length - 1].split(/[?#]/)[0];
   }
-  
+
   if (token.includes('token=')) {
     const match = token.match(/[?&]token=([^&#]+)/);
     if (match) return match[1];
   }
-  
+
   return token.trim();
 }
 
@@ -78,18 +82,24 @@ export const FamilyService = {
   },
 
   async getMembers(force: boolean = false): Promise<Member[]> {
-    const response = await fetchClient<ApiMember[]>(`/api/v1/family-members/${force ? '?t=' + Date.now() : ''}`);
+    const response = await fetchClient<ApiMember[]>(
+      `/api/v1/family-members/${force ? '?t=' + Date.now() : ''}`
+    );
 
     return response.map((apiMember) => {
       const user = apiMember.user || {};
       const colorData = mapColor(user.color, apiMember.user_id);
       const levelData = user.level;
-      
+
       let role: 'creator' | 'member' = 'member';
-      if (apiMember.role === 'creador' || apiMember.role === 'creator' || apiMember.role === 'owner') {
-          role = 'creator';
+      if (
+        apiMember.role === 'creador' ||
+        apiMember.role === 'creator' ||
+        apiMember.role === 'owner'
+      ) {
+        role = 'creator';
       } else if (apiMember.role === 'miembro' || apiMember.role === 'member') {
-          role = 'member';
+        role = 'member';
       }
 
       return {
@@ -167,7 +177,10 @@ export const FamilyService = {
     });
   },
 
-  async createInvitationCode(maxUses: number = 5, expiresInHours: number = 24): Promise<{ code: string; expires_at: string }> {
+  async createInvitationCode(
+    maxUses: number = 5,
+    expiresInHours: number = 24
+  ): Promise<{ code: string; expires_at: string }> {
     return fetchClient<{ code: string; expires_at: string }>('/api/v1/families/invitations/code', {
       method: 'POST',
       body: { max_uses: maxUses, expires_in_hours: expiresInHours },
@@ -180,11 +193,16 @@ export const FamilyService = {
     });
   },
 
-  async getInvitationInfo(token: string): Promise<{ family_id: string; family_name: string; inviter_name: string | null }> {
+  async getInvitationInfo(
+    token: string
+  ): Promise<{ family_id: string; family_name: string; inviter_name: string | null }> {
     const cleaned = cleanToken(token);
-    return fetchClient<{ family_id: string; family_name: string; inviter_name: string | null }>(`/api/v1/families/invitations/info?token=${cleaned}`, {
-       requiresAuth: false
-    });
+    return fetchClient<{ family_id: string; family_name: string; inviter_name: string | null }>(
+      `/api/v1/families/invitations/info?token=${cleaned}`,
+      {
+        requiresAuth: false,
+      }
+    );
   },
 
   async joinByLink(token: string): Promise<Family> {
@@ -207,8 +225,8 @@ export const FamilyService = {
     } catch (error) {
       return {
         valid: false,
-        error: (error as Error).message || 'Código inválido'
+        error: (error as Error).message || 'Código inválido',
       };
     }
-  }
+  },
 };

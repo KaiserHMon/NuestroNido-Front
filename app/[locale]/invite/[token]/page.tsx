@@ -2,7 +2,11 @@ import { Metadata } from 'next';
 import { FamilyService } from '@/services/family-service';
 import { InvitePageContent } from '@/components/invite-page-content';
 
-export async function generateMetadata({ params }: { params: { token: string } }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { token: string };
+}): Promise<Metadata> {
   const token = params.token;
   try {
     const info = await FamilyService.getInvitationInfo(token);

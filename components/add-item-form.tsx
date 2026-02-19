@@ -103,11 +103,7 @@ export function AddItemForm({ categories, onAddItem }: AddItemFormProps) {
         />
       </div>
 
-      <Button
-        type="submit"
-        className="w-full"
-        disabled={!isFormValid || isSubmitting}
-      >
+      <Button type="submit" className="w-full" disabled={!isFormValid || isSubmitting}>
         {isSubmitting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

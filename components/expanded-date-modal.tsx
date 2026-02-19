@@ -1,7 +1,13 @@
 'use client';
 
 import { Task, Member } from '@/lib/types';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { format, isSameDay, isBefore, startOfToday } from 'date-fns';
@@ -59,85 +65,85 @@ export function ExpandedDateModal({
           ) : (
             <div className="space-y-2 max-h-96 overflow-y-auto">
               {dayTasks.map((task) => {
-                 const isAssignedToMe = currentUserId && task.creatorId === currentUserId;
-                 
-                 return (
-                <div
-                  key={task.id}
-                  className={`p-3 rounded-lg border border-border bg-card/50 space-y-2 ${
-                    task.completed || isPast ? 'opacity-60' : ''
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-start gap-3 flex-1">
-                      {isToday && isAssignedToMe && (
-                        <Checkbox
-                          checked={task.completed}
-                          onCheckedChange={(c) => onToggleCompleted?.(task.id, !!c)}
-                          className="mt-1 border-2 border-primary/70"
-                        />
-                      )}
-                      <div className="flex items-start gap-2 flex-1">
-                        <div
-                          className="w-3 h-3 rounded-full flex-shrink-0 mt-1"
-                          style={{ backgroundColor: task.creatorColor.bg }}
-                          title={task.creatorColor.name}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <h4
-                            className={`font-semibold text-foreground text-sm break-words ${
-                              task.completed || isPast ? 'line-through text-muted-foreground' : ''
-                            }`}
-                          >
-                            {task.title}
-                          </h4>
-                          <p className="text-xs text-muted-foreground">
-                            Asignado a:{' '}
-                            <span className="font-medium">{getMemberName(task.creatorId)}</span>
-                          </p>
+                const isAssignedToMe = currentUserId && task.creatorId === currentUserId;
+
+                return (
+                  <div
+                    key={task.id}
+                    className={`p-3 rounded-lg border border-border bg-card/50 space-y-2 ${
+                      task.completed || isPast ? 'opacity-60' : ''
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-start gap-3 flex-1">
+                        {isToday && isAssignedToMe && (
+                          <Checkbox
+                            checked={task.completed}
+                            onCheckedChange={(c) => onToggleCompleted?.(task.id, !!c)}
+                            className="mt-1 border-2 border-primary/70"
+                          />
+                        )}
+                        <div className="flex items-start gap-2 flex-1">
+                          <div
+                            className="w-3 h-3 rounded-full flex-shrink-0 mt-1"
+                            style={{ backgroundColor: task.creatorColor.bg }}
+                            title={task.creatorColor.name}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <h4
+                              className={`font-semibold text-foreground text-sm break-words ${
+                                task.completed || isPast ? 'line-through text-muted-foreground' : ''
+                              }`}
+                            >
+                              {task.title}
+                            </h4>
+                            <p className="text-xs text-muted-foreground">
+                              Asignado a:{' '}
+                              <span className="font-medium">{getMemberName(task.creatorId)}</span>
+                            </p>
+                          </div>
                         </div>
                       </div>
+
+                      {task.completed && (
+                        <Badge className="bg-green-500/10 text-green-700 dark:text-green-400 text-xs flex-shrink-0">
+                          ✓
+                        </Badge>
+                      )}
                     </div>
 
-                    {task.completed && (
-                      <Badge className="bg-green-500/10 text-green-700 dark:text-green-400 text-xs flex-shrink-0">
-                        ✓
-                      </Badge>
-                    )}
+                    <div className="flex items-center gap-2 flex-wrap text-xs px-10">
+                      {task.dateType === 'days' && task.frequency === 'once' && (
+                        <Badge variant="secondary" className="capitalize">
+                          Semanal
+                        </Badge>
+                      )}
+                      {task.frequency && task.frequency !== 'once' && (
+                        <Badge variant="secondary" className="capitalize">
+                          {task.frequency}
+                        </Badge>
+                      )}
+                      {task.daysOfWeek && task.daysOfWeek.length > 0 && (
+                        <span className="text-muted-foreground">
+                          {task.daysOfWeek
+                            .map(
+                              (d) =>
+                                [
+                                  'Domingo',
+                                  'Lunes',
+                                  'Martes',
+                                  'Miércoles',
+                                  'Jueves',
+                                  'Viernes',
+                                  'Sábado',
+                                ][parseInt(d)]
+                            )
+                            .join(', ')}
+                        </span>
+                      )}
+                    </div>
                   </div>
-
-                  <div className="flex items-center gap-2 flex-wrap text-xs px-10">
-                    {task.dateType === 'days' && task.frequency === 'once' && (
-                      <Badge variant="secondary" className="capitalize">
-                        Semanal
-                      </Badge>
-                    )}
-                    {task.frequency && task.frequency !== 'once' && (
-                      <Badge variant="secondary" className="capitalize">
-                        {task.frequency}
-                      </Badge>
-                    )}
-                    {task.daysOfWeek && task.daysOfWeek.length > 0 && (
-                      <span className="text-muted-foreground">
-                        {task.daysOfWeek
-                          .map(
-                            (d) =>
-                              [
-                                'Domingo',
-                                'Lunes',
-                                'Martes',
-                                'Miércoles',
-                                'Jueves',
-                                'Viernes',
-                                'Sábado',
-                              ][parseInt(d)]
-                          )
-                          .join(', ')}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              );
+                );
               })}
             </div>
           )}

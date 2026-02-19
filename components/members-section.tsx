@@ -23,7 +23,7 @@ export function MembersSection() {
 
   const isCreator = useMemo(() => {
     const isById = family && user ? String(family.creatorId) === String(user.id) : false;
-    const myMember = family?.members.find(m => String(m.id) === String(user?.id));
+    const myMember = family?.members.find((m) => String(m.id) === String(user?.id));
     const isByRole = myMember?.roleId === 'creator';
     return isById || isByRole;
   }, [family, user]);
@@ -69,12 +69,12 @@ export function MembersSection() {
       toast.error('Error al eliminar miembro');
     }
   };
-  
+
   const candidateMembers = useMemo(() => {
-     if (!family || !user) return [];
-     return family.members
-       .filter(m => m.id !== user.id)
-       .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    if (!family || !user) return [];
+    return family.members
+      .filter((m) => m.id !== user.id)
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
   }, [family, user]);
 
   const topThreeIds = useMemo(() => {
@@ -82,7 +82,7 @@ export function MembersSection() {
     return [...family.members]
       .sort((a, b) => b.experience_points - a.experience_points)
       .slice(0, 3)
-      .map(m => m.id);
+      .map((m) => m.id);
   }, [family]);
 
   const handleConfirmEdit = async (updatedMember: Member) => {
@@ -93,7 +93,7 @@ export function MembersSection() {
         await UserService.updateUser(user.id, {
           name: updatedMember.name,
         });
-        
+
         refreshFamily();
         setMemberToEdit(null);
         toast.success('Perfil actualizado');
@@ -115,8 +115,8 @@ export function MembersSection() {
           <h3 className="text-lg font-semibold text-foreground">
             Miembros ({family.members.length})
           </h3>
-          <Button 
-            onClick={() => setInviteDialogOpen(true)} 
+          <Button
+            onClick={() => setInviteDialogOpen(true)}
             className="gap-2 bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
           >
             <Plus className="w-4 h-4" />
@@ -130,7 +130,7 @@ export function MembersSection() {
             const isMember = user?.id === member.id;
             const rankIndex = topThreeIds.indexOf(member.id);
             const rank = rankIndex !== -1 ? rankIndex + 1 : undefined;
-            
+
             return (
               <MemberCard
                 key={member.id}

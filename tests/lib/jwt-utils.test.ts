@@ -24,7 +24,8 @@ describe('parseJwt', () => {
     // " >?" in JSON is "\u0020\u003e\u003f"
     // Let's just manually create a payload and encode it to base64url
     const payload = { sub: 'subjects > 0?' };
-    const base64Payload = Buffer.from(JSON.stringify(payload)).toString('base64')
+    const base64Payload = Buffer.from(JSON.stringify(payload))
+      .toString('base64')
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=/g, '');

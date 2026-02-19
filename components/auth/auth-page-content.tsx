@@ -48,7 +48,8 @@ export function AuthPageContent() {
 
   useEffect(() => {
     if (isAuthenticated && !authLoading && !familyLoading) {
-      if (family) { // Renamed from familia to family
+      if (family) {
+        // Renamed from familia to family
         router.push('/dashboard');
       } else {
         router.push('/home');

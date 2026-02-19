@@ -47,7 +47,7 @@ export function NoteFilter({ members, activeFilters, onFilterChange }: NoteFilte
         {members.map((member) => {
           const colorBg = getMemberColor(member);
           const isActive = activeFilters.includes(member.id);
-          
+
           return (
             <Badge
               key={member.id}

@@ -2,7 +2,17 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { Calendar, ShoppingCart, Users, StickyNote, Bird, LogOut, Home, Trash2, Settings } from 'lucide-react';
+import {
+  Calendar,
+  ShoppingCart,
+  Users,
+  StickyNote,
+  Bird,
+  LogOut,
+  Home,
+  Trash2,
+  Settings,
+} from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -25,7 +35,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
 
   const isCreator = useMemo(() => {
     const isById = family && user ? String(family.creatorId) === String(user.id) : false;
-    const myMember = family?.members.find(m => String(m.id) === String(user?.id));
+    const myMember = family?.members.find((m) => String(m.id) === String(user?.id));
     const isByRole = myMember?.roleId === 'creator';
     return isById || isByRole;
   }, [family, user]);
@@ -122,7 +132,10 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
         </div>
       </header>
 
-      <nav className="bg-primary backdrop-blur-sm border-b border-primary sticky top-[48px] sm:top-[56px] z-10" aria-label="Navegación principal">
+      <nav
+        className="bg-primary backdrop-blur-sm border-b border-primary sticky top-[48px] sm:top-[56px] z-10"
+        aria-label="Navegación principal"
+      >
         <div className="container mx-auto px-3 sm:px-4">
           <div className="flex items-center justify-between">
             <div className="flex gap-1 sm:gap-2 overflow-x-auto py-2 sm:py-3 scrollbar-hide items-center">
@@ -135,7 +148,11 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
                     : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
                 }`}
               >
-                <Link href="/dashboard" prefetch={true} aria-current={activeSection === 'overview' ? 'page' : undefined}>
+                <Link
+                  href="/dashboard"
+                  prefetch={true}
+                  aria-current={activeSection === 'overview' ? 'page' : undefined}
+                >
                   <Bird className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span className="hidden xs:inline">Inicio</span>
                 </Link>
@@ -150,7 +167,11 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
                     : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
                 }`}
               >
-                <Link href="/dashboard/miembros" prefetch={true} aria-current={activeSection === 'members' ? 'page' : undefined}>
+                <Link
+                  href="/dashboard/miembros"
+                  prefetch={true}
+                  aria-current={activeSection === 'members' ? 'page' : undefined}
+                >
                   <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span className="hidden xs:inline">Miembros</span>
                 </Link>
@@ -165,7 +186,11 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
                     : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
                 }`}
               >
-                <Link href="/dashboard/tareas" prefetch={true} aria-current={activeSection === 'calendar' ? 'page' : undefined}>
+                <Link
+                  href="/dashboard/tareas"
+                  prefetch={true}
+                  aria-current={activeSection === 'calendar' ? 'page' : undefined}
+                >
                   <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span className="hidden xs:inline">Calendario de Tareas</span>
                 </Link>
@@ -180,7 +205,11 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
                     : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
                 }`}
               >
-                <Link href="/dashboard/lista" prefetch={true} aria-current={activeSection === 'list' ? 'page' : undefined}>
+                <Link
+                  href="/dashboard/lista"
+                  prefetch={true}
+                  aria-current={activeSection === 'list' ? 'page' : undefined}
+                >
                   <ShoppingCart className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span className="hidden xs:inline">Lista</span>
                 </Link>
@@ -195,7 +224,11 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
                     : 'text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground'
                 }`}
               >
-                <Link href="/dashboard/notas" prefetch={true} aria-current={activeSection === 'notes' ? 'page' : undefined}>
+                <Link
+                  href="/dashboard/notas"
+                  prefetch={true}
+                  aria-current={activeSection === 'notes' ? 'page' : undefined}
+                >
                   <StickyNote className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span className="hidden xs:inline">Notas</span>
                 </Link>
@@ -255,7 +288,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
           />
         </>
       )}
-      
+
       <LevelUpListener />
     </div>
   );

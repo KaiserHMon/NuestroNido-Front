@@ -50,7 +50,7 @@ export function DeleteMemberDialog({
 
   const handleConfirm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     if (requiresSuccessor && !newCreatorId) {
       setError('Debes asignar un nuevo creador antes de salir.');
       return;
@@ -101,7 +101,8 @@ export function DeleteMemberDialog({
           <div className="space-y-2">
             <Label>Asignar nuevo administrador</Label>
             <p className="text-xs text-muted-foreground mb-2">
-              Como eres el creador, debes delegar el rol de administrador a otro miembro antes de salir.
+              Como eres el creador, debes delegar el rol de administrador a otro miembro antes de
+              salir.
             </p>
             <Select value={newCreatorId} onValueChange={setNewCreatorId}>
               <SelectTrigger>

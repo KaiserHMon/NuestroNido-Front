@@ -54,36 +54,40 @@ export function SettingsDialog() {
     <>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant="ghost" size="icon" title="Configuración" className="hover:bg-primary/10 text-primary">
+          <Button
+            variant="ghost"
+            size="icon"
+            title="Configuración"
+            className="hover:bg-primary/10 text-primary"
+          >
             <Settings className="h-5 w-5" />
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Configuración</DialogTitle>
-            <DialogDescription>
-              Gestiona tu cuenta y preferencias.
-            </DialogDescription>
+            <DialogDescription>Gestiona tu cuenta y preferencias.</DialogDescription>
           </DialogHeader>
 
           <div className="py-4 space-y-4">
-             <div className="flex flex-col gap-2 p-4 border rounded-lg bg-background/50">
-                <div className="flex items-center gap-2 font-medium text-foreground">
-                    <UserX className="w-4 h-4" />
-                    <span>Zona de Peligro</span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                    Si eliminas tu cuenta, perderás todos tus datos y progreso. Esta acción no se puede deshacer.
-                </p>
-                <Button 
-                    variant="destructive" 
-                    className="w-full mt-2 gap-2"
-                    onClick={() => setShowDeleteAlert(true)}
-                >
-                    <Trash2 className="w-4 h-4" />
-                    Eliminar Cuenta
-                </Button>
-             </div>
+            <div className="flex flex-col gap-2 p-4 border rounded-lg bg-background/50">
+              <div className="flex items-center gap-2 font-medium text-foreground">
+                <UserX className="w-4 h-4" />
+                <span>Zona de Peligro</span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Si eliminas tu cuenta, perderás todos tus datos y progreso. Esta acción no se puede
+                deshacer.
+              </p>
+              <Button
+                variant="destructive"
+                className="w-full mt-2 gap-2"
+                onClick={() => setShowDeleteAlert(true)}
+              >
+                <Trash2 className="w-4 h-4" />
+                Eliminar Cuenta
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -92,11 +96,12 @@ export function SettingsDialog() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2 text-destructive">
-                <AlertTriangle className="w-5 h-5" />
-                ¿Estás absolutamente seguro?
+              <AlertTriangle className="w-5 h-5" />
+              ¿Estás absolutamente seguro?
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción es irreversible. Se eliminará permanentemente tu cuenta de usuario y todos tus datos asociados de nuestros servidores.
+              Esta acción es irreversible. Se eliminará permanentemente tu cuenta de usuario y todos
+              tus datos asociados de nuestros servidores.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

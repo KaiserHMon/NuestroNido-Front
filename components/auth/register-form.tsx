@@ -137,7 +137,9 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
             {...register('password')}
             disabled={isSubmitting}
           />
-          {errors.password ? <p className="text-xs text-destructive">{errors.password.message}</p> : null}
+          {errors.password ? (
+            <p className="text-xs text-destructive">{errors.password.message}</p>
+          ) : null}
           {!password ? (
             <p className="text-xs text-muted-foreground">
               {t('password_hint')}
