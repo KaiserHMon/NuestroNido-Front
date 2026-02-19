@@ -7,6 +7,9 @@
       "start": "Comenzar"
     },
     "hero": {
+      "title_start": "Un hogar más",
+      "title_end": "todo en un solo lugar.",
+      "words": ["organizado", "conectado", "armonioso"],
       "subtitle": "Organizá el hogar y motivá a todos a participar,\nsin fricción ni discusiones.",
       "cta_primary": "Comenzar gratis",
       "cta_dashboard": "Ir a mi Nido",
@@ -88,5 +91,73 @@
   "Common": {
     "loading": "Cargando...",
     "authenticating": "Autenticando..."
+  },
+  "Auth": {
+    "common": {
+      "logo_subtitle": "Gestiona tu hogar de manera fácil y divertida",
+      "loading": "Cargando..."
+    },
+    "login": {
+      "title": "Iniciar Sesión",
+      "google_button": "Continuar con Google",
+      "or": "O",
+      "email_label": "Email",
+      "email_placeholder": "tu@email.com",
+      "password_label": "Contraseña",
+      "password_placeholder": "Ingresa tu contraseña",
+      "forgot_password": "¿Olvidaste tu contraseña?",
+      "submitting": "Iniciando sesión...",
+      "submit": "Iniciar Sesión",
+      "no_account": "¿No tienes cuenta?",
+      "create_one": "Crea una aquí"
+    },
+    "register": {
+      "title": "Crear Cuenta",
+      "google_button": "Continuar con Google",
+      "name_label": "Nombre Completo",
+      "name_placeholder": "Juan García",
+      "email_label": "Email",
+      "email_placeholder": "tu@email.com",
+      "password_label": "Contraseña",
+      "password_placeholder": "Ingresa tu contraseña",
+      "password_hint": "Mínimo 8 caracteres, mayúsculas, números y símbolos",
+      "confirm_password_label": "Confirmar Contraseña",
+      "confirm_password_placeholder": "Confirma tu contraseña",
+      "submitting": "Creando cuenta...",
+      "submit": "Crear Cuenta",
+      "have_account": "¿Ya tienes cuenta?",
+      "login_here": "Inicia sesión aquí",
+      "invite_info": "Te estás registrando para unirte a la familia {family_name}",
+      "inviter_info": " invitada por {inviter_name}"
+    },
+    "forgot_password": {
+      "title": "Recuperar Contraseña",
+      "email_label": "Email",
+      "email_placeholder": "tu@email.com",
+      "hint": "Ingresa el email asociado a tu cuenta y te enviaremos un enlace para recuperar tu contraseña.",
+      "back": "Atrás",
+      "submitting": "Enviando...",
+      "submit": "Enviar Enlace",
+      "success_title": "✓ Email enviado exitosamente",
+      "success_message": "Hemos enviado un enlace de recuperación a {email}. Por favor revisa tu bandeja de entrada.",
+      "back_to_login": "Volver al Login",
+      "error_send": "Error al enviar el email de recuperación"
+    },
+    "reset_password": {
+      "title": "Restablecer Contraseña",
+      "subtitle": "Tu contraseña será restablecida de forma segura",
+      "new_password_label": "Nueva Contraseña",
+      "confirm_password_label": "Confirmar Contraseña",
+      "submitting": "Actualizando...",
+      "submit": "Actualizar Contraseña",
+      "success_title": "✓ Contraseña restablecida exitosamente",
+      "success_message": "Tu contraseña ha sido actualizada. Ahora puedes iniciar sesión con tu nueva contraseña.",
+      "go_to_login": "Ir al Login",
+      "invalid_token": "El enlace de recuperación es inválido o ha expirado.",
+      "request_new": "Solicitar un nuevo enlace de recuperación",
+      "error_generic": "Error al restablecer la contraseña",
+      "passwords_mismatch": "Las contraseñas no coinciden",
+      "password_min_length": "La contraseña debe tener al menos 8 caracteres"
+    }
   }
 }

@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/use-auth';
-import { useFamily } from '@/hooks/use-family'; // Corrected import
+import { useFamily } from '@/hooks/use-family';
+import { useTranslations } from 'next-intl';
 
 // Lazy load forms
 const LoginForm = dynamic(
@@ -43,6 +44,7 @@ export function AuthPageContent() {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
   const { family, isLoading: familyLoading } = useFamily(); // Renamed from familia to family
   const [activeTab, setActiveTab] = useState<'login' | 'forgot-password'>('login');
+  const t = useTranslations('Auth');
 
   useEffect(() => {
     if (isAuthenticated && !authLoading && !familyLoading) {
@@ -82,7 +84,7 @@ export function AuthPageContent() {
             />
           </div>
           <p className="text-muted-foreground text-xs sm:text-sm">
-            Gestiona tu hogar de manera fácil y divertida
+            {t('common.logo_subtitle')}
           </p>
         </div>
 
@@ -99,12 +101,12 @@ export function AuthPageContent() {
 
         <div className="text-center mt-4 text-sm sm:text-base text-muted-foreground">
           <p>
-            ¿No tienes cuenta?{' '}
+            {t('login.no_account')}{' '}
             <button
               onClick={() => router.push('/register')}
               className="text-primary hover:underline font-medium"
             >
-              Crea una aquí
+              {t('login.create_one')}
             </button>
           </p>
         </div>

@@ -2,14 +2,11 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
-
-const words = [
-  "organizado",
-  "conectado",
-  "armonioso"
-];
+import { useTranslations } from "next-intl";
 
 export function AnimatedHeroText() {
+  const t = useTranslations('Landing.hero');
+  const words = t.raw('words') as string[];
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -17,11 +14,11 @@ export function AnimatedHeroText() {
       setIndex((prev) => (prev + 1) % words.length);
     }, 2500);
     return () => clearInterval(interval);
-  }, []);
+  }, [words.length]);
 
   return (
     <h1 className="flex flex-col text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-heading leading-tight mb-6">
-      <span className="text-primary">Un hogar más</span>
+      <span className="text-primary">{t('title_start')}</span>
       <div className="h-[1.3em] relative overflow-hidden">
         <AnimatePresence mode="popLayout">
            <motion.span
@@ -36,7 +33,7 @@ export function AnimatedHeroText() {
           </motion.span>
         </AnimatePresence>
       </div>
-      <span className="text-primary">todo en un solo lugar.</span>
+      <span className="text-primary">{t('title_end')}</span>
     </h1>
   );
 }

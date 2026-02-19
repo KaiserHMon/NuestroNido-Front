@@ -6,9 +6,8 @@ import Image from 'next/image';
 import { LogOut, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
-import logo from '@/assets/logo.png';
+import logo from '@/public/logo.png';
 import { useTranslations } from 'next-intl';
-import { LocaleSwitcher } from '@/components/locale-switcher';
 
 export function LandingHeader() {
   const router = useRouter();
@@ -56,8 +55,6 @@ export function LandingHeader() {
           </Link>
 
           <div className="flex items-center gap-2">
-            <LocaleSwitcher />
-
             {isAuthenticated ? (
               <>
                 <Link href={dashboardRoute}>

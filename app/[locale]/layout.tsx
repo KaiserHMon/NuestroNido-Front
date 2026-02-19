@@ -10,7 +10,7 @@ import '@/styles/globals.css';
 import {NextIntlClientProvider} from 'next-intl';
 import {getMessages} from 'next-intl/server';
 import {notFound} from 'next/navigation';
-import {routing} from '@/i18n/routing';
+import {routing, type Locale} from '@/i18n/routing';
 
 const geist = Geist({
   subsets: ['latin'],
@@ -48,28 +48,28 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'NuestroNido - Organización Familiar y Armonía',
+    default: 'NuestroNido - Family Organization and Harmony',
     template: '%s | NuestroNido',
   },
   description:
-    'Un hogar más organizado, conectado y en armonía. Gestiona tareas, listas de compras y notas familiares en un solo lugar con gamificación divertida.',
+    'A more organized, connected, and harmonious home. Manage tasks, shopping lists, and family notes in one place with fun gamification.',
   keywords: [
-    'organización familiar',
-    'calendario compartido',
-    'listas de compras',
-    'tareas del hogar',
-    'app familiar',
-    'gamificación',
-    'gestión del hogar',
+    'family organization',
+    'shared calendar',
+    'shopping lists',
+    'household tasks',
+    'family app',
+    'gamification',
+    'home management',
     'nuestro nido',
   ],
   authors: [{ name: 'NuestroNido Team' }],
   creator: 'NuestroNido',
   metadataBase: new URL('https://nuestronido.vercel.app'),
   openGraph: {
-    title: 'NuestroNido - Organización Familiar y Armonía',
+    title: 'NuestroNido - Family Organization and Harmony',
     description:
-      'Coordina tareas, listas y notas con tu familia de forma divertida. ¡Haz del orden un juego y mantén tu hogar en armonía!',
+      'Coordinate tasks, lists and notes with your family in a fun way. Make order a game and keep your home in harmony!',
     url: 'https://nuestronido.vercel.app',
     siteName: 'NuestroNido',
     images: [
@@ -77,17 +77,17 @@ export const metadata: Metadata = {
         url: '/og-image.svg',
         width: 1200,
         height: 630,
-        alt: 'NuestroNido - Gestión Familiar',
+        alt: 'NuestroNido - Family Management',
       },
     ],
-    locale: 'es_ES',
+    locale: 'en_US',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'NuestroNido - Tu hogar organizado',
+    title: 'NuestroNido - Your organized home',
     description:
-      'Coordina tareas, listas y notas con tu familia de forma divertida. ¡Únete a NuestroNido!',
+      'Coordinate tasks, lists and notes with your family in a fun way. Join NuestroNido!',
     images: ['/og-image.svg'],
     creator: '@nuestronido',
   },
@@ -108,7 +108,7 @@ export default async function RootLayout({
   const {locale} = await params;
 
   // Ensure that the incoming `locale` is valid
-  if (!routing.locales.includes(locale as any)) {
+  if (!routing.locales.includes(locale as Locale)) {
     notFound();
   }
 

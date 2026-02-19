@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useFamily } from '@/hooks/use-family';
 import { FamilyService } from '@/services/family-service';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useTranslations } from 'next-intl';
 
 // Lazy load form
 const RegisterForm = dynamic(
@@ -39,6 +40,7 @@ export function RegisterPageContent() {
     family_name: string;
     inviter_name: string | null;
   } | null>(null);
+  const t = useTranslations('Auth');
 
   useEffect(() => {
     const code = searchParams.get('code');
@@ -83,9 +85,9 @@ export function RegisterPageContent() {
               priority
             />
           </div>
-          <h2 className="text-lg font-semibold text-foreground mb-1">Crear Cuenta</h2>
+          <h2 className="text-lg font-semibold text-foreground mb-1">{t('register.title')}</h2>
           <p className="text-muted-foreground text-xs sm:text-sm">
-            Gestiona tu hogar de manera fácil y divertida
+            {t('common.logo_subtitle')}
           </p>
         </div>
 
@@ -93,9 +95,8 @@ export function RegisterPageContent() {
           <Alert className="mb-6 bg-primary/5 border-primary/20">
             <Bird className="h-4 w-4 text-primary" />
             <AlertDescription className="text-sm text-foreground">
-              Te estás registrando para unirte a la familia{' '}
-              <strong>{inviteInfo.family_name}</strong>
-              {inviteInfo.inviter_name && <span> invitada por {inviteInfo.inviter_name}</span>}.
+              {t('register.invite_info', { family_name: inviteInfo.family_name })}
+              {inviteInfo.inviter_name && t('register.inviter_info', { inviter_name: inviteInfo.inviter_name })}.
             </AlertDescription>
           </Alert>
         )}
@@ -106,12 +107,12 @@ export function RegisterPageContent() {
 
         <div className="text-center mt-4 text-sm sm:text-base text-muted-foreground space-y-2">
           <p>
-            ¿Ya tienes cuenta?{' '}
+            {t('register.have_account')}{' '}
             <button
               onClick={() => router.push('/login')}
               className="text-primary hover:underline font-medium"
             >
-              Inicia sesión aquí
+              {t('register.login_here')}
             </button>
           </p>
         </div>

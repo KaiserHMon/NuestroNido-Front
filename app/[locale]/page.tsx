@@ -48,9 +48,8 @@ function LandingPageContent() {
             <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
               <AnimatedHeroText />
               
-              <p className="text-base sm:text-lg md:text-xl text-foreground mb-8 sm:mb-10 text-pretty max-w-2xl font-medium mx-auto">
-                Organizá el hogar y motivá a todos a participar,
-                <br className="hidden sm:block" /> sin fricción ni discusiones.
+              <p className="text-base sm:text-lg md:text-xl text-foreground mb-8 sm:mb-10 text-pretty max-w-2xl font-medium mx-auto whitespace-pre-line">
+                {t('hero.subtitle')}
               </p>
               
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center w-full">
@@ -61,7 +60,7 @@ function LandingPageContent() {
                         size="lg"
                         className="w-full sm:w-auto bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-8 sm:px-10 shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
                       >
-                        Ir a mi Nido
+                        {t('hero.cta_dashboard')}
                         <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
                       </Button>
                     </Link>
@@ -71,7 +70,7 @@ function LandingPageContent() {
                         size="lg"
                         className="w-full sm:w-auto bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-base sm:text-lg px-8 sm:px-10 shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
                       >
-                        Comenzar gratis
+                        {t('hero.cta_primary')}
                         <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />
                       </Button>
                     </Link>

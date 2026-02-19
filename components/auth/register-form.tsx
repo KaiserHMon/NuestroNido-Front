@@ -14,6 +14,7 @@ import { Checkbox as _Checkbox } from '@/components/ui/checkbox';
 import { RegisterSchema, RegisterFormInputs } from '@/lib/validation';
 import { useAuth } from '@/hooks/use-auth';
 import { fetchClient } from '@/lib/api-client';
+import { useTranslations } from 'next-intl';
 
 interface RegisterFormProps {
   onSuccess?: () => void;
@@ -22,6 +23,7 @@ interface RegisterFormProps {
 export function RegisterForm({ onSuccess }: RegisterFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { register: registerUser, error: authError } = useAuth();
+  const t = useTranslations('Auth.register');
 
   const handleGoogleLogin = async () => {
     try {
@@ -69,7 +71,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
         disabled={isSubmitting}
       >
         <GoogleIcon className="w-5 h-5" />
-        <span className="font-medium">Continuar con Google</span>
+        <span className="font-medium">{t('google_button')}</span>
       </Button>
 
       <div className="relative py-2">
@@ -77,7 +79,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           <div className="w-full border-t border-border"></div>
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">O</span>
+          <span className="bg-background px-2 text-muted-foreground">{t('submit')}</span>
         </div>
       </div>
 
@@ -90,14 +92,14 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
         <div className="space-y-1.5">
           <Label htmlFor="name" className="text-foreground font-medium">
-            Nombre Completo
+            {t('name_label')}
           </Label>
           <div className="relative">
             <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               id="name"
               type="text"
-              placeholder="Juan García"
+              placeholder={t('name_placeholder')}
               className="pl-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
               {...register('name')}
               disabled={isSubmitting}
@@ -108,14 +110,14 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
         <div className="space-y-1.5">
           <Label htmlFor="email" className="text-foreground font-medium">
-            Email
+            {t('email_label')}
           </Label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               id="email"
               type="email"
-              placeholder="tu@email.com"
+              placeholder={t('email_placeholder')}
               className="pl-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
               {...register('email')}
               disabled={isSubmitting}
@@ -126,11 +128,11 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
 
         <div className="space-y-1.5">
           <Label htmlFor="password" className="text-foreground font-medium">
-            Contraseña
+            {t('password_label')}
           </Label>
           <PasswordInput
             id="password"
-            placeholder="Ingresa tu contraseña"
+            placeholder={t('password_placeholder')}
             className="bg-background border-input text-foreground placeholder:text-muted-foreground"
             {...register('password')}
             disabled={isSubmitting}
@@ -138,18 +140,18 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           {errors.password ? <p className="text-xs text-destructive">{errors.password.message}</p> : null}
           {!password ? (
             <p className="text-xs text-muted-foreground">
-              Mínimo 8 caracteres, mayúsculas, números y símbolos
+              {t('password_hint')}
             </p>
           ) : null}
         </div>
 
         <div className="space-y-1.5">
           <Label htmlFor="passwordConfirm" className="text-foreground font-medium">
-            Confirmar Contraseña
+            {t('confirm_password_label')}
           </Label>
           <PasswordInput
             id="passwordConfirm"
-            placeholder="Confirma tu contraseña"
+            placeholder={t('confirm_password_placeholder')}
             className="bg-background border-input text-foreground placeholder:text-muted-foreground"
             {...register('passwordConfirm')}
             disabled={isSubmitting}
@@ -167,10 +169,10 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           {isSubmitting ? (
             <>
               <span className="inline-block w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" />
-              Creando cuenta...
+              {t('submitting')}
             </>
           ) : (
-            'Crear Cuenta'
+            t('submit')
           )}
         </Button>
       </form>

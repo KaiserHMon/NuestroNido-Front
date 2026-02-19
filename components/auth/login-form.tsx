@@ -13,6 +13,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { LoginSchema, LoginFormInputs } from '@/lib/validation';
 import { useAuth } from '@/hooks/use-auth';
 import { fetchClient } from '@/lib/api-client';
+import { useTranslations } from 'next-intl';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -22,6 +23,7 @@ interface LoginFormProps {
 export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, error: authError } = useAuth();
+  const t = useTranslations('Auth.login');
 
   const handleGoogleLogin = async () => {
     try {
@@ -66,7 +68,7 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
         disabled={isSubmitting}
       >
         <GoogleIcon className="w-5 h-5" />
-        <span className="font-medium">Continuar con Google</span>
+        <span className="font-medium">{t('google_button')}</span>
       </Button>
 
       <div className="relative py-2">
@@ -74,7 +76,7 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
           <div className="w-full border-t border-border"></div>
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">O</span>
+          <span className="bg-background px-2 text-muted-foreground">{t('or')}</span>
         </div>
       </div>
 
@@ -87,14 +89,14 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
 
         <div className="space-y-1.5">
           <Label htmlFor="email" className="text-foreground font-medium">
-            Email
+            {t('email_label')}
           </Label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               id="email"
               type="email"
-              placeholder="tu@email.com"
+              placeholder={t('email_placeholder')}
               className="pl-10 bg-background border-input text-foreground placeholder:text-muted-foreground"
               {...register('email')}
               disabled={isSubmitting}
@@ -105,11 +107,11 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
 
         <div className="space-y-1.5">
           <Label htmlFor="password" className="text-foreground font-medium">
-            Contraseña
+            {t('password_label')}
           </Label>
           <PasswordInput
             id="password"
-            placeholder="Ingresa tu contraseña"
+            placeholder={t('password_placeholder')}
             className="bg-background border-input text-foreground placeholder:text-muted-foreground"
             {...register('password')}
             disabled={isSubmitting}
@@ -124,7 +126,7 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
             className="text-primary hover:underline font-medium disabled:text-muted-foreground disabled:cursor-not-allowed px-1"
             disabled={isSubmitting}
           >
-            ¿Olvidaste tu contraseña?
+            {t('forgot_password')}
           </button>
         </div>
 
@@ -136,10 +138,10 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
           {isSubmitting ? (
             <>
               <span className="inline-block w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" />
-              Iniciando sesión...
+              {t('submitting')}
             </>
           ) : (
-            'Iniciar Sesión'
+            t('submit')
           )}
         </Button>
       </form>

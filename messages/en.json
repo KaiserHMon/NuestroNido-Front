@@ -7,6 +7,9 @@
       "start": "Start"
     },
     "hero": {
+      "title_start": "A more",
+      "title_end": "all in one place.",
+      "words": ["organized", "connected", "harmonious"],
       "subtitle": "Organize your home and motivate everyone to participate,\nwithout friction or arguments.",
       "cta_primary": "Start for free",
       "cta_dashboard": "Go to my Nest",
@@ -88,5 +91,73 @@
   "Common": {
     "loading": "Loading...",
     "authenticating": "Authenticating..."
+  },
+  "Auth": {
+    "common": {
+      "logo_subtitle": "Manage your home easily and fun",
+      "loading": "Loading..."
+    },
+    "login": {
+      "title": "Login",
+      "google_button": "Continue with Google",
+      "or": "OR",
+      "email_label": "Email",
+      "email_placeholder": "you@email.com",
+      "password_label": "Password",
+      "password_placeholder": "Enter your password",
+      "forgot_password": "Forgot your password?",
+      "submitting": "Logging in...",
+      "submit": "Login",
+      "no_account": "Don't have an account?",
+      "create_one": "Create one here"
+    },
+    "register": {
+      "title": "Create Account",
+      "google_button": "Continue with Google",
+      "name_label": "Full Name",
+      "name_placeholder": "John Doe",
+      "email_label": "Email",
+      "email_placeholder": "you@email.com",
+      "password_label": "Password",
+      "password_placeholder": "Enter your password",
+      "password_hint": "Minimum 8 characters, uppercase, numbers and symbols",
+      "confirm_password_label": "Confirm Password",
+      "confirm_password_placeholder": "Confirm your password",
+      "submitting": "Creating account...",
+      "submit": "Create Account",
+      "have_account": "Already have an account?",
+      "login_here": "Login here",
+      "invite_info": "You are registering to join the family {family_name}",
+      "inviter_info": " invited by {inviter_name}"
+    },
+    "forgot_password": {
+      "title": "Recover Password",
+      "email_label": "Email",
+      "email_placeholder": "you@email.com",
+      "hint": "Enter the email associated with your account and we'll send you a link to recover your password.",
+      "back": "Back",
+      "submitting": "Sending...",
+      "submit": "Send Link",
+      "success_title": "✓ Email sent successfully",
+      "success_message": "We've sent a recovery link to {email}. Please check your inbox.",
+      "back_to_login": "Back to Login",
+      "error_send": "Error sending recovery email"
+    },
+    "reset_password": {
+      "title": "Reset Password",
+      "subtitle": "Your password will be reset securely",
+      "new_password_label": "New Password",
+      "confirm_password_label": "Confirm Password",
+      "submitting": "Updating...",
+      "submit": "Update Password",
+      "success_title": "✓ Password reset successfully",
+      "success_message": "Your password has been updated. You can now login with your new password.",
+      "go_to_login": "Go to Login",
+      "invalid_token": "The recovery link is invalid or has expired.",
+      "request_new": "Request a new recovery link",
+      "error_generic": "Error resetting password",
+      "passwords_mismatch": "Passwords do not match",
+      "password_min_length": "Password must be at least 8 characters"
+    }
   }
 }

@@ -2,10 +2,12 @@
 
 import { useSearchParams } from 'next/navigation';
 import { ResetPasswordForm } from '@/components/auth/reset-password-form';
+import { useTranslations } from 'next-intl';
 
 export function RecoverPasswordContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
+  const t = useTranslations('Auth.reset_password');
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4 py-8">
@@ -14,7 +16,7 @@ export function RecoverPasswordContent() {
           <div className="flex items-center justify-center mb-4">
             <img src="/logo.png" alt="NuestroNido Logo" className="w-16 h-16 object-contain" />
           </div>
-          <p className="text-muted-foreground text-sm sm:text-base">Restablecer Contraseña</p>
+          <p className="text-muted-foreground text-sm sm:text-base">{t('title')}</p>
         </div>
 
         <div className="bg-card rounded-lg shadow-md border border-border p-6 sm:p-8">
@@ -22,7 +24,7 @@ export function RecoverPasswordContent() {
         </div>
 
         <div className="text-center mt-6 text-xs sm:text-sm text-muted-foreground">
-          <p>Tu contraseña será restablecida de forma segura</p>
+          <p>{t('subtitle')}</p>
         </div>
       </div>
     </div>

@@ -9,28 +9,30 @@ import { PasswordInput } from '@/components/ui/password-input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { z } from 'zod';
-import Link from 'next/link';
-
-const resetPasswordSchema = z
-  .object({
-    password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres'),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Las contraseñas no coinciden',
-    path: ['confirmPassword'],
-  });
-
-type ResetPasswordInputs = z.infer<typeof resetPasswordSchema>;
+import { Link } from '@/i18n/routing';
+import { useTranslations } from 'next-intl';
 
 interface ResetPasswordFormProps {
-  token?: string;
+  token: string | null | undefined;
 }
 
 export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const t = useTranslations('Auth.reset_password');
+
+  const resetPasswordSchema = z
+    .object({
+      password: z.string().min(8, t('password_min_length')),
+      confirmPassword: z.string(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+      message: t('passwords_mismatch'),
+      path: ['confirmPassword'],
+    });
+
+  type ResetPasswordInputs = z.infer<typeof resetPasswordSchema>;
 
   const {
     register,
@@ -42,7 +44,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
 
   const handleFormSubmit = async (data: ResetPasswordInputs) => {
     if (!token) {
-      setError('Token inválido o expirado');
+      setError(t('invalid_token'));
       return;
     }
 
@@ -62,12 +64,12 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al restablecer la contraseña');
+        throw new Error(errorData.message || t('error_generic'));
       }
 
       setSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ocurrió un error');
+      setError(err instanceof Error ? err.message : t('error_generic'));
     } finally {
       setIsSubmitting(false);
     }
@@ -78,15 +80,15 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       <div className="space-y-4">
         <Alert variant="default" className="bg-green-50 border-green-200">
           <AlertDescription className="text-green-800">
-            ✓ Contraseña restablecida exitosamente
+            {t('success_title')}
           </AlertDescription>
         </Alert>
         <p className="text-sm text-muted-foreground text-center">
-          Tu contraseña ha sido actualizada. Ahora puedes iniciar sesión con tu nueva contraseña.
+          {t('success_message')}
         </p>
         <Link href="/login" className="block">
           <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium">
-            Ir al Login
+            {t('go_to_login')}
           </Button>
         </Link>
       </div>
@@ -97,12 +99,12 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     return (
       <Alert variant="destructive">
         <AlertDescription>
-          El enlace de recuperación es inválido o ha expirado.
+          {t('invalid_token')}
           <Link
             href="/login?tab=forgot-password"
             className="block text-primary hover:underline mt-2"
           >
-            Solicitar un nuevo enlace de recuperación
+            {t('request_new')}
           </Link>
         </AlertDescription>
       </Alert>
@@ -119,7 +121,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="password" className="text-foreground font-medium">
-          Nueva Contraseña
+          {t('new_password_label')}
         </Label>
         <PasswordInput
           id="password"
@@ -133,7 +135,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="confirmPassword" className="text-foreground font-medium">
-          Confirmar Contraseña
+          {t('confirm_password_label')}
         </Label>
         <PasswordInput
           id="confirmPassword"
@@ -155,10 +157,10 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         {isSubmitting ? (
           <>
             <span className="inline-block w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin mr-2" />
-            Actualizando...
+            {t('submitting')}
           </>
         ) : (
-          'Actualizar Contraseña'
+          t('submit')
         )}
       </Button>
 
@@ -169,7 +171,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
           className="w-full flex items-center justify-center gap-2"
         >
           <ArrowLeft className="w-4 h-4" />
-          Volver
+          {t('go_to_login')}
         </Button>
       </Link>
     </form>
