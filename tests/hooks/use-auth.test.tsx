@@ -23,6 +23,7 @@ vi.mock('@/services/auth-service', () => ({
     login: vi.fn(),
     register: vi.fn(),
     logout: vi.fn(),
+    getMe: vi.fn(),
   },
 }));
 
@@ -54,8 +55,7 @@ describe('useAuth Hook', () => {
   );
 
   it('should initialize as unauthenticated if no session', async () => {
-    vi.mocked(TokenService.getToken).mockReturnValue(null);
-    vi.mocked(TokenService.getUser).mockReturnValue(null);
+    vi.mocked(AuthService.getMe).mockResolvedValue(null);
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -70,10 +70,8 @@ describe('useAuth Hook', () => {
 
   it('should verify session successfully on mount', async () => {
     const mockUser = { id: '1', name: 'Test', email: 'test@test.com' };
-    const mockToken = 'fake-token';
 
-    vi.mocked(TokenService.getToken).mockReturnValue(mockToken);
-    vi.mocked(TokenService.getUser).mockReturnValue(mockUser as unknown as User);
+    vi.mocked(AuthService.getMe).mockResolvedValue(mockUser as unknown as User);
 
     const { result } = renderHook(() => useAuth(), { wrapper });
 
@@ -83,13 +81,11 @@ describe('useAuth Hook', () => {
 
     expect(result.current.isAuthenticated).toBe(true);
     expect(result.current.user).toEqual(mockUser);
-    expect(result.current.token).toBe(mockToken);
+    expect(result.current.token).toBeNull();
   });
 
   it('should handle error verifying session', async () => {
-    vi.mocked(TokenService.getToken).mockImplementation(() => {
-      throw new Error('Storage error');
-    });
+    vi.mocked(AuthService.getMe).mockRejectedValue(new Error('Network error'));
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
     const { result } = renderHook(() => useAuth(), { wrapper });
@@ -105,14 +101,12 @@ describe('useAuth Hook', () => {
 
   it('should login successfully', async () => {
     const mockUser = { id: '1', name: 'Test', email: 'test@test.com' };
-    const mockToken = 'new-token';
 
-    vi.mocked(TokenService.getToken).mockReturnValue(null);
-    vi.mocked(TokenService.getUser).mockReturnValue(null);
+    vi.mocked(AuthService.getMe).mockResolvedValue(null);
 
     vi.mocked(AuthService.login).mockResolvedValue({
       success: true,
-      data: { token: mockToken, user: mockUser as unknown as User },
+      data: { token: null, user: mockUser as unknown as User },
     });
 
     const { result } = renderHook(() => useAuth(), { wrapper });
@@ -125,13 +119,11 @@ describe('useAuth Hook', () => {
 
     expect(result.current.isAuthenticated).toBe(true);
     expect(result.current.user).toEqual(mockUser);
-    expect(result.current.error).toBeNull();
   });
 
   it('should handle login error', async () => {
     const errorMessage = 'Invalid credentials';
-    vi.mocked(TokenService.getToken).mockReturnValue(null);
-    vi.mocked(TokenService.getUser).mockReturnValue(null);
+    vi.mocked(AuthService.getMe).mockResolvedValue(null);
     vi.mocked(AuthService.login).mockRejectedValue(new Error(errorMessage));
 
     const { result } = renderHook(() => useAuth(), { wrapper });
@@ -146,21 +138,21 @@ describe('useAuth Hook', () => {
     });
 
     expect(result.current.isAuthenticated).toBe(false);
-    expect(result.current.error).toBe(errorMessage);
   });
 
   it('should perform logout', async () => {
     const mockUser = { id: '1', name: 'Test', email: 'test@test.com' };
-    vi.mocked(TokenService.getToken).mockReturnValue('token');
-    vi.mocked(TokenService.getUser).mockReturnValue(mockUser as unknown as User);
+    vi.mocked(AuthService.getMe).mockResolvedValue(mockUser as unknown as User);
+    vi.mocked(AuthService.logout).mockResolvedValue();
 
     const { result } = renderHook(() => useAuth(), { wrapper });
     await waitFor(() => expect(result.current.isAuthenticated).toBe(true));
 
-    act(() => {
+    await act(async () => {
       result.current.logout();
     });
 
+    expect(AuthService.logout).toHaveBeenCalled();
     expect(TokenService.clearSession).toHaveBeenCalled();
     expect(result.current.isAuthenticated).toBe(false);
     expect(result.current.user).toBeNull();

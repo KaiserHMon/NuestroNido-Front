@@ -14,8 +14,15 @@ interface InvitationPreviewProps {
   autoFetch?: boolean;
 }
 
-export function InvitationPreview({ token, onConfirm, onCancel, autoFetch = true }: InvitationPreviewProps) {
-  const [info, setInfo] = useState<{ family_name: string; inviter_name: string | null } | null>(null);
+export function InvitationPreview({
+  token,
+  onConfirm,
+  onCancel,
+  autoFetch = true,
+}: InvitationPreviewProps) {
+  const [info, setInfo] = useState<{ family_name: string; inviter_name: string | null } | null>(
+    null
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -63,7 +70,9 @@ export function InvitationPreview({ token, onConfirm, onCancel, autoFetch = true
           <p className="text-center text-muted-foreground">{error}</p>
         </CardContent>
         <CardFooter className="justify-center">
-          <Button variant="outline" onClick={onCancel}>Volver al Inicio</Button>
+          <Button variant="outline" onClick={onCancel}>
+            Volver al Inicio
+          </Button>
         </CardFooter>
       </Card>
     );
@@ -77,23 +86,22 @@ export function InvitationPreview({ token, onConfirm, onCancel, autoFetch = true
         <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
           <Bird className="w-8 h-8 text-primary" />
         </div>
-        <CardTitle className="text-2xl font-bold text-foreground">
-          {info.family_name}
-        </CardTitle>
+        <CardTitle className="text-2xl font-bold text-foreground">{info.family_name}</CardTitle>
         {info.inviter_name && (
           <p className="text-sm text-muted-foreground">
             Invitado por <span className="font-medium text-foreground">{info.inviter_name}</span>
           </p>
         )}
       </CardHeader>
-      
+
       <CardContent className="space-y-4 text-center">
         <div className="bg-muted/50 p-4 rounded-lg flex items-start gap-3 text-left">
           <ShieldCheck className="w-5 h-5 text-green-600 mt-0.5 shrink-0" />
           <div className="space-y-1">
             <p className="text-sm font-medium">Confirmación de Seguridad</p>
             <p className="text-xs text-muted-foreground">
-              Estás a punto de unirte a esta familia. Tendrás acceso a sus listas, notas y tareas compartidas.
+              Estás a punto de unirte a esta familia. Tendrás acceso a sus listas, notas y tareas
+              compartidas.
             </p>
           </div>
         </div>

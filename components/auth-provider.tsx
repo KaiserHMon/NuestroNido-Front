@@ -32,36 +32,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [isAuthenticated]);
 
   useEffect(() => {
-    LevelService.getLevels().then(data => {
-      const sorted = [...data].sort((a, b) => a.level_number - b.level_number);
-      setLevels(sorted);
-    }).catch(console.error);
+    LevelService.getLevels()
+      .then((data) => {
+        const sorted = [...data].sort((a, b) => a.level_number - b.level_number);
+        setLevels(sorted);
+      })
+      .catch(console.error);
   }, []);
 
   const checkSession = useCallback(async () => {
     try {
-      const storedToken = TokenService.getToken();
-      const storedUser = TokenService.getUser();
+      // Verify session via HttpOnly cookie by calling the backend
+      const user = await AuthService.getMe();
 
-      if (storedToken && storedUser) {
-        setToken(storedToken);
-        setUser(storedUser);
+      if (user) {
+        setUser(user);
         setIsAuthenticated(true);
-        
+        setToken(null); // Token is not exposed to client
+
         try {
           const fam = await FamilyService.getMyFamily();
           if (fam) {
             setFamily(fam);
-            if (!storedUser.familyId) {
-               const updatedUser = { ...storedUser, familyId: fam.id };
-               setUser(updatedUser);
-               TokenService.setUser(updatedUser);
+            if (!user.familyId) {
+              const updatedUser = { ...user, familyId: fam.id };
+              setUser(updatedUser);
+              TokenService.setUser(updatedUser);
             }
           } else {
             setFamily(null);
           }
         } catch (err) {
-           console.error("Error loading family in checkSession:", err);
+          console.error('Error loading family in checkSession:', err);
         }
       } else {
         TokenService.clearSession();
@@ -92,7 +94,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const handleStorageChange = (e: Event) => {
       const storageEvent = e as StorageEvent;
-      if (storageEvent.key === 'auth_token' && !storageEvent.newValue) {
+      // Use user_data removal as trigger since tokens are no longer in storage
+      if (storageEvent.key === 'user_data' && !storageEvent.newValue) {
         performLogout();
       }
     };
@@ -103,7 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('auth-logout', handleAuthLogout);
-    
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('auth-logout', handleAuthLogout);
@@ -117,12 +120,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setToken(newToken);
       setUser(newUser);
       setIsAuthenticated(true);
-      
+
       try {
-          const fam = await FamilyService.getMyFamily();
-          setFamily(fam);
+        const fam = await FamilyService.getMyFamily();
+        setFamily(fam);
       } catch {
-          setFamily(null);
+        setFamily(null);
       }
     } else {
       throw new Error(response.error?.message || 'Login failed');
@@ -143,6 +146,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const logout = useCallback(() => {
+    // Call logout endpoint to clear cookies
+    AuthService.logout().catch(console.error);
     TokenService.clearSession();
     setUser(null);
     setToken(null);
@@ -150,99 +155,117 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsAuthenticated(false);
   }, []);
 
-  const createFamily = useCallback(async (name: string) => {
-    try {
-      const newFam = await FamilyService.create(name);
-      // Force refresh to get latest state from DB
-      const refreshedFam = await FamilyService.getMyFamily(true);
-      setFamily(refreshedFam || newFam);
-      
-      if (user) {
-        const updatedUserFromApi = await UserService.getUser(user.id);
-        const userWithFamily = { ...updatedUserFromApi, familyId: (refreshedFam || newFam).id };
-        setUser(userWithFamily);
-        TokenService.setUser(userWithFamily);
-      }
-    } catch (error) {
-      console.error('Error creating family in provider:', error);
-      throw error;
-    }
-  }, [user]);
+  const createFamily = useCallback(
+    async (name: string) => {
+      try {
+        const newFam = await FamilyService.create(name);
+        // Force refresh to get latest state from DB
+        const refreshedFam = await FamilyService.getMyFamily(true);
+        setFamily(refreshedFam || newFam);
 
-  const joinByCode = useCallback(async (code: string) => {
-    try {
-      const newFam = await FamilyService.joinByCode(code);
-      const refreshedFam = await FamilyService.getMyFamily(true);
-      setFamily(refreshedFam || newFam);
-      if (user) {
-        const updatedUserFromApi = await UserService.getUser(user.id);
-        const userWithFamily = { ...updatedUserFromApi, familyId: (refreshedFam || newFam).id };
-        setUser(userWithFamily);
-        TokenService.setUser(userWithFamily);
-      }
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : '';
-      if (errorMsg.toLowerCase().includes('already member') || errorMsg.toLowerCase().includes('ya eres miembro')) {
-        const fam = await FamilyService.getMyFamily(true);
-        if (fam) {
-          setFamily(fam);
-          if (user) {
-            const updatedUserFromApi = await UserService.getUser(user.id);
-            const userWithFamily = { ...updatedUserFromApi, familyId: fam.id };
-            setUser(userWithFamily);
-            TokenService.setUser(userWithFamily);
-          }
-          return;
+        if (user) {
+          const updatedUserFromApi = await UserService.getUser(user.id);
+          const userWithFamily = { ...updatedUserFromApi, familyId: (refreshedFam || newFam).id };
+          setUser(userWithFamily);
+          TokenService.setUser(userWithFamily);
         }
+      } catch (error) {
+        console.error('Error creating family in provider:', error);
+        throw error;
       }
-      throw error;
-    }
-  }, [user]);
+    },
+    [user]
+  );
 
-  const joinByLink = useCallback(async (token: string) => {
-    try {
-      const newFam = await FamilyService.joinByLink(token);
-      const refreshedFam = await FamilyService.getMyFamily(true);
-      setFamily(refreshedFam || newFam);
-      if (user) {
-        const updatedUserFromApi = await UserService.getUser(user.id);
-        const userWithFamily = { ...updatedUserFromApi, familyId: (refreshedFam || newFam).id };
-        setUser(userWithFamily);
-        TokenService.setUser(userWithFamily);
-      }
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : '';
-      if (errorMsg.toLowerCase().includes('already member') || errorMsg.toLowerCase().includes('ya eres miembro')) {
-        const fam = await FamilyService.getMyFamily(true);
-        if (fam) {
-          setFamily(fam);
-          if (user) {
-            const updatedUserFromApi = await UserService.getUser(user.id);
-            const userWithFamily = { ...updatedUserFromApi, familyId: fam.id };
-            setUser(userWithFamily);
-            TokenService.setUser(userWithFamily);
-          }
-          return;
+  const joinByCode = useCallback(
+    async (code: string) => {
+      try {
+        const newFam = await FamilyService.joinByCode(code);
+        const refreshedFam = await FamilyService.getMyFamily(true);
+        setFamily(refreshedFam || newFam);
+        if (user) {
+          const updatedUserFromApi = await UserService.getUser(user.id);
+          const userWithFamily = { ...updatedUserFromApi, familyId: (refreshedFam || newFam).id };
+          setUser(userWithFamily);
+          TokenService.setUser(userWithFamily);
         }
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : '';
+        if (
+          errorMsg.toLowerCase().includes('already member') ||
+          errorMsg.toLowerCase().includes('ya eres miembro')
+        ) {
+          const fam = await FamilyService.getMyFamily(true);
+          if (fam) {
+            setFamily(fam);
+            if (user) {
+              const updatedUserFromApi = await UserService.getUser(user.id);
+              const userWithFamily = { ...updatedUserFromApi, familyId: fam.id };
+              setUser(userWithFamily);
+              TokenService.setUser(userWithFamily);
+            }
+            return;
+          }
+        }
+        throw error;
       }
-      throw error;
-    }
-  }, [user]);
+    },
+    [user]
+  );
+
+  const joinByLink = useCallback(
+    async (token: string) => {
+      try {
+        const newFam = await FamilyService.joinByLink(token);
+        const refreshedFam = await FamilyService.getMyFamily(true);
+        setFamily(refreshedFam || newFam);
+        if (user) {
+          const updatedUserFromApi = await UserService.getUser(user.id);
+          const userWithFamily = { ...updatedUserFromApi, familyId: (refreshedFam || newFam).id };
+          setUser(userWithFamily);
+          TokenService.setUser(userWithFamily);
+        }
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : '';
+        if (
+          errorMsg.toLowerCase().includes('already member') ||
+          errorMsg.toLowerCase().includes('ya eres miembro')
+        ) {
+          const fam = await FamilyService.getMyFamily(true);
+          if (fam) {
+            setFamily(fam);
+            if (user) {
+              const updatedUserFromApi = await UserService.getUser(user.id);
+              const userWithFamily = { ...updatedUserFromApi, familyId: fam.id };
+              setUser(userWithFamily);
+              TokenService.setUser(userWithFamily);
+            }
+            return;
+          }
+        }
+        throw error;
+      }
+    },
+    [user]
+  );
 
   const updateFamily = useCallback(async (familyId: string, name: string) => {
     const updatedFam = await FamilyService.update(familyId, name);
     setFamily(updatedFam);
   }, []);
 
-  const deleteFamily = useCallback(async (familyId: string) => {
-    await FamilyService.delete(familyId);
-    setFamily(null);
-    if (user) {
-      const updatedUser = { ...user, familyId: undefined };
-      setUser(updatedUser);
-      TokenService.setUser(updatedUser);
-    }
-  }, [user]);
+  const deleteFamily = useCallback(
+    async (familyId: string) => {
+      await FamilyService.delete(familyId);
+      setFamily(null);
+      if (user) {
+        const updatedUser = { ...user, familyId: undefined };
+        setUser(updatedUser);
+        TokenService.setUser(updatedUser);
+      }
+    },
+    [user]
+  );
 
   const refreshFamily = useCallback(async () => {
     try {
@@ -270,7 +293,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         joinByLink,
         updateFamily,
         deleteFamily,
-        refreshFamily
+        refreshFamily,
       }}
     >
       {children}

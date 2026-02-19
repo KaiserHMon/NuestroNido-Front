@@ -53,13 +53,13 @@
       }
     },
     "cta_section": {
-        "title": "Comienza a organizar tu familia hoy",
-        "subtitle": "Únete a las familias que ya están disfrutando de un hogar con más armonía."
+      "title": "Comienza a organizar tu familia hoy",
+      "subtitle": "Únete a las familias que ya están disfrutando de un hogar con más armonía."
     },
     "footer": {
-        "help": "¿Necesitas ayuda?",
-        "privacy": "Política de Privacidad",
-        "rights": "Todos los derechos reservados."
+      "help": "¿Necesitas ayuda?",
+      "privacy": "Política de Privacidad",
+      "rights": "Todos los derechos reservados."
     }
   },
   "Dashboard": {

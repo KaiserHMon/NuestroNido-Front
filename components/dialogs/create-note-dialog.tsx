@@ -39,7 +39,12 @@ interface CreateNoteDialogProps {
   noteToEdit?: CreateNoteFormValues;
 }
 
-export function CreateNoteDialog({ open, onOpenChange, onSubmit, noteToEdit }: CreateNoteDialogProps) {
+export function CreateNoteDialog({
+  open,
+  onOpenChange,
+  onSubmit,
+  noteToEdit,
+}: CreateNoteDialogProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<CreateNoteFormValues>({

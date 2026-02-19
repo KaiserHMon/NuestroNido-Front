@@ -6,41 +6,27 @@
 import { User, ApiResponse, Family } from '@/lib/types';
 import { fetchClient, ApiError } from '@/lib/api-client';
 import { TokenService } from './token-service';
-import { parseJwt } from '@/lib/jwt-utils';
 import { UserService } from './user-service';
+import { mapColor } from '@/lib/colors';
 
-interface TokenResponse {
-  access_token: string;
-  token_type: string;
-  refresh_token: string;
-  expires_in: number;
+interface ProxyLoginResponse {
+  success: boolean;
+  userId: string;
 }
 
 export const AuthService = {
   async login(
     email: string,
     password: string
-  ): Promise<ApiResponse<{ token: string; user: User }>> {
+  ): Promise<ApiResponse<{ token: string | null; user: User }>> {
     try {
-      const tokenData = await fetchClient<TokenResponse>('/api/v1/auth/login', {
+      const loginData = await fetchClient<ProxyLoginResponse>('/api/auth/login', {
         method: 'POST',
         body: { email, password },
         requiresAuth: false,
       });
 
-      const token = tokenData.access_token;
-      TokenService.setToken(token);
-      
-      if (tokenData.refresh_token) {
-        TokenService.setRefreshToken(tokenData.refresh_token);
-      }
-
-      const decoded = parseJwt(token);
-      if (!decoded || !decoded.sub) {
-        throw new Error('Invalid token');
-      }
-
-      const userId = decoded.sub;
+      const userId = loginData.userId;
 
       const [userResponse, familyResponse] = await Promise.allSettled([
         UserService.getUser(userId),
@@ -54,13 +40,8 @@ export const AuthService = {
           ...userResponse.value,
         };
       } else {
-        userData = {
-          id: userId,
-          name: email.split('@')[0],
-          experience_points: 0,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
+        // If we have userId but failed to fetch details, we can't create full user object easily
+        throw new Error('Could not fetch user details');
       }
 
       if (familyResponse.status === 'fulfilled' && familyResponse.value) {
@@ -72,7 +53,7 @@ export const AuthService = {
       return {
         success: true,
         data: {
-          token,
+          token: null, // Token is in HttpOnly cookie
           user: userData,
         },
       };
@@ -92,7 +73,7 @@ export const AuthService = {
     name: string,
     email: string,
     password: string
-  ): Promise<ApiResponse<{ token: string; user: User }>> {
+  ): Promise<ApiResponse<{ token: string | null; user: User }>> {
     try {
       await fetchClient('/api/v1/auth/signup', {
         method: 'POST',
@@ -108,11 +89,16 @@ export const AuthService = {
     } catch (error) {
       console.error('Register error:', error);
       let message = 'Error al registrar usuario';
-      
-      if (error instanceof ApiError && error.data && typeof error.data === 'object' && 'detail' in error.data) {
-         message = String((error.data as { detail: unknown }).detail);
+
+      if (
+        error instanceof ApiError &&
+        error.data &&
+        typeof error.data === 'object' &&
+        'detail' in error.data
+      ) {
+        message = String((error.data as { detail: unknown }).detail);
       } else if (error instanceof Error) {
-         message = error.message;
+        message = error.message;
       }
 
       return {
@@ -122,6 +108,58 @@ export const AuthService = {
           message,
         },
       };
+    }
+  },
+
+  async getMe(): Promise<User | null> {
+    try {
+      // Call local proxy to get verified user data
+      // The proxy returns raw backend response for user
+      const rawUser = await fetchClient<any>('/api/auth/me');
+
+      // Transform data to match User type
+      const colorData = mapColor(rawUser.color, rawUser.id);
+      const levelData = rawUser.level;
+
+      const user: User = {
+        id: rawUser.id,
+        name: rawUser.name,
+        familyId: undefined,
+        color: colorData,
+        experience_points: rawUser.experience_points || 0,
+        level: levelData
+          ? {
+              id: levelData.id,
+              name: levelData.name,
+              level_number: levelData.level_number,
+              required_progress: levelData.required_progress,
+              image_url: levelData.image_url,
+            }
+          : undefined,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      try {
+        const family = await fetchClient<Family>('/api/v1/families/me');
+        if (family) user.familyId = family.id;
+      } catch (e) {
+        // ignore
+      }
+
+      TokenService.setUser(user);
+      return user;
+    } catch (error) {
+      return null;
+    }
+  },
+
+  async logout(): Promise<void> {
+    try {
+      await fetchClient('/api/auth/logout', { method: 'POST' });
+      TokenService.clearSession();
+    } catch (error) {
+      console.error('Logout error:', error);
     }
   },
 };

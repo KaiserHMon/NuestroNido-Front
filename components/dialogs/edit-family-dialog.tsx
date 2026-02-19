@@ -19,15 +19,15 @@ interface EditFamilyDialogProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-export function EditFamilyDialog({ 
-  family, 
-  onSuccess, 
+export function EditFamilyDialog({
+  family,
+  onSuccess,
   trigger,
   open: externalOpen,
-  onOpenChange: externalOnOpenChange
+  onOpenChange: externalOnOpenChange,
 }: EditFamilyDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false);
-  
+
   const isControlled = externalOpen !== undefined;
   const open = isControlled ? externalOpen : internalOpen;
   const setOpen = isControlled ? externalOnOpenChange! : setInternalOpen;
@@ -100,9 +100,7 @@ export function EditFamilyDialog({
           {...register('newName')}
           disabled={isSubmitting}
         />
-        {errors.newName && (
-          <p className="text-sm text-destructive">{errors.newName.message}</p>
-        )}
+        {errors.newName && <p className="text-sm text-destructive">{errors.newName.message}</p>}
       </div>
     </BaseDialog>
   );

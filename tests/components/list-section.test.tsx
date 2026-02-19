@@ -81,11 +81,13 @@ describe('ListSection', () => {
 
     // Verify API call
     expect(ListService.create).toHaveBeenCalledTimes(1);
-    expect(ListService.create).toHaveBeenCalledWith(expect.objectContaining({
-      title: 'Milk',
-      quantity: 2,
-      category: 'food', // Default category
-      family_id: 'family-123',
-    }));
+    expect(ListService.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Milk',
+        quantity: 2,
+        category: 'food', // Default category
+        family_id: 'family-123',
+      })
+    );
   });
 });

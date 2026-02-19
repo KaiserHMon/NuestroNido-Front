@@ -41,7 +41,13 @@ export function FamilyActions({
         family={family}
         onSuccess={onFamilyUpdated}
         trigger={
-          <Button variant="ghost" size="sm" className={buttonClass} title="Editar nombre" aria-label="Editar nombre">
+          <Button
+            variant="ghost"
+            size="sm"
+            className={buttonClass}
+            title="Editar nombre"
+            aria-label="Editar nombre"
+          >
             <Edit2 className={`${editIconClass} ${editIconColor}`} />
           </Button>
         }
@@ -50,7 +56,13 @@ export function FamilyActions({
       <DeleteFamilyDialog
         family={family}
         trigger={
-          <Button variant="ghost" size="sm" className={buttonClass} title="Eliminar familia" aria-label="Eliminar familia">
+          <Button
+            variant="ghost"
+            size="sm"
+            className={buttonClass}
+            title="Eliminar familia"
+            aria-label="Eliminar familia"
+          >
             <Trash2 className={`${deleteIconClass} ${deleteIconColor}`} />
           </Button>
         }

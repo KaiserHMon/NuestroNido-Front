@@ -46,8 +46,8 @@ export function NotesSection() {
     try {
       setLoading(true);
       const data = await NoteService.getNotes();
-      const memberIds = new Set(family.members.map(m => m.id));
-      const filteredData = data.filter(n => memberIds.has(n.user_id));
+      const memberIds = new Set(family.members.map((m) => m.id));
+      const filteredData = data.filter((n) => memberIds.has(n.user_id));
       setNotes(filteredData);
     } catch (error) {
       console.error('Error fetching notes:', error);
@@ -90,9 +90,7 @@ export function NotesSection() {
         content: data.content,
       });
 
-      setNotes((prev) =>
-        prev.map((n) => (n.id === updatedNote.id ? updatedNote : n))
-      );
+      setNotes((prev) => prev.map((n) => (n.id === updatedNote.id ? updatedNote : n)));
       setNoteToEdit(undefined);
       setIsNewNoteOpen(false);
       toast.success('Nota actualizada');
@@ -140,7 +138,9 @@ export function NotesSection() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Notas Familiares</h2>
-          <p className="text-sm text-muted-foreground mt-1">Comparte pensamientos, recordatorios o listas con tu familia</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Comparte pensamientos, recordatorios o listas con tu familia
+          </p>
         </div>
         <Button
           className="bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground shadow-md shadow-primary/30 transition-all duration-300 active:scale-95 sm:w-auto w-full"

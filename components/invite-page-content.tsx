@@ -51,9 +51,9 @@ export function InvitePageContent({ token }: InvitePageContentProps) {
   if (isLoading || !isAuthenticated || family) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-         <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mx-auto animate-pulse">
-            <Bird className="w-8 h-8 text-primary-foreground" />
-         </div>
+        <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mx-auto animate-pulse">
+          <Bird className="w-8 h-8 text-primary-foreground" />
+        </div>
       </div>
     );
   }
@@ -71,11 +71,7 @@ export function InvitePageContent({ token }: InvitePageContentProps) {
           </div>
         </div>
       ) : (
-        <InvitationPreview 
-          token={token} 
-          onConfirm={handleConfirmJoin} 
-          onCancel={handleCancel}
-        />
+        <InvitationPreview token={token} onConfirm={handleConfirmJoin} onCancel={handleCancel} />
       )}
     </div>
   );

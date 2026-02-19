@@ -21,7 +21,7 @@ test('Basic flow: Login and Dashboard navigation', async ({ page }) => {
   // 3. Fill form
   await page.getByLabel('Email').fill('test@example.com');
   await page.getByPlaceholder('••••••••').fill('password123');
-  
+
   // 4. Submit
   // await page.getByRole('button', { name: 'Iniciar Sesión' }).click();
 

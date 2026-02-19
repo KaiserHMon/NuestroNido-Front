@@ -6,7 +6,9 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 
 // Mock dependencies
 vi.mock('@/lib/category-utils', () => ({
-  getCategoryIcon: vi.fn(() => (props: React.ComponentProps<'svg'>) => <svg data-testid="category-icon" {...props} />),
+  getCategoryIcon: vi.fn(() => (props: React.ComponentProps<'svg'>) => (
+    <svg data-testid="category-icon" {...props} />
+  )),
   getCategoryLabel: vi.fn((cat: string) => `Label for ${cat}`),
 }));
 

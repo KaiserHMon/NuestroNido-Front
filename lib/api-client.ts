@@ -1,10 +1,8 @@
 import { TokenService } from '@/services/token-service';
 
-if (!process.env.NEXT_PUBLIC_API_URL) {
-  console.warn('Warning: NEXT_PUBLIC_API_URL environment variable is not set. Using default http://localhost:8000');
-}
-
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// Use relative URL to route requests through the Next.js API proxy
+// This ensures HttpOnly cookies are automatically attached and prevents CORS issues
+export const API_BASE_URL = '';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 
@@ -37,60 +35,43 @@ export async function fetchClient<T>(endpoint: string, options: FetchOptions = {
     },
   };
 
-  if (requiresAuth) {
-    const token = TokenService.getToken();
-    if (token) {
-      (config.headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
-    }
-  }
-
   if (body) {
     config.body = JSON.stringify(body);
   }
 
+  // Requests are routed through the local proxy (/api/...) which handles authentication
   const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
   if (response.status === 401 && requiresAuth) {
-    const refreshToken = TokenService.getRefreshToken();
+    // Attempt to refresh the session via the proxy
+    try {
+      const refreshResponse = await fetch('/api/auth/refresh', {
+        method: 'POST',
+      });
 
-    if (refreshToken) {
-      try {
-        const refreshResponse = await fetch(`${API_BASE_URL}/api/v1/auth/refresh`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ refresh_token: refreshToken }),
-        });
+      if (refreshResponse.ok) {
+        // The refresh response automatically updates the HttpOnly cookies
 
-        if (refreshResponse.ok) {
-          const data = await refreshResponse.json();
+        // Retry the original request
+        const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
-          TokenService.setToken(data.access_token);
-          if (data.refresh_token) {
-            TokenService.setRefreshToken(data.refresh_token);
-          }
-
-          if (config.headers) {
-            (config.headers as Record<string, string>)['Authorization'] =
-              `Bearer ${data.access_token}`;
-          }
-
-          const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, config);
-
-          if (!retryResponse.ok) {
-            const retryData = await retryResponse.json().catch(() => ({}));
-            throw new ApiError(retryResponse.status, retryResponse.statusText, retryData);
-          }
-
-          return retryResponse.json() as T;
+        if (!retryResponse.ok) {
+          const retryData = await retryResponse.json().catch(() => ({}));
+          throw new ApiError(retryResponse.status, retryResponse.statusText, retryData);
         }
-      } catch (error) {
-        console.error('Error refreshing token:', error);
+
+        return retryResponse.json() as T;
       }
+    } catch (error) {
+      console.error('Error refreshing token:', error);
     }
 
+    // If refresh failed, clear local session data and logout
     TokenService.clearSession();
+
+    // Call logout endpoint to clear cookies
+    await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new Event('auth-logout'));
     }
