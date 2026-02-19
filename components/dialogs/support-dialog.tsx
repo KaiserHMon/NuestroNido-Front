@@ -26,12 +26,12 @@ export function SupportDialog({ open, onOpenChange }: SupportDialogProps) {
     if (!message.trim()) return;
 
     setIsSubmitting(true);
-    
+
     const supportEmail = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@example.com';
     const subject = encodeURIComponent('Consulta Soporte - NuestroNido');
     const body = encodeURIComponent(message);
     const mailtoUrl = `mailto:${supportEmail}?subject=${subject}&body=${body}`;
-    
+
     window.location.href = mailtoUrl;
 
     toast.success('Abriendo cliente de correo...');

@@ -17,7 +17,8 @@ export const TokenService = {
   },
 
   setToken(token: string): void {
-    if (typeof window === 'undefined' || !token || token === 'undefined' || token === 'null') return;
+    if (typeof window === 'undefined' || !token || token === 'undefined' || token === 'null')
+      return;
     localStorage.setItem(TOKEN_KEY, token);
   },
 
@@ -37,7 +38,8 @@ export const TokenService = {
   },
 
   setRefreshToken(token: string): void {
-    if (typeof window === 'undefined' || !token || token === 'undefined' || token === 'null') return;
+    if (typeof window === 'undefined' || !token || token === 'undefined' || token === 'null')
+      return;
     localStorage.setItem(REFRESH_TOKEN_KEY, token);
   },
 

@@ -20,7 +20,8 @@ export default function NotFoundPage() {
               Something&apos;s missing.
             </p>
             <p className="mb-6 text-lg font-light text-muted-foreground">
-              Sorry, we can&apos;t find that page. You&apos;ll find plenty to explore on the home page.
+              Sorry, we can&apos;t find that page. You&apos;ll find plenty to explore on the home
+              page.
             </p>
             <Link href="/">
               <Button className="bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/20 text-primary-foreground font-medium px-6 py-2.5 shadow-md shadow-primary/30 transition-all duration-300">

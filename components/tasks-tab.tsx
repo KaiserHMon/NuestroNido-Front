@@ -159,11 +159,7 @@ export function TasksTab({
             No hay tareas {filter} {userFilter !== 'todos' ? 'asignadas a este miembro' : ''}
           </p>
           {userFilter !== 'todos' && (
-            <Button
-              variant="link"
-              onClick={() => setUserFilter('todos')}
-              className="mt-2 text-xs"
-            >
+            <Button variant="link" onClick={() => setUserFilter('todos')} className="mt-2 text-xs">
               Ver tareas de todos
             </Button>
           )}
@@ -171,7 +167,10 @@ export function TasksTab({
       ) : (
         <div className="space-y-2">
           {filteredTasks.map((task) => (
-            <Card key={task.id} className={`border border-border bg-card transition-colors ${task.completed ? 'opacity-60' : ''}`}>
+            <Card
+              key={task.id}
+              className={`border border-border bg-card transition-colors ${task.completed ? 'opacity-60' : ''}`}
+            >
               <CardContent className="p-3">
                 <div className="flex items-center justify-between gap-3">
                   {/* Left side: Dot + Info */}
@@ -183,24 +182,27 @@ export function TasksTab({
                     />
 
                     <div className="flex-1 min-w-0 space-y-1">
-                      <h4 className={`font-medium text-sm truncate text-foreground ${task.completed ? 'line-through text-muted-foreground' : ''}`}>
+                      <h4
+                        className={`font-medium text-sm truncate text-foreground ${task.completed ? 'line-through text-muted-foreground' : ''}`}
+                      >
                         {task.title}
                       </h4>
 
                       <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                         {filter === 'unicas' ? (
-                          <span className="flex items-center">
-                            {task.formattedDate}
-                          </span>
+                          <span className="flex items-center">{task.formattedDate}</span>
                         ) : (
                           <div className="flex flex-wrap gap-1.5 items-center">
                             {task.frequency && (
-                              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-5 capitalize font-medium">
+                              <Badge
+                                variant="secondary"
+                                className="text-[10px] px-1.5 py-0 h-5 capitalize font-medium"
+                              >
                                 {task.frequency === 'once' ? 'Puntual' : task.frequency}
                               </Badge>
                             )}
                             <div className="flex gap-1">
-                              {task.daysOfWeek && (
+                              {task.daysOfWeek &&
                                 task.daysOfWeek.map((d) => (
                                   <Badge
                                     key={d}
@@ -209,12 +211,9 @@ export function TasksTab({
                                   >
                                     {['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'][parseInt(d)]}
                                   </Badge>
-                                ))
-                              )}
+                                ))}
                             </div>
-                            {!task.daysOfWeek && !task.frequency && (
-                              <span>Recurrente</span>
-                            )}
+                            {!task.daysOfWeek && !task.frequency && <span>Recurrente</span>}
                           </div>
                         )}
                       </div>

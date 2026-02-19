@@ -45,11 +45,13 @@ export function NoteCard({ note, onEdit, onDelete, onClick, currentUserId }: Not
             <h3 className="font-semibold text-foreground break-words text-left line-clamp-2">
               {note.title || 'Nota sin título'}
             </h3>
-            <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">{formattedDate}</p>
+            <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">
+              {formattedDate}
+            </p>
           </div>
 
-          <div 
-            className="flex gap-1 flex-shrink-0" 
+          <div
+            className="flex gap-1 flex-shrink-0"
             onClick={(e) => e.stopPropagation()}
             onKeyDown={(e) => e.stopPropagation()}
             role="presentation"
@@ -93,10 +95,7 @@ export function NoteCard({ note, onEdit, onDelete, onClick, currentUserId }: Not
               color: colorBg,
             }}
           >
-            <div
-              className="w-1.5 h-1.5 rounded-full"
-              style={{ backgroundColor: colorBg }}
-            />
+            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: colorBg }} />
             {note.user.name}
           </div>
         </div>

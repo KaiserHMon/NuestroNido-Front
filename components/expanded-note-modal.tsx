@@ -40,26 +40,23 @@ export function ExpandedNoteModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto p-0 gap-0 border-none rounded-2xl">
         <div className="absolute right-4 top-4 z-10">
-            <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={() => onOpenChange(false)}
-                className="rounded-full bg-background/80 backdrop-blur-sm h-8 w-8 hover:bg-muted"
-            >
-                <X className="h-4 w-4" />
-            </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onOpenChange(false)}
+            className="rounded-full bg-background/80 backdrop-blur-sm h-8 w-8 hover:bg-muted"
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </div>
 
         <DialogHeader className="p-6 pb-4 sm:p-8 sm:pb-4 border-b border-border/40">
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
-               <div 
-                  className="w-3 h-3 rounded-full" 
-                  style={{ backgroundColor: colorBg }} 
-               />
-               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: colorBg }} />
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
                 {note.user.name}
-               </span>
+              </span>
             </div>
             <DialogTitle className="text-2xl font-bold text-foreground leading-tight">
               {note.title || 'Nota sin título'}
@@ -79,8 +76,8 @@ export function ExpandedNoteModal({
                 variant="outline"
                 size="sm"
                 onClick={() => {
-                    onOpenChange(false);
-                    onEdit(note);
+                  onOpenChange(false);
+                  onEdit(note);
                 }}
                 className="gap-2 h-9 px-4 rounded-full border-primary/20 text-primary hover:bg-primary/5"
               >
@@ -93,8 +90,8 @@ export function ExpandedNoteModal({
                 variant="ghost"
                 size="sm"
                 onClick={() => {
-                    onOpenChange(false);
-                    onDelete(note.id);
+                  onOpenChange(false);
+                  onDelete(note.id);
                 }}
                 className="gap-2 h-9 px-4 rounded-full text-destructive hover:bg-destructive/10 hover:text-destructive"
               >
@@ -103,9 +100,9 @@ export function ExpandedNoteModal({
               </Button>
             )}
           </div>
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => onOpenChange(false)}
             className="rounded-full"
           >

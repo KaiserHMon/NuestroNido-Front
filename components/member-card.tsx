@@ -39,7 +39,9 @@ export function MemberCard({
             style={{ borderColor: member.color.bg }}
           />
           {rank && (
-            <div className={`absolute -bottom-4 bg-card rounded-full shadow-md border border-border/50 animate-in zoom-in duration-300 leading-none ${rank <= 3 ? 'p-1.5 text-lg' : 'px-2 py-1 text-[10px] font-bold text-muted-foreground'}`}>
+            <div
+              className={`absolute -bottom-4 bg-card rounded-full shadow-md border border-border/50 animate-in zoom-in duration-300 leading-none ${rank <= 3 ? 'p-1.5 text-lg' : 'px-2 py-1 text-[10px] font-bold text-muted-foreground'}`}
+            >
               {rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : `#${rank}`}
             </div>
           )}
@@ -51,14 +53,17 @@ export function MemberCard({
               {member.name}
             </h4>
             {isMemberCreator && (
-              <Badge variant="secondary" className="bg-red-100 text-red-500 hover:bg-red-100 rounded-full px-2.5 py-0.5 text-[10px] font-black tracking-wider border-none shadow-sm uppercase">
+              <Badge
+                variant="secondary"
+                className="bg-red-100 text-red-500 hover:bg-red-100 rounded-full px-2.5 py-0.5 text-[10px] font-black tracking-wider border-none shadow-sm uppercase"
+              >
                 CREADOR
               </Badge>
             )}
           </div>
           <div className="flex items-center gap-1.5">
             <span className="text-sm text-muted-foreground truncate font-semibold opacity-70">
-                {member.level?.name || 'Miembro'}
+              {member.level?.name || 'Miembro'}
             </span>
           </div>
         </div>

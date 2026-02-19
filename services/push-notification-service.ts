@@ -20,7 +20,11 @@ function urlBase64ToUint8Array(base64String: string) {
 export async function subscribeToPushNotifications() {
   try {
     // 1. Verify browser support
-    if (typeof window === 'undefined' || !('serviceWorker' in navigator) || !('PushManager' in window)) {
+    if (
+      typeof window === 'undefined' ||
+      !('serviceWorker' in navigator) ||
+      !('PushManager' in window)
+    ) {
       console.warn('Push notifications are not supported by this browser.');
       return;
     }
@@ -44,20 +48,20 @@ export async function subscribeToPushNotifications() {
     // 4. Get the subscription from the browser's push manager
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
     });
 
     // 5. Send the subscription to the Backend (using your API client)
     const subJSON = subscription.toJSON();
-    
+
     await fetchClient('/api/v1/push/subscribe', {
       method: 'POST',
       body: {
         endpoint: subJSON.endpoint,
         p256dh: subJSON.keys?.p256dh,
-        auth: subJSON.keys?.auth
+        auth: subJSON.keys?.auth,
       },
-      requiresAuth: true // Assuming the user must be authenticated to subscribe
+      requiresAuth: true, // Assuming the user must be authenticated to subscribe
     });
 
     console.log('Push subscription completed successfully');

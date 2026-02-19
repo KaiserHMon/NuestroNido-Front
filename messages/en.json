@@ -53,13 +53,13 @@
       }
     },
     "cta_section": {
-        "title": "Start organizing your family today",
-        "subtitle": "Join the families who are already enjoying a more harmonious home."
+      "title": "Start organizing your family today",
+      "subtitle": "Join the families who are already enjoying a more harmonious home."
     },
     "footer": {
-        "help": "Need help?",
-        "privacy": "Privacy Policy",
-        "rights": "All rights reserved."
+      "help": "Need help?",
+      "privacy": "Privacy Policy",
+      "rights": "All rights reserved."
     }
   },
   "Dashboard": {
