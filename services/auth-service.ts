@@ -30,7 +30,7 @@ export const AuthService = {
 
       const token = tokenData.access_token;
       TokenService.setToken(token);
-      
+
       if (tokenData.refresh_token) {
         TokenService.setRefreshToken(tokenData.refresh_token);
       }
@@ -108,11 +108,16 @@ export const AuthService = {
     } catch (error) {
       console.error('Register error:', error);
       let message = 'Error al registrar usuario';
-      
-      if (error instanceof ApiError && error.data && typeof error.data === 'object' && 'detail' in error.data) {
-         message = String((error.data as { detail: unknown }).detail);
+
+      if (
+        error instanceof ApiError &&
+        error.data &&
+        typeof error.data === 'object' &&
+        'detail' in error.data
+      ) {
+        message = String((error.data as { detail: unknown }).detail);
       } else if (error instanceof Error) {
-         message = error.message;
+        message = error.message;
       }
 
       return {

@@ -26,21 +26,27 @@ const getDistinction = (position: number) => {
 
 export function Leaderboard({ members }: LeaderboardProps) {
   const { levels } = useAuth();
-  
+
   // Sort members by experience descending
-  const sortedMembers = [...members].sort((a, b) => (b.experience_points || 0) - (a.experience_points || 0));
+  const sortedMembers = [...members].sort(
+    (a, b) => (b.experience_points || 0) - (a.experience_points || 0)
+  );
 
   const entries = sortedMembers.map((m, index) => {
     const distinction = getDistinction(index + 1);
-    
+
     const currentXP = m.experience_points || 0;
     const currentLevelNum = m.level?.level_number || 1;
     const nextLevel = levels.find((l: Level) => l.level_number === currentLevelNum + 1);
-    
-    const nextLevelXP = nextLevel?.required_progress || currentXP; 
+
+    const nextLevelXP = nextLevel?.required_progress || currentXP;
     const isMaxLevel = !nextLevel;
-    
-    const progressPercent = isMaxLevel ? 100 : (nextLevelXP > 0 ? Math.min(100, (currentXP / nextLevelXP) * 100) : 0);
+
+    const progressPercent = isMaxLevel
+      ? 100
+      : nextLevelXP > 0
+        ? Math.min(100, (currentXP / nextLevelXP) * 100)
+        : 0;
 
     return {
       rank: index + 1,
@@ -55,7 +61,7 @@ export function Leaderboard({ members }: LeaderboardProps) {
       distinction: distinction ? (distinction.label as 'gold' | 'silver' | 'bronze') : undefined,
       nextLevelXP,
       progressPercent,
-      isMaxLevel
+      isMaxLevel,
     };
   });
 
@@ -80,7 +86,9 @@ export function Leaderboard({ members }: LeaderboardProps) {
                 <tr className="border-b border-border">
                   <th className="text-left py-2 px-2 text-muted-foreground font-medium">Pos</th>
                   <th className="text-left py-2 px-2 text-muted-foreground font-medium">Miembro</th>
-                  <th className="text-left py-2 px-2 text-muted-foreground font-medium w-1/3">Progreso (XP)</th>
+                  <th className="text-left py-2 px-2 text-muted-foreground font-medium w-1/3">
+                    Progreso (XP)
+                  </th>
                   <th className="text-left py-2 px-2 text-muted-foreground font-medium">Nivel</th>
                 </tr>
               </thead>
@@ -119,11 +127,13 @@ export function Leaderboard({ members }: LeaderboardProps) {
                     </td>
                     <td className="py-3 px-2">
                       <div className="space-y-1 max-w-[200px]">
-                         <div className="flex justify-between text-xs">
-                           <span className="font-medium">{entry.experience_points} XP</span>
-                           {!entry.isMaxLevel && <span className="text-muted-foreground">/ {entry.nextLevelXP}</span>}
-                         </div>
-                         <Progress value={entry.progressPercent} className="h-1.5" />
+                        <div className="flex justify-between text-xs">
+                          <span className="font-medium">{entry.experience_points} XP</span>
+                          {!entry.isMaxLevel && (
+                            <span className="text-muted-foreground">/ {entry.nextLevelXP}</span>
+                          )}
+                        </div>
+                        <Progress value={entry.progressPercent} className="h-1.5" />
                       </div>
                     </td>
                     <td className="py-3 px-2 text-muted-foreground">{entry.level.name}</td>
@@ -165,13 +175,15 @@ export function Leaderboard({ members }: LeaderboardProps) {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="mt-2 space-y-1">
-                   <div className="flex justify-between text-xs">
-                     <span className="font-medium">{entry.experience_points} XP</span>
-                     {!entry.isMaxLevel && <span className="text-muted-foreground">/ {entry.nextLevelXP}</span>}
-                   </div>
-                   <Progress value={entry.progressPercent} className="h-1.5" />
+                  <div className="flex justify-between text-xs">
+                    <span className="font-medium">{entry.experience_points} XP</span>
+                    {!entry.isMaxLevel && (
+                      <span className="text-muted-foreground">/ {entry.nextLevelXP}</span>
+                    )}
+                  </div>
+                  <Progress value={entry.progressPercent} className="h-1.5" />
                 </div>
               </div>
             ))}

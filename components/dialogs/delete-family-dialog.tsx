@@ -76,7 +76,9 @@ export function DeleteFamilyDialog({
           </div>
           <div className="space-y-2">
             <h3 className="text-xl font-bold text-foreground">Eliminando Nido...</h3>
-            <p className="text-muted-foreground">Estamos borrando todos los datos de forma segura</p>
+            <p className="text-muted-foreground">
+              Estamos borrando todos los datos de forma segura
+            </p>
             <Loader2 className="w-6 h-6 animate-spin mx-auto mt-4 text-destructive" />
           </div>
         </div>

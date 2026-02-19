@@ -85,7 +85,9 @@ export function JoinFamilyCard({ onSuccess }: JoinFamilyCardProps) {
         </div>
         <div className="space-y-2">
           <p className="text-foreground text-lg font-medium">Uniéndote al nido...</p>
-          <p className="text-muted-foreground text-sm">Estamos preparando tu nuevo espacio familiar</p>
+          <p className="text-muted-foreground text-sm">
+            Estamos preparando tu nuevo espacio familiar
+          </p>
         </div>
       </Card>
     );

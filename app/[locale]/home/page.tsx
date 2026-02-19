@@ -73,7 +73,7 @@ export default function HomeSelectionPage() {
           console.error('Error checking existing family:', error);
         }
       }
-      
+
       setIsCheckingFamily(false);
     };
 
@@ -84,7 +84,11 @@ export default function HomeSelectionPage() {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <Image src={logo} alt="Cargando..." className="h-16 w-auto object-contain mx-auto mb-4 animate-pulse" />
+          <Image
+            src={logo}
+            alt="Cargando..."
+            className="h-16 w-auto object-contain mx-auto mb-4 animate-pulse"
+          />
           <p className="text-foreground">Cargando...</p>
         </div>
       </div>
@@ -101,13 +105,21 @@ export default function HomeSelectionPage() {
         <div className="container mx-auto px-4 sm:px-6 py-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <Image src={logo} alt="NuestroNido Logo" className="h-10 sm:h-12 w-auto object-contain" />
+              <Image
+                src={logo}
+                alt="NuestroNido Logo"
+                className="h-10 sm:h-12 w-auto object-contain"
+              />
             </div>
 
             <div className="flex items-center gap-2">
               <SettingsDialog />
               <Link href="/">
-                <Button variant="ghost" size="sm" className="gap-2 hover:bg-primary/10 text-primary">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-2 hover:bg-primary/10 text-primary"
+                >
                   <ArrowLeft className="w-4 h-4" />
                   <span className="hidden sm:inline">Volver al inicio</span>
                 </Button>

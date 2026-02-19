@@ -1,13 +1,9 @@
-"use client";
+'use client';
 
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
-const words = [
-  "organizado",
-  "conectado",
-  "armonioso"
-];
+const words = ['organizado', 'conectado', 'armonioso'];
 
 export function AnimatedHeroText() {
   const [index, setIndex] = useState(0);
@@ -24,12 +20,12 @@ export function AnimatedHeroText() {
       <span className="text-primary">Un hogar más</span>
       <div className="h-[1.3em] relative overflow-hidden">
         <AnimatePresence mode="popLayout">
-           <motion.span
+          <motion.span
             key={words[index]}
-            initial={{ y: "100%", opacity: 0 }}
-            animate={{ y: "0%", opacity: 1 }}
-            exit={{ y: "-100%", opacity: 0 }}
-            transition={{ duration: 0.6, ease: "easeInOut" }}
+            initial={{ y: '100%', opacity: 0 }}
+            animate={{ y: '0%', opacity: 1 }}
+            exit={{ y: '-100%', opacity: 0 }}
+            transition={{ duration: 0.6, ease: 'easeInOut' }}
             className="absolute left-0 right-0 text-white drop-shadow-md"
           >
             {words[index]}

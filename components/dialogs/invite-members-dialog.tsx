@@ -2,7 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { Family } from '@/lib/types';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,7 +36,7 @@ export function InviteMembersDialog({ open, onOpenChange }: InviteMembersDialogP
         try {
           const [codeResult, linkResult] = await Promise.allSettled([
             FamilyService.createInvitationCode(5, 48),
-            FamilyService.createInvitationLink()
+            FamilyService.createInvitationLink(),
           ]);
 
           if (codeResult.status === 'fulfilled') {
@@ -152,9 +158,10 @@ export function InviteMembersDialog({ open, onOpenChange }: InviteMembersDialogP
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Válido por 24 horas. 
+                  Válido por 24 horas.
                   <span className="block mt-1 text-amber-600 dark:text-amber-500 font-medium">
-                    ⚠️ Cualquiera con este enlace podrá unirse a tu familia. Compártelo solo con personas de confianza.
+                    ⚠️ Cualquiera con este enlace podrá unirse a tu familia. Compártelo solo con
+                    personas de confianza.
                   </span>
                 </p>
               </div>

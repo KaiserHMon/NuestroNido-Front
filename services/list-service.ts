@@ -18,7 +18,7 @@ export const ListService = {
 
   async getCategories(): Promise<string[]> {
     const categories = await fetchClient<string[]>('/api/v1/lists/categories');
-    return categories.filter(cat => cat !== 'Otros');
+    return categories.filter((cat) => cat !== 'Otros');
   },
 
   async create(item: {
