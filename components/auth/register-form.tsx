@@ -79,7 +79,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           <div className="w-full border-t border-border"></div>
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">{t('submit')}</span>
+          <span className="bg-background px-2 text-muted-foreground">O</span>
         </div>
       </div>
 

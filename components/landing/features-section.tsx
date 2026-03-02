@@ -75,15 +75,15 @@ export function FeaturesSection() {
           >
             {features.map((feature, index) => (
               <motion.div key={index} variants={itemVariants}>
-                <Card className="border-card bg-card transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 hover:border-primary/50 hover:-translate-y-1 cursor-pointer h-full">
-                  <CardHeader className="p-4 sm:p-6">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-lg flex items-center justify-center mb-3 sm:mb-4 shadow-sm">
-                      <feature.icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
+                <Card className="border-organic-1 shadow-tactile border-none bg-card transition-all duration-300 hover:shadow-organic hover:-translate-y-2 group cursor-pointer h-full">
+                  <CardHeader className="p-6 sm:p-8">
+                    <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 shadow-inner group-hover:bg-primary transition-colors duration-300">
+                      <feature.icon className="w-7 h-7 text-primary group-hover:text-primary-foreground transition-colors duration-300" />
                     </div>
-                    <CardTitle className="text-lg sm:text-xl font-heading text-primary">
+                    <CardTitle className="text-xl sm:text-2xl font-bold font-heading text-primary mb-3">
                       {t(`items.${feature.id}.title`)}
                     </CardTitle>
-                    <CardDescription className="text-sm sm:text-base text-foreground">
+                    <CardDescription className="text-base text-foreground/80 leading-relaxed font-medium">
                       {t(`items.${feature.id}.description`)}
                     </CardDescription>
                   </CardHeader>

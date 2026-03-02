@@ -12,28 +12,29 @@ export function AnimatedHeroText() {
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % words.length);
-    }, 2500);
+    }, 3500);
     return () => clearInterval(interval);
   }, [words.length]);
 
   return (
-    <h1 className="flex flex-col text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold font-heading leading-tight mb-6">
-      <span className="text-primary">{t('title_start')}</span>
-      <div className="h-[1.3em] relative overflow-hidden">
+    <h1 className="flex flex-col text-center font-bold font-heading leading-[1.1] mb-12 tracking-tight px-2 relative z-20">
+      <span className="text-primary text-[clamp(2.5rem,8vw,5rem)]">{t('title_start')}</span>
+      <div className="h-[1.5em] text-[clamp(2.5rem,8vw,5rem)] relative w-full flex justify-center items-center -my-3 overflow-hidden">
         <AnimatePresence mode="popLayout">
           <motion.span
             key={words[index]}
             initial={{ y: '100%', opacity: 0 }}
             animate={{ y: '0%', opacity: 1 }}
             exit={{ y: '-100%', opacity: 0 }}
-            transition={{ duration: 0.6, ease: 'easeInOut' }}
-            className="absolute left-0 right-0 text-white drop-shadow-md"
+            transition={{ duration: 0.8, ease: [0.21, 0.45, 0.32, 0.9] }}
+            className="absolute whitespace-nowrap"
+            style={{ color: '#a93838' }}
           >
             {words[index]}
           </motion.span>
         </AnimatePresence>
       </div>
-      <span className="text-primary">{t('title_end')}</span>
+      <span className="text-primary text-[clamp(2.5rem,8vw,5rem)]">{t('title_end')}</span>
     </h1>
   );
 }

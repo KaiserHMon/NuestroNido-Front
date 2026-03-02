@@ -50,25 +50,25 @@ export function HowItWorksSection() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: false, margin: '-50px', amount: 0.2 }}
-            className="relative space-y-8 sm:space-y-12"
+            className="relative space-y-12 sm:space-y-20 px-2"
           >
             {steps.map((step, index) => (
               <motion.div
                 key={index}
                 variants={itemVariants}
-                className="flex gap-4 sm:gap-8 items-start relative"
+                className="flex flex-col sm:flex-row gap-6 sm:gap-12 items-start relative group"
               >
-                <div className="relative">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-full flex items-center justify-center flex-shrink-0 text-primary-foreground font-bold text-base sm:text-lg shadow-lg shadow-primary/30 z-10 relative">
+                <div className="relative shrink-0">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-primary border-organic-2 flex items-center justify-center flex-shrink-0 text-primary-foreground font-serif-custom italic font-bold text-3xl sm:text-4xl shadow-organic z-10 relative group-hover:rotate-6 transition-transform">
                     {step.number}
                   </div>
                 </div>
 
-                <div className="pt-1">
-                  <h3 className="text-xl sm:text-2xl font-bold font-heading text-primary mb-2">
+                <div className="pt-2">
+                  <h3 className="text-2xl sm:text-3xl font-bold font-heading text-primary mb-4 leading-tight">
                     {t(`steps.${step.number}.title`)}
                   </h3>
-                  <p className="text-foreground text-base sm:text-lg leading-relaxed">
+                  <p className="text-foreground/90 text-lg sm:text-xl leading-relaxed font-medium balance">
                     {t(`steps.${step.number}.description`)}
                   </p>
                 </div>
