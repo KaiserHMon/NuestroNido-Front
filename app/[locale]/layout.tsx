@@ -132,7 +132,7 @@ export default async function RootLayout({
           <Script
             src="https://owlight-widget.vercel.app/widget-feedback.umd.js"
             data-theme="dark"
-            data-position="left"
+            data-position="right"
             data-lang={locale}
             strategy="lazyOnload"
           />

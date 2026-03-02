@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import { Task, Member } from '@/lib/types';
 import { TasksTab } from '@/components/tasks-tab';
 import { ExpandedDateModal } from '@/components/expanded-date-modal';
@@ -35,7 +36,13 @@ import { useAuth } from '@/hooks/use-auth';
 import { useFamily } from '@/hooks/use-family';
 import { toast } from 'sonner';
 import { SectionSkeleton } from '@/components/ui/section-skeleton';
-import { CalendarGrid, ColorDot } from '@/components/calendar-grid';
+
+const CalendarGrid = dynamic(() => import('@/components/calendar-grid').then(mod => mod.CalendarGrid), {
+  loading: () => <div className="h-80 animate-pulse bg-muted rounded-xl" />,
+  ssr: false
+});
+
+import { ColorDot } from '@/components/calendar-grid';
 
 interface CreateTaskFormValues {
   title: string;
@@ -319,10 +326,15 @@ export function CalendarSection() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-foreground">Calendario de Tareas</h2>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Calendario de Tareas</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Organiza las actividades y responsabilidades diarias de tu nido
+          </p>
+        </div>
         <Button
-          className="bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
+          className="bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground shadow-md shadow-primary/30 transition-all duration-300 active:scale-95 sm:w-auto w-full"
           onClick={() => {
             setTaskToEdit(undefined);
             setIsNewTaskOpen(true);

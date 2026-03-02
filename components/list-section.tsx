@@ -155,12 +155,12 @@ export function ListSection() {
             Gestiona tus listas de compras por categoría
           </p>
         </div>
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2 flex-wrap sm:w-auto w-full">
           {purchasedItems.length > 0 ? (
             <Button
               variant="outline"
               onClick={clearPurchased}
-              className="text-xs sm:text-sm h-9 sm:h-10 bg-transparent"
+              className="text-xs sm:text-sm h-11 bg-transparent rounded-full px-5"
               aria-label="Limpiar items comprados"
               title="Limpiar items comprados"
             >

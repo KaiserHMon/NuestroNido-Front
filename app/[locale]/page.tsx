@@ -55,10 +55,7 @@ function LandingPageContent() {
               {/* Ajusta lg:-left-16 (X) y lg:top-0 (Y) para mover en Desktop */}
               {/* Ajusta mb-6 para alejar del título en Móvil */}
               <div className="lg:absolute lg:-left-16 xl:lg:-left-24 lg:-top-40 lg:-translate-x-1/2 pointer-events-none select-none mb-0 lg:mb-0">
-                <motion.img
-                  initial={{ opacity: 0, scale: 0.8, x: -20 }}
-                  animate={{ opacity: 1, scale: 1, x: 0 }}
-                  transition={{ duration: 1, delay: 0.2, ease: [0.21, 0.45, 0.32, 0.9] }}
+                <img
                   src="/up_left_bird.png"
                   alt="Bird doing dishes"
                   className="w-60 sm:w-100 lg:w-48 xl:w-98 h-auto object-contain drop-shadow-xl mx-auto"
@@ -72,10 +69,7 @@ function LandingPageContent() {
                 {/* Ajusta lg:-right-16 (X) y lg:bottom-12 (Y) para mover en Desktop */}
                 {/* Ajusta my-12 para dar aire entre Título y Subtítulo en Móvil */}
                 <div className="lg:absolute lg:-right-16 xl:lg:-right-30 lg:-bottom-20 lg:translate-x-1/2 pointer-events-none select-none -my-8 lg:my-0 order-1 lg:order-none">
-                  <motion.img
-                    initial={{ opacity: 0, scale: 0.8, x: 20 }}
-                    animate={{ opacity: 1, scale: 1, x: 0 }}
-                    transition={{ duration: 1, delay: 0.4, ease: [0.21, 0.45, 0.32, 0.9] }}
+                  <img
                     src="/down_right_bird.png"
                     alt="Bird watering plants"
                     className="w-60 sm:w-110 lg:w-56 xl:w-110 h-auto object-contain drop-shadow-xl mx-auto"

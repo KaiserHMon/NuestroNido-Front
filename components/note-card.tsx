@@ -29,10 +29,7 @@ export function NoteCard({ note, onEdit, onDelete, onClick, currentUserId }: Not
 
   return (
     <Card
-      className="border-organic-2 shadow-tactile border-none overflow-hidden transition-all hover:shadow-organic hover:-translate-y-1 hover:rotate-1 h-full flex flex-col cursor-pointer active:scale-[0.98] group"
-      style={{
-        backgroundColor: colorBg + '15', // Ultra soft pastel background
-      }}
+      className="border-organic-2 shadow-tactile border-none overflow-hidden transition-all hover:shadow-organic h-full flex flex-col cursor-pointer active:scale-[0.98] group bg-card"
       onClick={() => onClick?.(note)}
       onKeyDown={handleKeyDown}
       role="button"

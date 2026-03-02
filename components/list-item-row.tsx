@@ -1,4 +1,4 @@
-import { createElement } from 'react';
+import { createElement, memo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Check, X } from 'lucide-react';
 import { getCategoryIcon, getCategoryLabel } from '@/lib/category-utils';
@@ -10,7 +10,7 @@ interface ListItemRowProps {
   onDelete: (itemId: string) => void;
 }
 
-export function ListItemRow({ item, onToggle, onDelete }: ListItemRowProps) {
+export const ListItemRow = memo(function ListItemRow({ item, onToggle, onDelete }: ListItemRowProps) {
   const iconComponent = getCategoryIcon(item.category);
   const isPurchased = item.purchased;
 
@@ -73,4 +73,4 @@ export function ListItemRow({ item, onToggle, onDelete }: ListItemRowProps) {
       </div>
     </div>
   );
-}
+});

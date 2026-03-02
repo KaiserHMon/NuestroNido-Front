@@ -23,9 +23,9 @@ export function AddItemDialog({ open, onOpenChange, categories, onAddItem }: Add
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button className="gap-2 text-xs sm:text-sm h-9 sm:h-10 bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground shadow-md shadow-primary/30 transition-all duration-300 active:scale-95">
-          <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
-          Agregar Item
+        <Button className="gap-2 bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground shadow-md shadow-primary/30 transition-all duration-300 active:scale-95 h-11 px-5 rounded-full flex-1 sm:flex-none">
+          <Plus className="w-4 h-4" aria-hidden="true" />
+          <span className="font-semibold">Agregar Item</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-[95vw] sm:max-w-md max-h-[90vh] overflow-y-auto">

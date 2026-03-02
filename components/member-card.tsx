@@ -1,5 +1,4 @@
-'use client';
-
+import { memo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Trash2, Edit2, LogOut } from 'lucide-react';
@@ -16,7 +15,7 @@ interface MemberCardProps {
   onEdit: (member: Member) => void;
 }
 
-export function MemberCard({
+export const MemberCard = memo(function MemberCard({
   member,
   isCurrentUser,
   isCreator,
@@ -106,4 +105,4 @@ export function MemberCard({
       </CardContent>
     </Card>
   );
-}
+});

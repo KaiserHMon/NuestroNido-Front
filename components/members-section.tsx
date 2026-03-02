@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { Plus, Settings, Trash2 } from 'lucide-react';
-import { Leaderboard } from '@/components/leaderboard';
 import { DeleteMemberDialog } from '@/components/dialogs/delete-member-dialog';
 import { DeleteFamilyDialog } from '@/components/dialogs/delete-family-dialog';
 import { EditProfileDialog } from '@/components/dialogs/edit-profile-dialog';
@@ -17,6 +17,11 @@ import { UserService } from '@/services/user-service';
 import { toast } from 'sonner';
 import { SectionSkeleton } from '@/components/ui/section-skeleton';
 import { MemberCard } from '@/components/member-card';
+
+const Leaderboard = dynamic(() => import('@/components/leaderboard').then(mod => mod.Leaderboard), {
+  loading: () => <div className="h-40 animate-pulse bg-muted rounded-xl" />,
+  ssr: false
+});
 
 export function MembersSection() {
   const { family, refreshFamily } = useFamily();
@@ -118,7 +123,15 @@ export function MembersSection() {
             Miembros del Nido ({family.members.length})
           </h3>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <Button
+              onClick={() => setInviteDialogOpen(true)}
+              className="gap-2 bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground shadow-md shadow-primary/30 transition-all duration-300 active:scale-95 h-11 px-5 rounded-full"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="font-semibold">Invitar a Familiar</span>
+            </Button>
+
             {isCreator && (
               <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-full border border-border/50 transition-all hover:shadow-sm">
                 <Button
@@ -141,14 +154,6 @@ export function MembersSection() {
                 </Button>
               </div>
             )}
-            
-            <Button
-              onClick={() => setInviteDialogOpen(true)}
-              className="gap-2 bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground shadow-md shadow-primary/30 transition-all duration-300 active:scale-95 h-11 px-5 rounded-full"
-            >
-              <Plus className="w-4 h-4" />
-              <span className="font-semibold">Invitar a Familiar</span>
-            </Button>
           </div>
         </div>
 
