@@ -34,11 +34,24 @@ export const AuthService = {
       };
     } catch (error) {
       console.error('Login error:', error);
+      let message = 'Error al iniciar sesión';
+
+      if (
+        error instanceof ApiError &&
+        error.data &&
+        typeof error.data === 'object' &&
+        'detail' in error.data
+      ) {
+        message = String((error.data as { detail: unknown }).detail);
+      } else if (error instanceof Error) {
+        message = error.message;
+      }
+
       return {
         success: false,
         error: {
           code: 'LOGIN_FAILED',
-          message: error instanceof Error ? error.message : 'Error al iniciar sesión',
+          message,
         },
       };
     }

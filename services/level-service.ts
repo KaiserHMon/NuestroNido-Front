@@ -3,6 +3,6 @@ import { Level } from '@/lib/types';
 
 export const LevelService = {
   async getLevels(): Promise<Level[]> {
-    return await fetchClient<Level[]>('/api/v1/levels/');
+    return await fetchClient<Level[]>('/api/v1/levels/', { requiresAuth: false });
   },
 };

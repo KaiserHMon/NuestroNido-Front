@@ -28,6 +28,34 @@ export class ApiError extends Error {
   }
 }
 
+let refreshPromise: Promise<boolean> | null = null;
+
+async function performRefresh(): Promise<boolean> {
+  if (refreshPromise) return refreshPromise;
+
+  refreshPromise = (async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/auth/refresh`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+      });
+
+      return response.ok;
+    } catch (error) {
+      console.error('Error refreshing token:', error);
+      return false;
+    } finally {
+      refreshPromise = null;
+    }
+  })();
+
+  return refreshPromise;
+}
+
 export async function fetchClient<T>(endpoint: string, options: FetchOptions = {}): Promise<T> {
   const { method = 'GET', body, headers = {}, requiresAuth = true } = options;
 
@@ -48,33 +76,28 @@ export async function fetchClient<T>(endpoint: string, options: FetchOptions = {
   const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
   if (response.status === 401 && requiresAuth) {
-    try {
-      const refreshResponse = await fetch(`${API_BASE_URL}/api/v1/auth/refresh`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-        },
-      });
+    const success = await performRefresh();
 
-      if (refreshResponse.ok) {
-        const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, config);
+    if (success) {
+      const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
-        if (!retryResponse.ok) {
-          const retryData = await retryResponse.json().catch(() => ({}));
-          throw new ApiError(retryResponse.status, retryResponse.statusText, retryData);
-        }
-
+      if (retryResponse.ok) {
         return retryResponse.json() as T;
       }
-    } catch (error) {
-      console.error('Error refreshing token:', error);
     }
 
+    // If we reach here, refresh failed or retry failed
     TokenService.clearSession();
+
+    // Only dispatch logout if we're not already on an auth page
     if (typeof window !== 'undefined') {
-      window.dispatchEvent(new Event('auth-logout'));
+      const isAuthPage =
+        window.location.pathname.includes('/login') ||
+        window.location.pathname.includes('/register');
+
+      if (!isAuthPage) {
+        window.dispatchEvent(new Event('auth-logout'));
+      }
     }
   }
 
