@@ -94,12 +94,12 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
       <aside
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        className={`hidden sm:flex flex-col bg-card border-r border-border transition-all duration-300 ease-in-out z-50 h-screen sticky top-0 overflow-visible ${
-          isSidebarExpanded ? 'w-64' : 'w-16'
+        className={`hidden sm:flex flex-col bg-card border-r border-border transition-all duration-300 ease-in-out z-50 h-screen sticky top-0 overflow-x-hidden ${
+          isSidebarExpanded ? 'w-64' : 'w-20'
         }`}
         aria-label="Sidebar principal"
       >
-        <div className="p-4 flex items-center justify-center overflow-hidden border-b border-border/40 h-[64px] flex-shrink-0">
+        <div className="p-4 flex items-center justify-center overflow-hidden border-b border-border/40 h-[80px] flex-shrink-0">
           <div className={`transition-all duration-300 transform ${isSidebarExpanded ? 'scale-100 opacity-100' : 'scale-0 opacity-0 w-0'}`}>
             <Image
               src="/logo.png"
@@ -111,43 +111,28 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
             />
           </div>
           <div className={`transition-all duration-300 flex items-center justify-center ${isSidebarExpanded ? 'hidden' : 'block'}`}>
-             <Bird className="w-8 h-8 text-primary" />
+             <Bird className="w-10 h-10 text-primary" />
           </div>
         </div>
 
-        <nav className="flex-1 py-4 flex flex-col gap-2 px-2 overflow-y-auto no-scrollbar">
-          <Link
-            href="/"
-            className={`flex items-center gap-3 h-10 px-2 rounded-xl transition-all duration-200 group relative text-muted-foreground hover:bg-muted mb-2 border-b border-border/20 pb-2`}
-          >
-            <Home className="w-5 h-5 flex-shrink-0" />
-            <span className={`font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${isSidebarExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
-              Landing Page
-            </span>
-            {!isSidebarExpanded && (
-              <div className="absolute left-14 bg-popover text-popover-foreground text-xs px-2 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-[100] border border-border">
-                Volver al Inicio
-              </div>
-            )}
-          </Link>
-
+        <nav className="flex-1 py-8 flex flex-col gap-6 px-3 overflow-y-auto no-scrollbar overflow-x-hidden">
           {navItems.map((item) => (
             <Link
               key={item.id}
               href={item.href}
-              className={`flex items-center gap-3 h-10 px-2 rounded-xl transition-all duration-200 group relative ${
+              className={`flex items-center gap-4 h-12 px-3 rounded-xl transition-all duration-200 group relative ${
                 activeSection === item.id
                   ? 'bg-primary text-primary-foreground shadow-tactile'
                   : 'text-muted-foreground hover:bg-muted'
               }`}
             >
-              <item.icon className={`w-5 h-5 flex-shrink-0 transition-transform ${activeSection === item.id ? 'scale-110' : 'group-hover:scale-110'}`} />
-              <span className={`font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${isSidebarExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
+              <item.icon className={`w-6 h-6 flex-shrink-0 transition-transform ${activeSection === item.id ? 'scale-110' : 'group-hover:scale-110'}`} />
+              <span className={`font-semibold text-base whitespace-nowrap overflow-hidden transition-all duration-300 ${isSidebarExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
                 {item.label}
               </span>
               
               {!isSidebarExpanded && (
-                <div className="absolute left-14 bg-popover text-popover-foreground text-xs px-2 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-[100] border border-border">
+                <div className="absolute left-16 bg-popover text-popover-foreground text-sm px-3 py-1.5 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-[100] border border-border whitespace-nowrap font-medium">
                   {item.label}
                 </div>
               )}
@@ -155,27 +140,34 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
           ))}
         </nav>
 
-        <div className="p-2 border-t border-border/40 space-y-2 flex-shrink-0 pb-6">
+        <div className="p-3 border-t border-border/40 space-y-6 flex-shrink-0 pb-8 overflow-hidden">
+          {/* Family and User Info */}
+          <div className={`px-2 transition-all duration-300 ${isSidebarExpanded ? 'opacity-100' : 'opacity-100 flex flex-col items-center'}`}>
+             <div className={`transition-all duration-300 ${isSidebarExpanded ? 'text-left' : 'text-center'} w-full overflow-hidden`}>
+                <p className={`font-bold text-foreground leading-tight truncate ${isSidebarExpanded ? 'text-lg' : 'text-[10px]'}`}>
+                  {isSidebarExpanded ? family.name : family.name.substring(0, 2).toUpperCase()}
+                </p>
+                <p className={`text-muted-foreground font-medium truncate ${isSidebarExpanded ? 'text-sm' : 'text-[8px]'}`}>
+                  {isSidebarExpanded ? user.name : user.name.substring(0, 1).toUpperCase()}
+                </p>
+             </div>
+          </div>
+
           <button
             onClick={handleLogout}
-            className={`flex items-center gap-3 h-10 px-2 rounded-xl text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all group relative w-full`}
+            className={`flex items-center gap-4 h-12 px-3 rounded-xl text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all group relative w-full overflow-hidden`}
             title="Cerrar sesión"
           >
-            <LogOut className="w-5 h-5 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
-            <span className={`font-medium whitespace-nowrap transition-all duration-300 ${isSidebarExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
+            <LogOut className="w-6 h-6 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
+            <span className={`font-semibold text-base whitespace-nowrap transition-all duration-300 ${isSidebarExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
               Salir
             </span>
             {!isSidebarExpanded && (
-              <div className="absolute left-14 bg-popover text-popover-foreground text-xs px-2 py-1 rounded shadow-md opacity-0 group-hover:opacity-100 pointer-events-none z-[100] border border-border">
+              <div className="absolute left-16 bg-popover text-popover-foreground text-sm px-3 py-1.5 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none z-[100] border border-border whitespace-nowrap font-medium">
                 Cerrar sesión
               </div>
             )}
           </button>
-          
-          <div className={`mt-2 p-2 bg-muted/40 rounded-xl overflow-hidden transition-all duration-300 ${isSidebarExpanded ? 'opacity-100' : 'opacity-0 h-0 p-0'}`}>
-             <p className="text-xs font-bold text-foreground truncate">{family.name}</p>
-             <p className="text-[10px] text-muted-foreground truncate">{user.name}</p>
-          </div>
         </div>
       </aside>
 
