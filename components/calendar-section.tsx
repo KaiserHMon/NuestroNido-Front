@@ -80,6 +80,18 @@ export function CalendarSection() {
           else if (t.recurrence_type === 'weekly') frequency = 'weekly';
           else if (t.recurrence_type === 'monthly') frequency = 'monthly';
 
+          // Detect validity from end_date
+          let validity: Task['validity'] = 'once';
+          if (t.end_date) {
+            const endDate = new Date(t.end_date);
+            if (endDate.getMonth() === 11 && endDate.getDate() >= 30) {
+              validity = 'yearly';
+            } else if (endDate.getDate() >= 27) {
+              // Approximate end of month
+              validity = 'monthly';
+            }
+          }
+
           return {
             id: t.id,
             title: t.title,
@@ -87,6 +99,7 @@ export function CalendarSection() {
             date: t.due_date,
             endDate: t.end_date || undefined,
             frequency: frequency,
+            validity: validity,
             recurrence_type: t.recurrence_type,
             creatorId: t.assigned_to_user_id || '',
             creatorColor: color,
@@ -184,9 +197,19 @@ export function CalendarSection() {
     let end_date = null;
     const baseDate = data.date || new Date();
     if (data.recurrence === 'once') {
-      if (recurrence_type === 'weekly')
-        end_date = endOfWeek(baseDate, { weekStartsOn: 1 }).toISOString();
-      else end_date = due_date;
+      if (recurrence_type === 'weekly') {
+        const eow = endOfWeek(baseDate, { weekStartsOn: 1 });
+        eow.setHours(23, 59, 59, 999);
+        end_date = eow.toISOString();
+      } else {
+        const eod = new Date(baseDate);
+        eod.setHours(23, 59, 59, 999);
+        end_date = eod.toISOString();
+      }
+    } else if (data.recurrence === 'monthly') {
+      const eom = endOfMonth(baseDate);
+      eom.setHours(23, 59, 59, 999);
+      end_date = eom.toISOString();
     } else if (data.recurrence === 'yearly') {
       const yearEnd = new Date(baseDate.getFullYear(), 11, 31, 23, 59, 59, 999);
       end_date = yearEnd.toISOString();
@@ -223,9 +246,19 @@ export function CalendarSection() {
     let end_date = null;
     const baseDate = data.date || new Date();
     if (data.recurrence === 'once') {
-      if (recurrence_type === 'weekly')
-        end_date = endOfWeek(baseDate, { weekStartsOn: 1 }).toISOString();
-      else end_date = due_date;
+      if (recurrence_type === 'weekly') {
+        const eow = endOfWeek(baseDate, { weekStartsOn: 1 });
+        eow.setHours(23, 59, 59, 999);
+        end_date = eow.toISOString();
+      } else {
+        const eod = new Date(baseDate);
+        eod.setHours(23, 59, 59, 999);
+        end_date = eod.toISOString();
+      }
+    } else if (data.recurrence === 'monthly') {
+      const eom = endOfMonth(baseDate);
+      eom.setHours(23, 59, 59, 999);
+      end_date = eom.toISOString();
     } else if (data.recurrence === 'yearly') {
       const yearEnd = new Date(baseDate.getFullYear(), 11, 31, 23, 59, 59, 999);
       end_date = yearEnd.toISOString();
@@ -409,9 +442,7 @@ export function CalendarSection() {
                 dateType: taskToEdit.dateType || 'date',
                 date: taskToEdit.date ? new Date(taskToEdit.date) : undefined,
                 daysOfWeek: taskToEdit.daysOfWeek,
-                recurrence: (taskToEdit.frequency === 'weekly' || !taskToEdit.frequency
-                  ? 'once'
-                  : taskToEdit.frequency) as 'once' | 'monthly' | 'yearly',
+                recurrence: taskToEdit.validity || 'once',
                 assignedTo: taskToEdit.creatorId,
               }
             : undefined

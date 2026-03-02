@@ -214,6 +214,7 @@ export interface Task {
   creatorColor: MemberColor;
   priority?: 'low' | 'medium' | 'high';
   frequency?: 'once' | 'daily' | 'weekly' | 'monthly' | 'yearly';
+  validity?: 'once' | 'monthly' | 'yearly';
   recurrence_type: 'none' | 'daily' | 'weekly' | 'monthly';
   completed: boolean;
   assignedMembers?: string[];

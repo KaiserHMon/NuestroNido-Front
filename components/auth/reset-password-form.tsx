@@ -101,7 +101,10 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         <AlertDescription>
           {t('invalid_token')}
           <Link
-            href="/login?tab=forgot-password"
+            href={{
+              pathname: '/login',
+              query: { tab: 'forgot-password' }
+            }}
             className="block text-primary hover:underline mt-2"
           >
             {t('request_new')}

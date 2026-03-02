@@ -123,18 +123,17 @@ export function ListSection() {
   }, []);
 
   const clearPurchased = useCallback(async () => {
-    const purchased = items.filter((i) => i.purchased);
     try {
-      await ListService.deleteBatch(purchased.map((i) => i.id));
+      const response = await ListService.clearPurchasedItems();
       setItems((prev) => prev.filter((item) => !item.purchased));
-      setLastActionMsg('Purchased items cleared');
+      setLastActionMsg(`Se eliminaron ${response.deleted_count} items`);
       setTimeout(() => setLastActionMsg(''), 1500);
       toast.success('Lista de comprados limpiada');
     } catch (error) {
       console.error('Error cleaning purchased items:', error);
       toast.error('Error al limpiar la lista');
     }
-  }, [items]);
+  }, []);
 
   const countByCategory = useCallback(
     (category: string | undefined) => {

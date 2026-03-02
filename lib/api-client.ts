@@ -46,7 +46,10 @@ async function performRefresh(): Promise<boolean> {
 
       return response.ok;
     } catch (error) {
-      console.error('Error refreshing token:', error);
+      // Don't log 401s during refresh as they are expected for unauthenticated users
+      if (!(error instanceof ApiError && error.status === 401)) {
+        console.error('Error refreshing token:', error);
+      }
       return false;
     } finally {
       refreshPromise = null;

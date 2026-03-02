@@ -57,7 +57,7 @@ export function MemberCard({
                 variant="secondary"
                 className="bg-primary/10 text-primary hover:bg-primary/20 rounded-full px-2.5 py-0.5 text-[10px] font-black tracking-widest border-none uppercase"
               >
-                NIDO
+                {member.roleId === 'creator' ? 'CREADOR' : 'MIEMBRO'}
               </Badge>
             )}
           </div>

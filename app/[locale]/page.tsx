@@ -28,8 +28,10 @@ function LandingPageContent() {
     if (code || token) {
       // Redirect to the auth callback handler to process the login
       // Construct the new URL preserving the query params
-      const newUrl = `/auth/callback?${searchParams.toString()}`;
-      router.push(newUrl);
+      router.push({
+        pathname: '/auth/callback',
+        query: Object.fromEntries(searchParams.entries())
+      });
     }
   }, [searchParams, router]);
 

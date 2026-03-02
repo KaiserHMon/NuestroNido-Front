@@ -2,11 +2,12 @@
 
 import { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
+import { Plus, Settings, Trash2 } from 'lucide-react';
 import { Leaderboard } from '@/components/leaderboard';
 import { DeleteMemberDialog } from '@/components/dialogs/delete-member-dialog';
 import { DeleteFamilyDialog } from '@/components/dialogs/delete-family-dialog';
 import { EditProfileDialog } from '@/components/dialogs/edit-profile-dialog';
+import { EditFamilyDialog } from '@/components/dialogs/edit-family-dialog';
 import { InviteMembersDialog } from '@/components/dialogs/invite-members-dialog';
 import { Member } from '@/lib/types';
 import { useFamily } from '@/hooks/use-family';
@@ -34,6 +35,7 @@ export function MembersSection() {
   const [memberToEdit, setMemberToEdit] = useState<Member | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  const [editFamilyOpen, setEditFamilyOpen] = useState(false);
 
   const handleDeleteMember = (member: Member) => {
     if (member.roleId === 'creator' && family?.members.length === 1) {
@@ -111,18 +113,43 @@ export function MembersSection() {
   return (
     <div className="space-y-6">
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-foreground">
-            Miembros ({family.members.length})
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+          <h3 className="text-xl font-bold text-foreground">
+            Miembros del Nido ({family.members.length})
           </h3>
-          <Button
-            onClick={() => setInviteDialogOpen(true)}
-            className="gap-2 bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground shadow-md shadow-primary/30 transition-all duration-300 active:scale-95"
-          >
-            <Plus className="w-4 h-4" />
-            <span className="hidden sm:inline">Invitar a Familiar</span>
-            <span className="sm:hidden">Invitar</span>
-          </Button>
+          
+          <div className="flex items-center gap-2">
+            {isCreator && (
+              <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-full border border-border/50 transition-all hover:shadow-sm">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setEditFamilyOpen(true)}
+                  className="h-9 w-9 rounded-full text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                  title="Ajustes del Nido"
+                >
+                  <Settings className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setDeleteFamilyDialogOpen(true)}
+                  className="h-9 w-9 rounded-full text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                  title="Eliminar Nido"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
+            
+            <Button
+              onClick={() => setInviteDialogOpen(true)}
+              className="gap-2 bg-gradient-to-br from-primary via-primary to-primary/80 hover:shadow-lg hover:shadow-primary/50 text-primary-foreground shadow-md shadow-primary/30 transition-all duration-300 active:scale-95 h-11 px-5 rounded-full"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="font-semibold">Invitar a Familiar</span>
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -158,12 +185,20 @@ export function MembersSection() {
       />
 
       {family && (
-        <DeleteFamilyDialog
-          family={family}
-          trigger={null}
-          open={deleteFamilyDialogOpen}
-          onOpenChange={setDeleteFamilyDialogOpen}
-        />
+        <>
+          <DeleteFamilyDialog
+            family={family}
+            trigger={null}
+            open={deleteFamilyDialogOpen}
+            onOpenChange={setDeleteFamilyDialogOpen}
+          />
+          <EditFamilyDialog
+            family={family}
+            open={editFamilyOpen}
+            onOpenChange={setEditFamilyOpen}
+            trigger={null}
+          />
+        </>
       )}
 
       <EditProfileDialog

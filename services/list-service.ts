@@ -47,6 +47,12 @@ export const ListService = {
     });
   },
 
+  async clearPurchasedItems(): Promise<{ deleted_count: number }> {
+    return fetchClient<{ deleted_count: number }>('/api/v1/lists/items/purchased', {
+      method: 'DELETE',
+    });
+  },
+
   async deleteBatch(itemIds: string[]): Promise<void> {
     try {
       return await fetchClient(`/api/v1/lists/items/batch`, {

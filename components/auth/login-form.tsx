@@ -26,15 +26,22 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
   const t = useTranslations('Auth.login');
 
   const handleGoogleLogin = async () => {
+    setIsSubmitting(true);
     try {
       const response = await fetchClient<{ url: string }>('/api/v1/auth/login/google', {
         requiresAuth: false,
       });
       if (response.url) {
         window.location.href = response.url;
+      } else {
+        throw new Error('No se recibió la URL de redirección');
       }
     } catch (error) {
       console.error('Error fetching Google login URL:', error);
+      // We can use the already existing authError logic or just console.error
+      // Let's assume the user might have deactivated it as mentioned.
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

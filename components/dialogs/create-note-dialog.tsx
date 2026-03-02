@@ -109,7 +109,7 @@ export function CreateNoteDialog({
                 <FormItem>
                   <FormLabel>Título</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ej: Lista de compras" {...field} />
+                    <Input placeholder="Ej: Mensaje para la familia." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

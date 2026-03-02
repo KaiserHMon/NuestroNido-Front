@@ -41,10 +41,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       // First check if there's a cached user to avoid showing a blank screen
       const storedUser = TokenService.getUser();
-      if (storedUser) {
-        setUser(storedUser);
-        setIsAuthenticated(true);
+      if (!storedUser) {
+        setIsLoading(false);
+        return;
       }
+
+      setUser(storedUser);
+      setIsAuthenticated(true);
 
       // Re-validate session with backend
       const me = await UserService.getMe();
@@ -76,7 +79,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (error) {
       // If 401, clear session. Other errors might be network issues.
-      const status = error && typeof error === 'object' && 'status' in error ? error.status : null;
+      const status =
+        error && typeof error === 'object' && 'status' in error
+          ? (error as { status: number }).status
+          : null;
       if (status === 401) {
         TokenService.clearSession();
         setUser(null);

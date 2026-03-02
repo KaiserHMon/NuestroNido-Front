@@ -26,15 +26,20 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
   const t = useTranslations('Auth.register');
 
   const handleGoogleLogin = async () => {
+    setIsSubmitting(true);
     try {
       const response = await fetchClient<{ url: string }>('/api/v1/auth/login/google', {
         requiresAuth: false,
       });
       if (response.url) {
         window.location.href = response.url;
+      } else {
+        throw new Error('No se recibió la URL de redirección');
       }
     } catch (error) {
       console.error('Error fetching Google login URL:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

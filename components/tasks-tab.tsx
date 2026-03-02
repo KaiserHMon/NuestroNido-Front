@@ -196,9 +196,13 @@ export function TasksTab({
                             {task.frequency && (
                               <Badge
                                 variant="secondary"
-                                className="text-[10px] px-1.5 py-0 h-5 capitalize font-medium"
+                                className="text-[10px] px-1.5 py-0 h-5 font-medium"
                               >
-                                {task.frequency === 'once' ? 'Puntual' : task.frequency}
+                                {task.frequency === 'once' ? 'Puntual' : 
+                                 task.frequency === 'daily' ? 'Diaria' :
+                                 task.frequency === 'weekly' ? 'Semanal' :
+                                 task.frequency === 'monthly' ? 'Mensual' :
+                                 task.frequency === 'yearly' ? 'Anual' : task.frequency}
                               </Badge>
                             )}
                             <div className="flex gap-1">

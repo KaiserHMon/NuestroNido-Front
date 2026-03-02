@@ -50,7 +50,10 @@ function AuthCallbackPageContent() {
         }
       } catch (error) {
         console.error('Auth callback error:', error);
-        router.push('/login?error=auth_failed');
+        router.push({
+          pathname: '/login',
+          query: { error: 'auth_failed' }
+        });
       }
     };
 

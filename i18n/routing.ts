@@ -7,6 +7,22 @@ export const routing = defineRouting({
 
   // Used when no locale matches
   defaultLocale: 'es',
+  pathnames: {
+    '/': '/',
+    '/home': '/home',
+    '/login': '/login',
+    '/register': '/register',
+    '/auth/callback': '/auth/callback',
+    '/dashboard': '/dashboard',
+    '/dashboard/nido': {
+      es: '/dashboard/nido',
+      en: '/dashboard/nest'
+    },
+    '/dashboard/tareas': '/dashboard/tareas',
+    '/dashboard/lista': '/dashboard/lista',
+    '/dashboard/notas': '/dashboard/notas',
+    '/privacy-policy': '/privacy-policy'
+  }
 });
 
 export type Locale = (typeof routing.locales)[number];
