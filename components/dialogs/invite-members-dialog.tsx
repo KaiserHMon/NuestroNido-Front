@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Copy, Check, Loader2 } from 'lucide-react';
 import { FamilyService } from '@/services/family-service';
+import { useLocale } from 'next-intl';
 
 interface InviteMembersDialogProps {
   family: Family;
@@ -23,6 +24,7 @@ interface InviteMembersDialogProps {
 }
 
 export function InviteMembersDialog({ open, onOpenChange }: InviteMembersDialogProps) {
+  const locale = useLocale();
   const [codeCopied, setCodeCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
   const [invitationCode, setInvitationCode] = useState('');
@@ -50,7 +52,8 @@ export function InviteMembersDialog({ open, onOpenChange }: InviteMembersDialogP
             try {
               const url = new URL(linkData.link);
               const currentOrigin = typeof window !== 'undefined' ? window.location.origin : '';
-              const localLink = `${currentOrigin}/invite${url.pathname.replace('/invite', '')}`;
+              // Incluimos el locale en el link para evitar 404 y redirecciones innecesarias
+              const localLink = `${currentOrigin}/${locale}/invite${url.pathname.replace('/invite', '')}`;
               setInvitationLink(localLink);
             } catch (e) {
               console.error('Error processing link:', e);
@@ -67,7 +70,7 @@ export function InviteMembersDialog({ open, onOpenChange }: InviteMembersDialogP
       };
       loadInvitations();
     }
-  }, [open]);
+  }, [open, locale]);
 
   const copyCode = async () => {
     try {
