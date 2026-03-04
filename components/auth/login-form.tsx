@@ -58,7 +58,8 @@ export function LoginForm({ onSuccess, onForgotPassword }: LoginFormProps) {
     try {
       await login(data.email, data.password);
       onSuccess?.();
-    } catch {
+    } catch (error) {
+      console.error('Login failed:', error);
       // Handled by auth state
     } finally {
       setIsSubmitting(false);
