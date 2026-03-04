@@ -47,8 +47,6 @@ export function LevelUpListener() {
     // Check for level UP
     if (currentLevelNumber > prevLevelNumberRef.current) {
       // LEVEL UP DETECTED!
-      console.log('Level Up detected:', prevLevelNumberRef.current, '->', currentLevelNumber);
-
       setTimeout(() => {
         setNewLevelData({
           name: myMember.level?.name || '',
