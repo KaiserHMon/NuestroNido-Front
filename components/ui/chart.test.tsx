@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, it, expect } from 'vitest';
@@ -13,9 +12,9 @@ describe('ChartStyle Security', () => {
   it('renders styles correctly for safe inputs', () => {
     const config = {
       views: {
-        label: "Views",
-        color: "hsl(var(--chart-1))"
-      }
+        label: 'Views',
+        color: 'hsl(var(--chart-1))',
+      },
     };
     const html = renderToStaticMarkup(<ChartStyle id="chart-1" config={config} />);
     expect(html).toContain('[data-chart="chart-1"]');
@@ -57,14 +56,14 @@ describe('ChartStyle Security', () => {
   });
 
   it('escapes </style>', () => {
-     const maliciousColor = '</style><script>alert(1)</script>';
-     const config = { test: { color: maliciousColor } };
-     const html = renderToStaticMarkup(<ChartStyle id="safe" config={config} />);
+    const maliciousColor = '</style><script>alert(1)</script>';
+    const config = { test: { color: maliciousColor } };
+    const html = renderToStaticMarkup(<ChartStyle id="safe" config={config} />);
 
-     // The HTML will contain the valid closing </style> tag of the component.
-     // We want to ensure the malicious one inside the content is escaped.
-     // < becomes \3c , > becomes \3e
-     expect(html).toContain('\\3c /style\\3e');
-     expect(html).not.toContain('</style><script>');
+    // The HTML will contain the valid closing </style> tag of the component.
+    // We want to ensure the malicious one inside the content is escaped.
+    // < becomes \3c , > becomes \3e
+    expect(html).toContain('\\3c /style\\3e');
+    expect(html).not.toContain('</style><script>');
   });
 });

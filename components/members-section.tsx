@@ -18,10 +18,13 @@ import { toast } from 'sonner';
 import { SectionSkeleton } from '@/components/ui/section-skeleton';
 import { MemberCard } from '@/components/member-card';
 
-const Leaderboard = dynamic(() => import('@/components/leaderboard').then(mod => mod.Leaderboard), {
-  loading: () => <div className="h-40 animate-pulse bg-muted rounded-xl" />,
-  ssr: false
-});
+const Leaderboard = dynamic(
+  () => import('@/components/leaderboard').then((mod) => mod.Leaderboard),
+  {
+    loading: () => <div className="h-40 animate-pulse bg-muted rounded-xl" />,
+    ssr: false,
+  }
+);
 
 export function MembersSection() {
   const { family, refreshFamily } = useFamily();
@@ -122,7 +125,7 @@ export function MembersSection() {
           <h3 className="text-xl font-bold text-foreground">
             Miembros del Nido ({family.members.length})
           </h3>
-          
+
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
             <Button
               onClick={() => setInviteDialogOpen(true)}

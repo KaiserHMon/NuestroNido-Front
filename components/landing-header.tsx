@@ -44,7 +44,10 @@ export function LandingHeader() {
     <header className="border-b border-card bg-card/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
       <div className="container mx-auto px-4 py-3 sm:py-4">
         <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center hover:opacity-80 transition-all hover:scale-105 active:scale-95 shrink-0">
+          <Link
+            href="/"
+            className="flex items-center hover:opacity-80 transition-all hover:scale-105 active:scale-95 shrink-0"
+          >
             <Image
               src={logo}
               alt="NuestroNido Logo"

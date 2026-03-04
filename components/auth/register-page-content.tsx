@@ -86,9 +86,7 @@ export function RegisterPageContent() {
             />
           </div>
           <h2 className="text-lg font-semibold text-foreground mb-1">{t('register.title')}</h2>
-          <p className="text-muted-foreground text-xs sm:text-sm">
-            {t('common.logo_subtitle')}
-          </p>
+          <p className="text-muted-foreground text-xs sm:text-sm">{t('common.logo_subtitle')}</p>
         </div>
 
         {inviteInfo && (
@@ -96,7 +94,9 @@ export function RegisterPageContent() {
             <Bird className="h-4 w-4 text-primary" />
             <AlertDescription className="text-sm text-foreground">
               {t('register.invite_info', { family_name: inviteInfo.family_name })}
-              {inviteInfo.inviter_name && t('register.inviter_info', { inviter_name: inviteInfo.inviter_name })}.
+              {inviteInfo.inviter_name &&
+                t('register.inviter_info', { inviter_name: inviteInfo.inviter_name })}
+              .
             </AlertDescription>
           </Alert>
         )}

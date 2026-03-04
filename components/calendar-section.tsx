@@ -37,10 +37,13 @@ import { useFamily } from '@/hooks/use-family';
 import { toast } from 'sonner';
 import { SectionSkeleton } from '@/components/ui/section-skeleton';
 
-const CalendarGrid = dynamic(() => import('@/components/calendar-grid').then(mod => mod.CalendarGrid), {
-  loading: () => <div className="h-80 animate-pulse bg-muted rounded-xl" />,
-  ssr: false
-});
+const CalendarGrid = dynamic(
+  () => import('@/components/calendar-grid').then((mod) => mod.CalendarGrid),
+  {
+    loading: () => <div className="h-80 animate-pulse bg-muted rounded-xl" />,
+    ssr: false,
+  }
+);
 
 import { ColorDot } from '@/components/calendar-grid';
 
