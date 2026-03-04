@@ -63,8 +63,6 @@ export async function subscribeToPushNotifications() {
       },
       requiresAuth: true, // Assuming the user must be authenticated to subscribe
     });
-
-    console.log('Push subscription completed successfully');
   } catch (error) {
     console.error('Error subscribing to push notifications:', error);
   }
