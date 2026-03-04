@@ -48,7 +48,10 @@ export const MemberCard = memo(function MemberCard({
 
         <div className="flex flex-col min-w-0 pr-12 flex-1 justify-center">
           <div className="flex flex-wrap items-center gap-2 mb-1">
-            <h4 className="font-bold text-foreground text-xl truncate font-heading" title={member.name}>
+            <h4
+              className="font-bold text-foreground text-xl truncate font-heading"
+              title={member.name}
+            >
               {member.name}
             </h4>
             {isMemberCreator && (

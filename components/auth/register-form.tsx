@@ -145,11 +145,7 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
           {errors.password ? (
             <p className="text-xs text-destructive">{errors.password.message}</p>
           ) : null}
-          {!password ? (
-            <p className="text-xs text-muted-foreground">
-              {t('password_hint')}
-            </p>
-          ) : null}
+          {!password ? <p className="text-xs text-muted-foreground">{t('password_hint')}</p> : null}
         </div>
 
         <div className="space-y-1.5">

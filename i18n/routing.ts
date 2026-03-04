@@ -16,13 +16,13 @@ export const routing = defineRouting({
     '/dashboard': '/dashboard',
     '/dashboard/nido': {
       es: '/dashboard/nido',
-      en: '/dashboard/nest'
+      en: '/dashboard/nest',
     },
     '/dashboard/tareas': '/dashboard/tareas',
     '/dashboard/lista': '/dashboard/lista',
     '/dashboard/notas': '/dashboard/notas',
-    '/privacy-policy': '/privacy-policy'
-  }
+    '/privacy-policy': '/privacy-policy',
+  },
 });
 
 export type Locale = (typeof routing.locales)[number];

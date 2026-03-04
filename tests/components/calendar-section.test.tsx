@@ -91,7 +91,10 @@ describe('CalendarSection', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(useAuth).mockReturnValue({ user: mockUser } as unknown as ReturnType<typeof useAuth>);
-    vi.mocked(useFamily).mockReturnValue({ family: mockFamily, refreshFamily: vi.fn() } as unknown as ReturnType<typeof useFamily>);
+    vi.mocked(useFamily).mockReturnValue({
+      family: mockFamily,
+      refreshFamily: vi.fn(),
+    } as unknown as ReturnType<typeof useFamily>);
     vi.mocked(TaskService.getTasks).mockResolvedValue([]);
   });
 

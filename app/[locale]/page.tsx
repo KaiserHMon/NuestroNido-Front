@@ -30,7 +30,7 @@ function LandingPageContent() {
       // Construct the new URL preserving the query params
       router.push({
         pathname: '/auth/callback',
-        query: Object.fromEntries(searchParams.entries())
+        query: Object.fromEntries(searchParams.entries()),
       });
     }
   }, [searchParams, router]);
@@ -75,7 +75,7 @@ function LandingPageContent() {
                     className="w-60 sm:w-110 lg:w-56 xl:w-110 h-auto object-contain drop-shadow-xl mx-auto"
                   />
                 </div>
-                
+
                 <p className="text-lg sm:text-xl md:text-2xl text-foreground/90 mb-8 sm:mb-12 max-w-2xl mx-auto font-medium balance leading-relaxed px-4 order-2 lg:order-none">
                   {t('hero.subtitle')}
                 </p>
