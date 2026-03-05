@@ -36,7 +36,6 @@ export async function subscribeToPushNotifications() {
 
     // 2. Register Service Worker if it's not already registered
     const registration = await navigator.serviceWorker.register('/sw.js');
-    console.log('Service Worker registered:', registration.scope);
 
     // 3. Request permission from the user
     const permission = await Notification.requestPermission();
@@ -63,8 +62,6 @@ export async function subscribeToPushNotifications() {
       },
       requiresAuth: true, // Assuming the user must be authenticated to subscribe
     });
-
-    console.log('Push subscription completed successfully');
   } catch (error) {
     console.error('Error subscribing to push notifications:', error);
   }

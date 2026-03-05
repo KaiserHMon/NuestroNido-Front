@@ -59,7 +59,8 @@ export function RegisterForm({ onSuccess }: RegisterFormProps) {
     try {
       await registerUser(data.name, data.email, data.password);
       onSuccess?.();
-    } catch {
+    } catch (error) {
+      console.error('Registration failed:', error);
       // Handled by auth state
     } finally {
       setIsSubmitting(false);
