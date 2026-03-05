@@ -91,7 +91,10 @@ export function NoteCard({ note, onEdit, onDelete, onClick, currentUserId }: Not
               color: colorBg,
             }}
           >
-            <div className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: colorBg }} />
+            <div
+              className="w-2 h-2 rounded-full animate-pulse"
+              style={{ backgroundColor: colorBg }}
+            />
             {note.user.name}
           </div>
         </div>

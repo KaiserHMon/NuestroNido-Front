@@ -35,7 +35,9 @@ export async function generateMetadata({
         creator: '@nuestronido',
       },
     };
-  } catch {
+  } catch (error) {
+    // Log the error to ensure observability when fetching family info fails
+    console.error('Failed to fetch invitation info for metadata:', error);
     return {
       title: 'Invitación a NuestroNido',
       description: 'Únete a una familia en NuestroNido para organizar tu hogar.',

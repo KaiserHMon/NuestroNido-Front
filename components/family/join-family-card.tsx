@@ -47,7 +47,9 @@ export function JoinFamilyCard({ onSuccess }: JoinFamilyCardProps) {
         try {
           const result = await validateCode(invitationCode);
           setCodeValidation(result);
-        } catch {
+        } catch (error) {
+          // Log the error to maintain observability for validation failures
+          console.error('Error validating invitation code:', error);
           setCodeValidation({ valid: false });
         }
       } else {

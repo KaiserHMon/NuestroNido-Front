@@ -33,7 +33,7 @@ function AuthCallbackPageContent() {
 
         // Now fetch the current user to confirm authentication and get data
         const user = await UserService.getMe();
-        
+
         if (!user) {
           throw new Error('User data could not be retrieved');
         }
@@ -52,7 +52,7 @@ function AuthCallbackPageContent() {
         console.error('Auth callback error:', error);
         router.push({
           pathname: '/login',
-          query: { error: 'auth_failed' }
+          query: { error: 'auth_failed' },
         });
       }
     };
