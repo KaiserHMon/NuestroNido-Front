@@ -67,12 +67,17 @@ function cleanToken(token: string): string {
 export const FamilyService = {
   async getMyFamily(force: boolean = false): Promise<Family | null> {
     try {
-      const [apiFamily, members] = await Promise.all([
-        fetchClient<ApiFamily>(`/api/v1/families/me${force ? '?t=' + Date.now() : ''}`),
-        this.getMembers(force),
-      ]);
+      // Execute sequentially to avoid race conditions and handle errors individually
+      const apiFamily = await fetchClient<ApiFamily>(
+        `/api/v1/families/me${force ? '?t=' + Date.now() : ''}`
+      ).catch((err) => {
+        if ((err as { status?: number }).status === 404) return null;
+        throw err;
+      });
 
       if (!apiFamily) return null;
+
+      const members = await this.getMembers(force).catch(() => []);
 
       return mapApiFamilyToFamily(apiFamily, members);
     } catch (error) {
@@ -82,79 +87,80 @@ export const FamilyService = {
   },
 
   async getMembers(force: boolean = false): Promise<Member[]> {
-    const response = await fetchClient<ApiMember[]>(
-      `/api/v1/family-members/${force ? '?t=' + Date.now() : ''}`
-    );
+    try {
+      const response = await fetchClient<ApiMember[]>(
+        `/api/v1/family-members/${force ? '?t=' + Date.now() : ''}`
+      );
 
-    return response.map((apiMember) => {
-      const user = apiMember.user || {};
-      const colorData = mapColor(user.color, apiMember.user_id);
-      const levelData = user.level;
+      return response.map((apiMember) => {
+        const user = apiMember.user || {};
+        const colorData = mapColor(user.color, apiMember.user_id);
+        const levelData = user.level;
 
-      let role: 'creator' | 'member' = 'member';
-      if (
-        apiMember.role === 'creador' ||
-        apiMember.role === 'creator' ||
-        apiMember.role === 'owner'
-      ) {
-        role = 'creator';
-      } else if (apiMember.role === 'miembro' || apiMember.role === 'member') {
-        role = 'member';
+        let role: 'creator' | 'member' = 'member';
+        if (
+          apiMember.role === 'creador' ||
+          apiMember.role === 'creator' ||
+          apiMember.role === 'owner'
+        ) {
+          role = 'creator';
+        } else if (apiMember.role === 'miembro' || apiMember.role === 'member') {
+          role = 'member';
+        }
+
+        return {
+          id: apiMember.user_id,
+          name: user.name || 'Miembro',
+          color: colorData,
+          experience_points: user.experience_points || 0,
+          level: levelData
+            ? {
+                id: levelData.id,
+                name: levelData.name,
+                level_number: levelData.level_number,
+                required_progress: levelData.required_progress,
+                image_url: levelData.image_url,
+              }
+            : undefined,
+          roleId: role,
+          familyId: apiMember.family_id,
+          createdAt: new Date(apiMember.joined_at),
+          updatedAt: new Date(apiMember.joined_at),
+        };
+      });
+    } catch (error) {
+      if ((error as { status?: number }).status === 404) {
+        return [];
       }
-
-      return {
-        id: apiMember.user_id,
-        name: user.name || 'Miembro',
-        color: colorData,
-        experience_points: user.experience_points || 0,
-        level: levelData
-          ? {
-              id: levelData.id,
-              name: levelData.name,
-              level_number: levelData.level_number,
-              required_progress: levelData.required_progress,
-              image_url: levelData.image_url,
-            }
-          : undefined,
-        roleId: role,
-        familyId: apiMember.family_id,
-        createdAt: new Date(apiMember.joined_at),
-        updatedAt: new Date(apiMember.joined_at),
-      };
-    });
+      throw error;
+    }
   },
 
   async create(name: string): Promise<Family> {
-    const [apiFamily, members] = await Promise.all([
-      fetchClient<ApiFamily>('/api/v1/families/', {
-        method: 'POST',
-        body: { name },
-      }),
-      this.getMembers(),
-    ]);
+    const apiFamily = await fetchClient<ApiFamily>('/api/v1/families/', {
+      method: 'POST',
+      body: { name },
+    });
+    const members = await this.getMembers();
     return mapApiFamilyToFamily(apiFamily, members);
   },
 
   async joinByCode(code: string): Promise<Family> {
     const cleaned = cleanToken(code);
-    const [apiFamily, members] = await Promise.all([
-      fetchClient<ApiFamily>('/api/v1/families/join/code', {
-        method: 'POST',
-        body: { code: cleaned },
-      }),
-      this.getMembers(),
-    ]);
+    const apiFamily = await fetchClient<ApiFamily>('/api/v1/families/join/code', {
+      method: 'POST',
+      body: { code: cleaned },
+    });
+    const members = await this.getMembers();
     return mapApiFamilyToFamily(apiFamily, members);
   },
 
   async update(familyId: string, name: string): Promise<Family> {
-    const [apiFamily, members] = await Promise.all([
-      fetchClient<ApiFamily>(`/api/v1/families/${familyId}`, {
-        method: 'PUT',
-        body: { name },
-      }),
-      this.getMembers(),
-    ]);
+    const apiFamily = await fetchClient<ApiFamily>(`/api/v1/families/${familyId}`, {
+      method: 'PUT',
+      body: { name },
+    });
+    const members = await this.getMembers();
     return mapApiFamilyToFamily(apiFamily, members);
   },
 
