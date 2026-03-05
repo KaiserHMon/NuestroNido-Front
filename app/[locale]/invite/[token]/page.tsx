@@ -36,8 +36,8 @@ export async function generateMetadata({
       },
     };
   } catch (error) {
+    // Log the error to ensure observability when fetching family info fails
     console.error('Failed to fetch invitation info for metadata:', error);
-    // Fall back to generic metadata if the API fails or token is invalid
     return {
       title: 'Invitación a NuestroNido',
       description: 'Únete a una familia en NuestroNido para organizar tu hogar.',

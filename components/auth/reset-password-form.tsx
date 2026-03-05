@@ -79,13 +79,9 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     return (
       <div className="space-y-4">
         <Alert variant="default" className="bg-green-50 border-green-200">
-          <AlertDescription className="text-green-800">
-            {t('success_title')}
-          </AlertDescription>
+          <AlertDescription className="text-green-800">{t('success_title')}</AlertDescription>
         </Alert>
-        <p className="text-sm text-muted-foreground text-center">
-          {t('success_message')}
-        </p>
+        <p className="text-sm text-muted-foreground text-center">{t('success_message')}</p>
         <Link href="/login" className="block">
           <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium">
             {t('go_to_login')}
@@ -103,7 +99,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
           <Link
             href={{
               pathname: '/login',
-              query: { tab: 'forgot-password' }
+              query: { tab: 'forgot-password' },
             }}
             className="block text-primary hover:underline mt-2"
           >

@@ -8,7 +8,6 @@ import {
   StickyNote,
   Bird,
   LogOut,
-  Home,
 } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';

@@ -84,9 +84,7 @@ export function AuthPageContent() {
               priority
             />
           </div>
-          <p className="text-muted-foreground text-xs sm:text-sm">
-            {t('common.logo_subtitle')}
-          </p>
+          <p className="text-muted-foreground text-xs sm:text-sm">{t('common.logo_subtitle')}</p>
         </div>
 
         <div className="bg-card rounded-lg shadow-md border border-border p-4 sm:p-5">
