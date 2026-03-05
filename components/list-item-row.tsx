@@ -10,7 +10,11 @@ interface ListItemRowProps {
   onDelete: (itemId: string) => void;
 }
 
-export const ListItemRow = memo(function ListItemRow({ item, onToggle, onDelete }: ListItemRowProps) {
+export const ListItemRow = memo(function ListItemRow({
+  item,
+  onToggle,
+  onDelete,
+}: ListItemRowProps) {
   const iconComponent = getCategoryIcon(item.category);
   const isPurchased = item.purchased;
 

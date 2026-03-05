@@ -12,10 +12,7 @@ interface AuthResponse {
 }
 
 export const AuthService = {
-  async login(
-    email: string,
-    password: string
-  ): Promise<ApiResponse<{ user: User }>> {
+  async login(email: string, password: string): Promise<ApiResponse<{ user: User }>> {
     try {
       const data = await fetchClient<AuthResponse>('/api/v1/auth/login', {
         method: 'POST',

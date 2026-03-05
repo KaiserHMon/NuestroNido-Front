@@ -66,9 +66,7 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
     return (
       <div className="space-y-4">
         <Alert variant="default" className="bg-green-50 border-green-200">
-          <AlertDescription className="text-green-800">
-            {t('success_title')}
-          </AlertDescription>
+          <AlertDescription className="text-green-800">{t('success_title')}</AlertDescription>
         </Alert>
         <p className="text-sm text-muted-foreground text-center">
           {t('success_message', { email })}
@@ -107,9 +105,7 @@ export function ForgotPasswordForm({ onBack }: ForgotPasswordFormProps) {
         {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
       </div>
 
-      <p className="text-sm text-muted-foreground">
-        {t('hint')}
-      </p>
+      <p className="text-sm text-muted-foreground">{t('hint')}</p>
 
       <div className="flex gap-3 pt-2">
         <Button

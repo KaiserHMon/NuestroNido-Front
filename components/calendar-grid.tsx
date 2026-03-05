@@ -29,20 +29,14 @@ export function CalendarGrid({
     <>
       <div className="grid grid-cols-7 gap-0.5 mb-2">
         {['D', 'L', 'M', 'X', 'J', 'V', 'S'].map((dia) => (
-          <div
-            key={dia}
-            className="text-center text-xs font-semibold text-muted-foreground p-1"
-          >
+          <div key={dia} className="text-center text-xs font-semibold text-muted-foreground p-1">
             {dia}
           </div>
         ))}
       </div>
       <div className="grid grid-cols-7 gap-0.5">
         {Array.from({ length: startOffset }).map((_, i) => (
-          <div
-            key={`empty-${i}`}
-            className="h-12 sm:h-14 rounded-sm p-1 bg-muted/20"
-          />
+          <div key={`empty-${i}`} className="h-12 sm:h-14 rounded-sm p-1 bg-muted/20" />
         ))}
         {daysInMonth.map((day) => {
           const dayColors = getColorsForDay(day);
