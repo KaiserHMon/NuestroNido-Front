@@ -7,6 +7,7 @@ import { TokenService } from '@/services/token-service';
 import { fetchClient } from '@/lib/api-client';
 import { Family } from '@/lib/types';
 import { UserService } from '@/services/user-service';
+import { FamilyService } from '@/services/family-service';
 import { useTranslations } from 'next-intl';
 
 function AuthCallbackPageContent() {
@@ -38,7 +39,7 @@ function AuthCallbackPageContent() {
           throw new Error('User data could not be retrieved');
         }
 
-        const familyResponse = await fetchClient<Family>('/api/v1/families/me').catch(() => null);
+        const familyResponse = await FamilyService.getMyFamily();
 
         if (familyResponse) {
           user.familyId = familyResponse.id;

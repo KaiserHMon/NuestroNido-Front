@@ -70,8 +70,17 @@ export const FamilyService = {
       // Execute sequentially to avoid race conditions and handle errors individually
       const apiFamily = await fetchClient<ApiFamily>(
         `/api/v1/families/me${force ? '?t=' + Date.now() : ''}`
-      ).catch((err) => {
-        if ((err as { status?: number }).status === 404) return null;
+      ).catch(async (err) => {
+        // If 404, retry once after a small delay to handle eventual consistency/latency
+        if ((err as { status?: number }).status === 404) {
+          await new Promise((resolve) => setTimeout(resolve, 800));
+          return fetchClient<ApiFamily>(
+            `/api/v1/families/me${force ? '?t=' + Date.now() : ''}`
+          ).catch((retryErr) => {
+            if ((retryErr as { status?: number }).status === 404) return null;
+            throw retryErr;
+          });
+        }
         throw err;
       });
 
@@ -87,12 +96,21 @@ export const FamilyService = {
   },
 
   async getMembers(force: boolean = false): Promise<Member[]> {
+    const endpoint = `/api/v1/family-members${force ? '?t=' + Date.now() : ''}`;
     try {
-      const response = await fetchClient<ApiMember[]>(
-        `/api/v1/family-members/${force ? '?t=' + Date.now() : ''}`
-      );
+      const response = await fetchClient<ApiMember[]>(endpoint).catch(async (err) => {
+        // Retry once for 404 to handle backend latency
+        if ((err as { status?: number }).status === 404) {
+          await new Promise((resolve) => setTimeout(resolve, 800));
+          return fetchClient<ApiMember[]>(endpoint).catch((retryErr) => {
+            if ((retryErr as { status?: number }).status === 404) return [];
+            throw retryErr;
+          });
+        }
+        throw err;
+      });
 
-      return response.map((apiMember) => {
+      return (response || []).map((apiMember) => {
         const user = apiMember.user || {};
         const colorData = mapColor(user.color, apiMember.user_id);
         const levelData = user.level;

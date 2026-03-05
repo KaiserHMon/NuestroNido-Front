@@ -18,7 +18,15 @@ interface ApiUserResponse {
 
 export const UserService = {
   async getMe(): Promise<User> {
-    const response = await fetchClient<ApiUserResponse>('/api/v1/users/me');
+    const response = await fetchClient<ApiUserResponse>('/api/v1/users/me').catch(async (err) => {
+      // If 404, retry once after a small delay to handle eventual consistency/latency
+      if ((err as { status?: number }).status === 404) {
+        await new Promise((resolve) => setTimeout(resolve, 800));
+        return fetchClient<ApiUserResponse>('/api/v1/users/me');
+      }
+      throw err;
+    });
+
     const colorData = mapColor(response.color, response.id);
     const levelData = response.level;
 
