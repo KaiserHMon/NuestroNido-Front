@@ -2,13 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, Link } from '@/i18n/routing';
-import {
-  Calendar,
-  ShoppingCart,
-  StickyNote,
-  Bird,
-  LogOut,
-} from 'lucide-react';
+import { Calendar, ShoppingCart, StickyNote, Bird, LogOut, Home } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
@@ -99,7 +93,9 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
         aria-label="Sidebar principal"
       >
         <div className="p-4 flex items-center justify-center overflow-hidden border-b border-border/40 h-[80px] flex-shrink-0">
-          <div className={`transition-all duration-300 transform ${isSidebarExpanded ? 'scale-100 opacity-100' : 'scale-0 opacity-0 w-0'}`}>
+          <div
+            className={`transition-all duration-300 transform ${isSidebarExpanded ? 'scale-100 opacity-100' : 'scale-0 opacity-0 w-0'}`}
+          >
             <Image
               src="/logo.png"
               alt="NuestroNido"
@@ -109,8 +105,10 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
               priority
             />
           </div>
-          <div className={`transition-all duration-300 flex items-center justify-center ${isSidebarExpanded ? 'hidden' : 'block'}`}>
-             <Bird className="w-10 h-10 text-primary" />
+          <div
+            className={`transition-all duration-300 flex items-center justify-center ${isSidebarExpanded ? 'hidden' : 'block'}`}
+          >
+            <Bird className="w-10 h-10 text-primary" />
           </div>
         </div>
 
@@ -125,11 +123,15 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
                   : 'text-muted-foreground hover:bg-muted'
               }`}
             >
-              <item.icon className={`w-6 h-6 flex-shrink-0 transition-transform ${activeSection === item.id ? 'scale-110' : 'group-hover:scale-110'}`} />
-              <span className={`font-semibold text-base whitespace-nowrap overflow-hidden transition-all duration-300 ${isSidebarExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
+              <item.icon
+                className={`w-6 h-6 flex-shrink-0 transition-transform ${activeSection === item.id ? 'scale-110' : 'group-hover:scale-110'}`}
+              />
+              <span
+                className={`font-semibold text-base whitespace-nowrap overflow-hidden transition-all duration-300 ${isSidebarExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}
+              >
                 {item.label}
               </span>
-              
+
               {!isSidebarExpanded && (
                 <div className="absolute left-16 bg-popover text-popover-foreground text-sm px-3 py-1.5 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-[100] border border-border whitespace-nowrap font-medium">
                   {item.label}
@@ -141,15 +143,23 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
 
         <div className="p-3 border-t border-border/40 space-y-6 flex-shrink-0 pb-8 overflow-hidden">
           {/* Family and User Info */}
-          <div className={`px-2 transition-all duration-300 ${isSidebarExpanded ? 'opacity-100' : 'opacity-100 flex flex-col items-center'}`}>
-             <div className={`transition-all duration-300 ${isSidebarExpanded ? 'text-left' : 'text-center'} w-full overflow-hidden`}>
-                <p className={`font-bold text-foreground leading-tight truncate ${isSidebarExpanded ? 'text-lg' : 'text-[10px]'}`}>
-                  {isSidebarExpanded ? family.name : family.name.substring(0, 2).toUpperCase()}
-                </p>
-                <p className={`text-muted-foreground font-medium truncate ${isSidebarExpanded ? 'text-sm' : 'text-[8px]'}`}>
-                  {isSidebarExpanded ? user.name : user.name.substring(0, 1).toUpperCase()}
-                </p>
-             </div>
+          <div
+            className={`px-2 transition-all duration-300 ${isSidebarExpanded ? 'opacity-100' : 'opacity-100 flex flex-col items-center'}`}
+          >
+            <div
+              className={`transition-all duration-300 ${isSidebarExpanded ? 'text-left' : 'text-center'} w-full overflow-hidden`}
+            >
+              <p
+                className={`font-bold text-foreground leading-tight truncate ${isSidebarExpanded ? 'text-lg' : 'text-[10px]'}`}
+              >
+                {isSidebarExpanded ? family.name : family.name.substring(0, 2).toUpperCase()}
+              </p>
+              <p
+                className={`text-muted-foreground font-medium truncate ${isSidebarExpanded ? 'text-sm' : 'text-[8px]'}`}
+              >
+                {isSidebarExpanded ? user.name : user.name.substring(0, 1).toUpperCase()}
+              </p>
+            </div>
           </div>
 
           <button
@@ -158,7 +168,9 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
             title="Cerrar sesión"
           >
             <LogOut className="w-6 h-6 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
-            <span className={`font-semibold text-base whitespace-nowrap transition-all duration-300 ${isSidebarExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}>
+            <span
+              className={`font-semibold text-base whitespace-nowrap transition-all duration-300 ${isSidebarExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}
+            >
               Salir
             </span>
             {!isSidebarExpanded && (
@@ -182,10 +194,17 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
             priority
           />
           <div className="flex items-center gap-3">
-             <p className="text-xs font-bold text-foreground max-w-[100px] truncate">{family.name}</p>
-             <Button variant="ghost" size="icon" onClick={handleLogout} className="h-8 w-8 text-muted-foreground">
-                <LogOut className="w-4 h-4" />
-             </Button>
+            <p className="text-xs font-bold text-foreground max-w-[100px] truncate">
+              {family.name}
+            </p>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleLogout}
+              className="h-8 w-8 text-muted-foreground"
+            >
+              <LogOut className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </header>
@@ -193,7 +212,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-10 animate-in fade-in slide-in-from-bottom-2 duration-500 no-scrollbar">
-           {children}
+          {children}
         </main>
       </div>
 
@@ -208,14 +227,14 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
                 activeSection === item.id ? 'text-primary' : 'text-muted-foreground'
               }`}
             >
-              <div className={`p-1 rounded-xl transition-all ${
-                activeSection === item.id ? 'bg-primary/10 shadow-sm' : ''
-              }`}>
+              <div
+                className={`p-1 rounded-xl transition-all ${
+                  activeSection === item.id ? 'bg-primary/10 shadow-sm' : ''
+                }`}
+              >
                 <item.icon className={`w-5 h-5 ${activeSection === item.id ? 'scale-110' : ''}`} />
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-tighter">
-                {item.label}
-              </span>
+              <span className="text-[10px] font-bold uppercase tracking-tighter">{item.label}</span>
             </Link>
           ))}
         </div>
