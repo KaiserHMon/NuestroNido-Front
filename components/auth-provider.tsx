@@ -127,7 +127,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const fam = await FamilyService.getMyFamily();
         setFamily(fam);
-      } catch {
+      } catch (error) {
+        // User may not have a family yet, log error and reset state
+        console.error('Error fetching family during login:', error);
         setFamily(null);
       }
     } else {
