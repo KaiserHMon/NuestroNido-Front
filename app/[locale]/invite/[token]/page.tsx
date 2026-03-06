@@ -5,9 +5,9 @@ import { InvitePageContent } from '@/components/invite-page-content';
 export async function generateMetadata({
   params,
 }: {
-  params: { token: string };
+  params: Promise<{ token: string }>;
 }): Promise<Metadata> {
-  const token = params.token;
+  const { token } = await params;
   try {
     const info = await FamilyService.getInvitationInfo(token);
 
@@ -45,6 +45,7 @@ export async function generateMetadata({
   }
 }
 
-export default function InvitePage({ params }: { params: { token: string } }) {
-  return <InvitePageContent token={params.token} />;
+export default async function InvitePage({ params }: { params: Promise<{ token: string }> }) {
+  const { token } = await params;
+  return <InvitePageContent token={token} />;
 }

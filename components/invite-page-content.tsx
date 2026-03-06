@@ -25,10 +25,9 @@ export function InvitePageContent({ token }: InvitePageContentProps) {
       return;
     }
 
-    if (family) {
-      router.push('/dashboard');
-    }
-  }, [isAuthenticated, isLoading, family, router, token]);
+    // Don't redirect if family exists. Let the InvitationPreview show the info.
+    // The join process will handle if they are already members of that specific family.
+  }, [isAuthenticated, isLoading, router, token]);
 
   const handleConfirmJoin = async () => {
     setIsJoining(true);
@@ -62,7 +61,7 @@ export function InvitePageContent({ token }: InvitePageContentProps) {
     router.push('/home');
   };
 
-  if (isLoading || !isAuthenticated || family) {
+  if (isLoading || !isAuthenticated) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center mx-auto animate-pulse">
