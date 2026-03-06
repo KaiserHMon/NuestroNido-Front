@@ -236,8 +236,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } catch (err) {
           console.warn("Initial family refresh failed after joining, using optimistic state:", err);
         }
-
-        return newFam;
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : '';
         if (
@@ -252,8 +250,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               setUser(userWithFamily);
               TokenService.setUser(userWithFamily);
             }
-            return fam;
           }
+          return;
         }
         throw error;
       }
