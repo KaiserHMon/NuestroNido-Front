@@ -216,15 +216,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const joinByLink = useCallback(
     async (token: string) => {
       try {
+        // 1. Join and get the family object immediately
         const newFam = await FamilyService.joinByLink(token);
-        const refreshedFam = await FamilyService.getMyFamily(true);
-        setFamily(refreshedFam || newFam);
+
+        // 2. Set the family in state immediately to avoid redirection issues
+        setFamily(newFam);
+
+        // 3. Update user local state if they are logged in
         if (user) {
-          const updatedUserFromApi = await UserService.getMe();
-          const userWithFamily = { ...updatedUserFromApi, familyId: (refreshedFam || newFam).id };
+          const userWithFamily = { ...user, familyId: newFam.id };
           setUser(userWithFamily);
           TokenService.setUser(userWithFamily);
         }
+
+        // 4. Optionally try to refresh in background to get most up-to-date member list
+        // but don't block or fail the whole process if it's slow
+        FamilyService.getMyFamily(true).then((refreshed) => {
+          if (refreshed) setFamily(refreshed);
+        }).catch(err => console.warn("Background family refresh failed after joining:", err));
+
+        return newFam;
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : '';
         if (
@@ -235,12 +246,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (fam) {
             setFamily(fam);
             if (user) {
-              const updatedUserFromApi = await UserService.getMe();
-              const userWithFamily = { ...updatedUserFromApi, familyId: fam.id };
+              const userWithFamily = { ...user, familyId: fam.id };
               setUser(userWithFamily);
               TokenService.setUser(userWithFamily);
             }
-            return;
+            return fam;
           }
         }
         throw error;

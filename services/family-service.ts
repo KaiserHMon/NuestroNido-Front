@@ -235,8 +235,14 @@ export const FamilyService = {
       method: 'POST',
       body: { token: cleaned },
     });
-    const members = await this.getMembers();
-    return mapApiFamilyToFamily(apiFamily, members);
+
+    try {
+      const members = await this.getMembers(true);
+      return mapApiFamilyToFamily(apiFamily, members);
+    } catch (error) {
+      console.warn('Could not fetch members immediately after joining by link:', error);
+      return mapApiFamilyToFamily(apiFamily, []);
+    }
   },
 
   async validateCode(code: string): Promise<ValidateCodeResponse> {
