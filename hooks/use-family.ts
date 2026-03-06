@@ -43,6 +43,23 @@ export const useFamily = () => {
     [context]
   );
 
+  const joinByLink = useCallback(
+    async (token: string) => {
+      setActionLoading(true);
+      setError(null);
+      try {
+        await context.joinByLink(token);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Error al unirse por enlace';
+        setError(msg);
+        throw err;
+      } finally {
+        setActionLoading(false);
+      }
+    },
+    [context]
+  );
+
   const updateName = useCallback(
     async (familyId: string, newName: string) => {
       setActionLoading(true);
@@ -96,6 +113,7 @@ export const useFamily = () => {
     error,
     createFamily,
     joinFamily,
+    joinByLink,
     updateName,
     deleteFamily,
     validateCode,

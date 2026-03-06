@@ -19,7 +19,7 @@ import { toast } from 'sonner';
 export default function HomeSelectionPage() {
   const router = useRouter();
   const { isAuthenticated, user, isLoading: authLoading } = useAuth();
-  const { family, isLoading: familyLoading, joinFamily } = useFamily();
+  const { family, isLoading: familyLoading, joinFamily, joinByLink } = useFamily();
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isCheckingFamily, setIsCheckingFamily] = useState(true);
 
@@ -38,26 +38,37 @@ export default function HomeSelectionPage() {
       }
 
       // Check for pending invitation by link (Token)
-      const pendingToken = sessionStorage.getItem('pendingInviteToken');
+      const pendingToken = localStorage.getItem('pendingInviteToken');
       if (pendingToken) {
-        sessionStorage.removeItem('pendingInviteToken');
-        router.push(`/invite/${pendingToken}`);
-        return;
+        try {
+          setIsCheckingFamily(true);
+          await joinByLink(pendingToken);
+          localStorage.removeItem('pendingInviteToken');
+          toast.success('¡Te has unido a la familia exitosamente!');
+          router.push('/dashboard');
+          return;
+        } catch (error) {
+          console.error('Error joining with pending link:', error);
+          // If it fails, maybe the token is invalid/expired, remove it to avoid loops
+          localStorage.removeItem('pendingInviteToken');
+          toast.error('No se pudo procesar el enlace de invitación.');
+        }
       }
 
       // Check for pending invitation by code
-      const pendingCode = sessionStorage.getItem('pendingInvitationCode');
+      const pendingCode = localStorage.getItem('pendingInvitationCode');
       if (pendingCode) {
         try {
+          setIsCheckingFamily(true);
           await joinFamily(pendingCode);
-          sessionStorage.removeItem('pendingInvitationCode');
+          localStorage.removeItem('pendingInvitationCode');
           toast.success('¡Te has unido a la familia exitosamente!');
           router.push('/dashboard');
           return;
         } catch (error) {
           console.error('Error joining with pending code:', error);
+          localStorage.removeItem('pendingInvitationCode');
           toast.error('No se pudo procesar la invitación. El código podría ser inválido.');
-          sessionStorage.removeItem('pendingInvitationCode');
         }
       }
 

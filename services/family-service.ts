@@ -56,11 +56,6 @@ function cleanToken(token: string): string {
     return parts[parts.length - 1].split(/[?#]/)[0];
   }
 
-  if (token.includes('token=')) {
-    const match = token.match(/[?&]token=([^&#]+)/);
-    if (match) return match[1];
-  }
-
   return token.trim();
 }
 

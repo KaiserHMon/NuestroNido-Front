@@ -46,10 +46,10 @@ export function RegisterPageContent() {
     const code = searchParams.get('code');
     const invite = searchParams.get('invite');
     if (code) {
-      sessionStorage.setItem('pendingInvitationCode', code);
+      localStorage.setItem('pendingInvitationCode', code);
     }
     if (invite) {
-      sessionStorage.setItem('pendingInviteToken', invite);
+      localStorage.setItem('pendingInviteToken', invite);
       // Try to fetch info to show a friendly message
       FamilyService.getInvitationInfo(invite)
         .then(setInviteInfo)
