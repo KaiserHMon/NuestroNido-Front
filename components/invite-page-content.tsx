@@ -35,10 +35,10 @@ export function InvitePageContent({ token }: InvitePageContentProps) {
     try {
       await joinByLink(token);
       toast.success('¡Te has unido a la familia!');
-      // Give a small delay for state to propagate before navigating
+      // Give a delay for state to propagate and backend to be consistent before navigating
       setTimeout(() => {
         router.push('/dashboard');
-      }, 100);
+      }, 1000);
     } catch (error) {
       console.error('Error joining family by link:', error);
       

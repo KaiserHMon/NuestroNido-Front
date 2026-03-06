@@ -229,11 +229,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           TokenService.setUser(userWithFamily);
         }
 
-        // 4. Optionally try to refresh in background to get most up-to-date member list
-        // but don't block or fail the whole process if it's slow
-        FamilyService.getMyFamily(true).then((refreshed) => {
+        // 4. Force a refresh and wait for it to ensure consistency
+        try {
+          const refreshed = await FamilyService.getMyFamily(true);
           if (refreshed) setFamily(refreshed);
-        }).catch(err => console.warn("Background family refresh failed after joining:", err));
+        } catch (err) {
+          console.warn("Initial family refresh failed after joining, using optimistic state:", err);
+        }
 
         return newFam;
       } catch (error) {

@@ -71,15 +71,29 @@ export const FamilyService = {
       const apiFamily = await fetchClient<ApiFamily>(
         `/api/v1/families/me${force ? '?t=' + Date.now() : ''}`
       ).catch(async (err) => {
-        // If 404, retry once after a small delay to handle eventual consistency/latency
+        // If 404, retry with increasing delays to handle eventual consistency/latency
         if ((err as { status?: number }).status === 404) {
-          await new Promise((resolve) => setTimeout(resolve, 800));
-          return fetchClient<ApiFamily>(
-            `/api/v1/families/me${force ? '?t=' + Date.now() : ''}`
-          ).catch((retryErr) => {
-            if ((retryErr as { status?: number }).status === 404) return null;
+          // First retry: 1s delay
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          try {
+            return await fetchClient<ApiFamily>(
+              `/api/v1/families/me${force ? '?t=' + Date.now() : ''}`
+            );
+          } catch (retryErr) {
+            if ((retryErr as { status?: number }).status === 404) {
+              // Second retry: 2s delay
+              await new Promise((resolve) => setTimeout(resolve, 2000));
+              try {
+                return await fetchClient<ApiFamily>(
+                  `/api/v1/families/me${force ? '?t=' + Date.now() : ''}`
+                );
+              } catch (finalErr) {
+                if ((finalErr as { status?: number }).status === 404) return null;
+                throw finalErr;
+              }
+            }
             throw retryErr;
-          });
+          }
         }
         throw err;
       });
