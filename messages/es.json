@@ -127,8 +127,8 @@
       "submit": "Crear Cuenta",
       "have_account": "¿Ya tienes cuenta?",
       "login_here": "Inicia sesión aquí",
-      "invite_info": "Te estás registrando para unirte a la familia {family_name}",
-      "inviter_info": " invitada por {inviter_name}"
+      "invite_info": "Te estás registrando para unirte a la familia <family>{family_name}</family>",
+      "inviter_info": " invitada por <inviter>{inviter_name}</inviter>"
     },
     "forgot_password": {
       "title": "Recuperar Contraseña",

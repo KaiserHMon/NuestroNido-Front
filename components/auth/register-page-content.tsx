@@ -90,12 +90,18 @@ export function RegisterPageContent() {
         </div>
 
         {inviteInfo && (
-          <Alert className="mb-6 bg-primary/5 border-primary/20">
+          <Alert className="mb-6 bg-muted border-primary/20 shadow-sm">
             <Bird className="h-4 w-4 text-primary" />
             <AlertDescription className="text-sm text-foreground">
-              {t('register.invite_info', { family_name: inviteInfo.family_name })}
+              {t.rich('register.invite_info', {
+                family_name: inviteInfo.family_name,
+                family: (chunks) => <span className="text-primary font-bold">{chunks}</span>,
+              })}
               {inviteInfo.inviter_name &&
-                t('register.inviter_info', { inviter_name: inviteInfo.inviter_name })}
+                t.rich('register.inviter_info', {
+                  inviter_name: inviteInfo.inviter_name,
+                  inviter: (chunks) => <span className="text-primary font-bold">{chunks}</span>,
+                })}
               .
             </AlertDescription>
           </Alert>

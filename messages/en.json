@@ -127,8 +127,8 @@
       "submit": "Create Account",
       "have_account": "Already have an account?",
       "login_here": "Login here",
-      "invite_info": "You are registering to join the family {family_name}",
-      "inviter_info": " invited by {inviter_name}"
+      "invite_info": "You are registering to join the family <family>{family_name}</family>",
+      "inviter_info": " invited by <inviter>{inviter_name}</inviter>"
     },
     "forgot_password": {
       "title": "Recover Password",

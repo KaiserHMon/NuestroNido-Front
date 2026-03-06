@@ -107,7 +107,7 @@ export function InvitationPreview({
         </div>
       </CardContent>
 
-      <CardFooter className="flex flex-col sm:flex-row gap-3">
+      <CardFooter className="grid grid-cols-2 gap-3">
         <Button variant="outline" className="w-full" onClick={onCancel}>
           Cancelar
         </Button>
