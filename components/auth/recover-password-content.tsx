@@ -14,7 +14,7 @@ export function RecoverPasswordContent() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <img src="/logo.png" alt="NuestroNido Logo" className="w-16 h-16 object-contain" />
+            <img src="/nuestro-nido-logo.png" alt="NuestroNido Logo" className="w-20 h-20 sm:w-24 sm:h-24 object-contain" />
           </div>
           <p className="text-muted-foreground text-sm sm:text-base">{t('title')}</p>
         </div>

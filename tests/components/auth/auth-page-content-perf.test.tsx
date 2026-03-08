@@ -43,7 +43,7 @@ describe('AuthPageContent Performance', () => {
     expect(image).toBeInTheDocument();
 
     // Check props
-    expect(image).toHaveAttribute('src', '/logo.png');
+    expect(image).toHaveAttribute('src', '/nuestro-nido-logo.png');
     expect(image).toHaveAttribute('width', '261');
     expect(image).toHaveAttribute('height', '64');
     expect(image).toHaveAttribute('alt', 'NuestroNido Logo');

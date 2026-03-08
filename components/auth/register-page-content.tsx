@@ -77,11 +77,11 @@ export function RegisterPageContent() {
         <div className="text-center mb-6">
           <div className="flex items-center justify-center mb-2">
             <Image
-              src="/logo.png"
+              src="/nuestro-nido-logo.png"
               alt="NuestroNido Logo"
               width={1161}
               height={285}
-              className="h-16 w-auto object-contain"
+              className="h-20 sm:h-24 w-auto object-contain"
               priority
             />
           </div>

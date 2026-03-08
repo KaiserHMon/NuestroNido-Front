@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { LogOut, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
-import logo from '@/public/logo.png';
+import logo from '@/public/nuestro-nido-logo.png';
 import { useTranslations } from 'next-intl';
 
 export function LandingHeader() {
@@ -30,10 +30,9 @@ export function LandingHeader() {
               <Image
                 src={logo}
                 alt="NuestroNido Logo"
-                className="h-6.5 sm:h-11 w-auto object-contain"
+                className="h-8 sm:h-12 lg:h-14 w-auto object-contain"
                 priority
-              />
-            </div>
+              />            </div>
           </div>
         </div>
       </header>
@@ -51,10 +50,9 @@ export function LandingHeader() {
             <Image
               src={logo}
               alt="NuestroNido Logo"
-              className="h-6.5 sm:h-11 w-auto object-contain"
+              className="h-8 sm:h-12 lg:h-14 w-auto object-contain"
               priority
-            />
-          </Link>
+            />          </Link>
 
           <div className="flex items-center gap-1.5 sm:gap-4">
             {isAuthenticated ? (

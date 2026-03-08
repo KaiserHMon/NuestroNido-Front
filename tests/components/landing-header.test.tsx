@@ -14,7 +14,7 @@ vi.mock('@/hooks/use-auth', () => ({
 }));
 
 // Mock image import
-vi.mock('@/assets/logo.png', () => ({
+vi.mock('@/public/nuestro-nido-logo.png', () => ({
   default: {
     src: '/img.jpg',
     height: 100,

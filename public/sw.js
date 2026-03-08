@@ -3,8 +3,8 @@ self.addEventListener('push', function (event) {
     const data = event.data.json();
     const options = {
       body: data.body,
-      icon: '/logo.png', // Fallback to logo.png
-      badge: '/icon.svg', // Fallback to icon.svg
+      icon: '/nuestro-nido-logo.png', // Fallback to logo
+      badge: '/nuestro-nido-favicon.png', // Fallback to favicon
       data: {
         url: data.data?.url || 'https://nuestronido.vercel.app/'
       }

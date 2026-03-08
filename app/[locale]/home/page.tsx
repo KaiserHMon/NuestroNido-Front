@@ -2,13 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import logo from '@/public/logo.png';
+import logo from '@/public/nuestro-nido-logo.png';
 import { useAuth } from '@/hooks/use-auth';
 import { useFamily } from '@/hooks/use-family';
-import { Button } from '@/components/ui/button';
 import { CreateFamilyCard } from '@/components/family/create-family-card';
 import { JoinFamilyCard } from '@/components/family/join-family-card';
 import { SupportDialog } from '@/components/dialogs/support-dialog';
@@ -115,26 +113,16 @@ export default function HomeSelectionPage() {
       <header className="border-b border-card bg-card/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 sm:px-6 py-2">
           <div className="flex items-center justify-between">
-            <div className="flex items-center">
+            <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
               <Image
                 src={logo}
                 alt="NuestroNido Logo"
-                className="h-10 sm:h-12 w-auto object-contain"
+                className="h-14 sm:h-16 lg:h-20 w-auto object-contain"
               />
-            </div>
+            </Link>
 
             <div className="flex items-center gap-2">
               <SettingsDialog />
-              <Link href="/">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="gap-2 hover:bg-primary/10 text-primary"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span className="hidden sm:inline">Volver al inicio</span>
-                </Button>
-              </Link>
             </div>
           </div>
         </div>

@@ -218,6 +218,7 @@ export interface Task {
   recurrence_type: 'none' | 'daily' | 'weekly' | 'monthly';
   completed: boolean;
   assignedMembers?: string[];
+  xp_reward?: number;
   familyId: string;
   createdAt?: string;
   updatedAt?: string;
@@ -233,6 +234,7 @@ export interface ApiTask {
   status: 'pending' | 'completed';
   due_date: string;
   end_date: string | null;
+  xp_reward: number | null;
   created_at: string;
   updated_at: string;
 }

@@ -92,8 +92,8 @@ export const metadata: Metadata = {
     creator: '@nuestronido',
   },
   icons: {
-    icon: '/icon.svg',
-    apple: '/icon.svg',
+    icon: '/nuestro-nido-favicon.png',
+    apple: '/nuestro-nido-favicon.png',
   },
   manifest: '/site.webmanifest',
 };

@@ -8,9 +8,9 @@
   "theme_color": "#f76e6e",
   "icons": [
     {
-      "src": "/icon.svg",
+      "src": "/nuestro-nido-favicon.png",
       "sizes": "any",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]

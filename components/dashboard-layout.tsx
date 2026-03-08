@@ -61,7 +61,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <Image
-            src="/logo.png"
+            src="/nuestro-nido-logo.png"
             alt="Cargando..."
             width={261}
             height={64}
@@ -97,11 +97,11 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
             className={`transition-all duration-300 transform ${isSidebarExpanded ? 'scale-100 opacity-100' : 'scale-0 opacity-0 w-0'}`}
           >
             <Image
-              src="/logo.png"
+              src="/nuestro-nido-logo.png"
               alt="NuestroNido"
               width={163}
               height={40}
-              className="h-10 w-auto object-contain"
+              className="h-12 lg:h-14 w-auto object-contain"
               priority
             />
           </div>
@@ -186,11 +186,11 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
       <header className="sm:hidden border-b border-card bg-card/80 backdrop-blur-md sticky top-0 z-50 h-[56px] flex-shrink-0">
         <div className="container mx-auto px-4 h-full flex items-center justify-between">
           <Image
-            src="/logo.png"
+            src="/nuestro-nido-logo.png"
             alt="NuestroNido"
             width={122}
             height={30}
-            className="h-7 w-auto object-contain"
+            className="h-9 w-auto object-contain"
             priority
           />
           <div className="flex items-center gap-3">

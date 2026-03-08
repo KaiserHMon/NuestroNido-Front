@@ -114,6 +114,7 @@ export function CalendarSection() {
             creatorId: t.assigned_to_user_id || '',
             creatorColor: color,
             completed: t.status === 'completed',
+            xp_reward: t.xp_reward || undefined,
             familyId: t.family_id,
             daysOfWeek: t.week_days ? t.week_days.split(',') : undefined,
             createdAt: t.created_at,

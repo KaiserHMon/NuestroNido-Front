@@ -32,6 +32,6 @@ describe('RegisterPageContent', () => {
 
     // Check if it has the correct src (at least contains logo.png)
     const src = logo.getAttribute('src');
-    expect(src).toContain('logo.png');
+    expect(src).toContain('nuestro-nido-logo.png');
   });
 });

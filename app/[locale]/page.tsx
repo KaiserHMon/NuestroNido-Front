@@ -163,9 +163,9 @@ function LandingPageContent() {
             <div className="flex flex-col items-center text-center gap-6">
               <div className="flex items-center justify-center">
                 <img
-                  src="/logo.png"
+                  src="/nuestro-nido-logo.png"
                   alt="NuestroNido Logo"
-                  className="h-12 w-auto object-contain"
+                  className="h-12 sm:h-14 w-auto object-contain"
                 />
               </div>
               <div className="flex flex-wrap justify-center gap-x-8 gap-y-3">
