@@ -35,12 +35,14 @@ NuestroNido (Our Nest) is a collaborative household management platform designed
 ### Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/your-username/nuestronido.git
    cd nuestronido/front
    ```
 
 2. Install dependencies:
+
    ```bash
    pnpm install
    ```
@@ -51,9 +53,11 @@ NuestroNido (Our Nest) is a collaborative household management platform designed
 ### Running the App
 
 - **Development Mode**:
+
   ```bash
   pnpm dev
   ```
+
   The app will be available at `http://localhost:3000`.
 
 - **Build for Production**:

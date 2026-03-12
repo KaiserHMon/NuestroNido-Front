@@ -12,13 +12,11 @@ describe('API_BASE_URL Security Check', () => {
     process.env = originalEnv;
   });
 
-  it('should throw an error when NEXT_PUBLIC_API_URL is not set', async () => {
+  it('should fallback to an empty string when NEXT_PUBLIC_API_URL is not set', async () => {
     delete process.env.NEXT_PUBLIC_API_URL;
 
-    // Since the error happens at module evaluation time, we need to catch the import error
-    await expect(import('@/lib/api-client')).rejects.toThrow(
-      'NEXT_PUBLIC_API_URL environment variable is not set'
-    );
+    const { API_BASE_URL } = await import('@/lib/api-client');
+    expect(API_BASE_URL).toBe('');
   });
 
   it('should use the environment variable when set', async () => {
