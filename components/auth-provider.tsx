@@ -234,7 +234,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const refreshed = await FamilyService.getMyFamily(true);
           if (refreshed) setFamily(refreshed);
         } catch (err) {
-          console.warn("Initial family refresh failed after joining, using optimistic state:", err);
+          console.warn('Initial family refresh failed after joining, using optimistic state:', err);
         }
       } catch (error) {
         const errorMsg = error instanceof Error ? error.message : '';
