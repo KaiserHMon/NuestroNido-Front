@@ -16,6 +16,12 @@ interface ResetPasswordFormProps {
   token: string | null | undefined;
 }
 
+const isValidToken = (token: string) => {
+  return /^(?:[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]*|[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$/.test(
+    token
+  );
+};
+
 export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -43,7 +49,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   });
 
   const handleFormSubmit = async (data: ResetPasswordInputs) => {
-    if (!token) {
+    if (!token || !isValidToken(token)) {
       setError(t('invalid_token'));
       return;
     }
@@ -91,7 +97,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     );
   }
 
-  if (!token) {
+  if (!token || !isValidToken(token)) {
     return (
       <Alert variant="destructive">
         <AlertDescription>

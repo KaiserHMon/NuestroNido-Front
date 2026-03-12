@@ -40,17 +40,19 @@ export function InvitePageContent({ token }: InvitePageContentProps) {
       }, 1000);
     } catch (error) {
       console.error('Error joining family by link:', error);
-      
+
       let errorMessage = 'El enlace de invitación ha expirado o no es válido.';
       if (error instanceof Error) {
-        if (error.message.toLowerCase().includes('already member') || 
-            error.message.toLowerCase().includes('ya eres miembro')) {
+        if (
+          error.message.toLowerCase().includes('already member') ||
+          error.message.toLowerCase().includes('ya eres miembro')
+        ) {
           toast.info('Ya eres miembro de esta familia.');
           router.push('/dashboard');
           return;
         }
       }
-      
+
       toast.error(errorMessage);
       setIsJoining(false);
       // Don't redirect to home immediately on error, let the user see the message

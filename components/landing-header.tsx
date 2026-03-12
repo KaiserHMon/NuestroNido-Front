@@ -32,7 +32,8 @@ export function LandingHeader() {
                 alt="NuestroNido Logo"
                 className="h-8 sm:h-12 lg:h-14 w-auto object-contain"
                 priority
-              />            </div>
+              />{' '}
+            </div>
           </div>
         </div>
       </header>
@@ -52,7 +53,8 @@ export function LandingHeader() {
               alt="NuestroNido Logo"
               className="h-8 sm:h-12 lg:h-14 w-auto object-contain"
               priority
-            />          </Link>
+            />{' '}
+          </Link>
 
           <div className="flex items-center gap-1.5 sm:gap-4">
             {isAuthenticated ? (
