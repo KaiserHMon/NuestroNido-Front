@@ -173,13 +173,70 @@ export function CalendarSection() {
 
   const tasksByDay = useMemo(() => {
     const map = new Map<string, Task[]>();
-    daysInMonth.forEach((day) => {
-      const key = format(day, 'yyyy-MM-dd');
-      const filtered = tasks.filter((t) => isTaskOnDay(t, day));
-      if (filtered.length > 0) map.set(key, filtered);
+
+    // Pre-calculate day properties once
+    const dayProps = daysInMonth.map((day) => ({
+      date: day,
+      key: format(day, 'yyyy-MM-dd'),
+      dayOfWeek: day.getDay().toString(),
+      dayOfMonth: day.getDate(),
+      time: day.getTime(), // For quick comparisons
+    }));
+
+    const startOfTodayDate = new Date();
+    startOfTodayDate.setHours(0, 0, 0, 0);
+    const startOfTodayTime = startOfTodayDate.getTime();
+
+    tasks.forEach((task) => {
+      if (!task.date) return;
+
+      // Process task start date once per task
+      const startDate = new Date(task.date);
+      startDate.setHours(0, 0, 0, 0);
+      const startTime = startDate.getTime();
+
+      // Process task end date once per task
+      let endTime = Infinity;
+      if (task.endDate) {
+        const endDate = new Date(task.endDate);
+        endDate.setHours(23, 59, 59, 999);
+        endTime = endDate.getTime();
+      }
+
+      const taskRecurrence = task.recurrence_type;
+      const taskDaysOfWeek = task.daysOfWeek;
+      const taskDateDay = new Date(task.date).getDate();
+
+      dayProps.forEach((dayProp) => {
+        // Early boundary checks using pre-calculated timestamp
+        if (dayProp.time < startOfTodayTime) return;
+        if (dayProp.time < startTime) return;
+        if (dayProp.time > endTime) return;
+
+        let isOnDay = false;
+        if (taskRecurrence === 'none') {
+          isOnDay = startTime === dayProp.time;
+        } else if (taskRecurrence === 'daily') {
+          isOnDay = true;
+        } else if (taskRecurrence === 'weekly' && taskDaysOfWeek) {
+          isOnDay = taskDaysOfWeek.includes(dayProp.dayOfWeek);
+        } else if (taskRecurrence === 'monthly') {
+          isOnDay = taskDateDay === dayProp.dayOfMonth;
+        }
+
+        if (isOnDay) {
+          let list = map.get(dayProp.key);
+          if (!list) {
+            list = [];
+            map.set(dayProp.key, list);
+          }
+          list.push(task);
+        }
+      });
     });
+
     return map;
-  }, [tasks, daysInMonth, isTaskOnDay]);
+  }, [tasks, daysInMonth]);
 
   const getColorsForDay = useCallback(
     (day: Date): ColorDot[] => {
