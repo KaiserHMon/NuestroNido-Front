@@ -6,6 +6,7 @@ import { MemberAvatar } from '@/components/ui/member-avatar';
 import { Medal } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 import { Progress } from '@/components/ui/progress';
+import { useMemo } from 'react';
 
 interface LeaderboardProps {
   members: Member[];
@@ -32,12 +33,18 @@ export function Leaderboard({ members }: LeaderboardProps) {
     (a, b) => (b.experience_points || 0) - (a.experience_points || 0)
   );
 
+  const levelsMap = useMemo(() => {
+    const map = new Map<number, Level>();
+    levels.forEach((l) => map.set(l.level_number, l));
+    return map;
+  }, [levels]);
+
   const entries = sortedMembers.map((m, index) => {
     const distinction = getDistinction(index + 1);
 
     const currentXP = m.experience_points || 0;
     const currentLevelNum = m.level?.level_number || 1;
-    const nextLevel = levels.find((l: Level) => l.level_number === currentLevelNum + 1);
+    const nextLevel = levelsMap.get(currentLevelNum + 1);
 
     const nextLevelXP = nextLevel?.required_progress || currentXP;
     const isMaxLevel = !nextLevel;
