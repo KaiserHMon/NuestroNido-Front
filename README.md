@@ -1,19 +1,37 @@
-# NuestroNido 🐦
+# NuestroNido - Frontend Client
+
+[![Next.js](https://img.shields.io/badge/Next.js-15-black.svg)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue.svg)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3-38B2AC.svg)](https://tailwindcss.com/)
+[![License](https://img.shields.io/badge/license-private-red.svg)](#license)
 
 NuestroNido (Our Nest) is a collaborative household management platform designed to help families and housemates organize their daily lives. From task management and shared calendars to notes and a gamified leaderboard, NuestroNido turns household chores into a shared, rewarding experience.
 
-## ✨ Features
+## Table of Contents
 
-- **🏠 Family Management**: Create or join a "nest" to collaborate with your family members or roommates.
-- **📅 Shared Calendar**: Keep track of important dates, events, and deadlines in one central place.
-- **📝 Task Lists & Chores**: Organize household tasks and track progress.
-- **🏆 Gamification**: Earn points and level up by completing tasks. A leaderboard keeps everyone motivated!
-- **🗒️ Shared Notes**: Quick access to shopping lists, recipes, or important household information.
-- **🔔 Push Notifications**: Stay updated on new tasks, mentions, and family updates.
-- **🌐 Multilingual Support**: Fully localized in English and Spanish.
-- **📱 Responsive Design**: Optimized for both desktop and mobile devices.
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Environment Variables](#environment-variables)
+  - [Installation](#installation)
+- [Running the App](#running-the-app)
+- [Project Structure](#project-structure)
+- [Testing](#testing)
+- [License](#license)
 
-## 🚀 Tech Stack
+## Features
+
+- **Family Management**: Create or join a "nest" to collaborate with your family members or roommates.
+- **Shared Calendar**: Keep track of important dates, events, and deadlines in one central place.
+- **Task Lists & Chores**: Organize household tasks and track progress.
+- **Gamification**: Earn points and level up by completing tasks. A leaderboard keeps everyone motivated!
+- **Shared Notes**: Quick access to shopping lists, recipes, or important household information.
+- **Push Notifications**: Stay updated on new tasks, mentions, and family updates.
+- **Multilingual Support**: Fully localized in English and Spanish.
+- **Responsive Design**: Optimized for both desktop and mobile devices.
+
+## Tech Stack
 
 - **Framework**: [Next.js 15+](https://nextjs.org/) (App Router)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
@@ -25,12 +43,22 @@ NuestroNido (Our Nest) is a collaborative household management platform designed
 - **State Management & Data Fetching**: Custom hooks and services with [React Context](https://react.dev/learn/passing-data-deeply-with-context).
 - **Testing**: [Vitest](https://vitest.dev/) for unit/component tests and [Playwright](https://playwright.dev/) for E2E testing.
 
-## 🛠️ Getting Started
+## Getting Started
 
 ### Prerequisites
 
 - [Node.js](https://nodejs.org/) (v18 or higher recommended)
 - [pnpm](https://pnpm.io/) (preferred) or `npm` / `yarn`
+
+### Environment Variables
+
+Create a `.env.local` file in the root of the `/front` directory based on the following configurations:
+
+| Variable | Description | Example / Default | Required |
+| :--- | :--- | :--- | :--- |
+| `NEXT_PUBLIC_API_URL` | Base URL of the backend API | `http://localhost:8000` | Yes |
+| `NEXT_PUBLIC_SUPPORT_EMAIL` | Support contact email | `support@example.com` | No |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Public key for Web Push notifications | None | No |
 
 ### Installation
 
@@ -62,7 +90,7 @@ NuestroNido (Our Nest) is a collaborative household management platform designed
   pnpm start
   ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 ├── app/                  # Next.js App Router (Internationalized)
@@ -84,7 +112,7 @@ NuestroNido (Our Nest) is a collaborative household management platform designed
 └── tests/                # Vitest and Playwright test suites
 ```
 
-## 🧪 Testing
+## Testing
 
 - **Run Unit Tests**:
   ```bash
@@ -99,10 +127,10 @@ NuestroNido (Our Nest) is a collaborative household management platform designed
   pnpm lint
   ```
 
-## 📜 License
+## License
 
 This project is private and for internal use only.
 
 ---
 
-Made with ❤️ by the NuestroNido Team.
+Made by the NuestroNido Team.
