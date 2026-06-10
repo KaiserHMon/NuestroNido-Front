@@ -1,12 +1,10 @@
 import { TokenService } from '@/services/token-service';
 
 if (!process.env.NEXT_PUBLIC_API_URL) {
-  console.warn(
-    'Warning: NEXT_PUBLIC_API_URL environment variable is not set. Using default http://localhost:8000'
-  );
+  throw new Error('NEXT_PUBLIC_API_URL environment variable is not set');
 }
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
 

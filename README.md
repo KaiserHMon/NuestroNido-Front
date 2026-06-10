@@ -63,12 +63,14 @@ Create a `.env.local` file in the root of the `/front` directory based on the fo
 ### Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/your-username/nuestronido.git
    cd nuestronido/front
    ```
 
 2. Install dependencies:
+
    ```bash
    pnpm install
    ```
@@ -79,9 +81,11 @@ Create a `.env.local` file in the root of the `/front` directory based on the fo
 ### Running the App
 
 - **Development Mode**:
+
   ```bash
   pnpm dev
   ```
+
   The app will be available at `http://localhost:3000`.
 
 - **Build for Production**:
