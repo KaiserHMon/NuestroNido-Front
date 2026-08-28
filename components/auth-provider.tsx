@@ -49,28 +49,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(storedUser);
       setIsAuthenticated(true);
 
-      // Re-validate session with backend
-      const me = await UserService.getMe();
-      if (me) {
-        setUser(me);
-        setIsAuthenticated(true);
-        TokenService.setUser(me);
+      // Re-validate session and family in parallel to eliminate request waterfalls
+      const [meResult, familyResult] = await Promise.allSettled([
+        UserService.getMe(),
+        FamilyService.getMyFamily(),
+      ]);
 
-        try {
-          const fam = await FamilyService.getMyFamily();
-          if (fam) {
-            setFamily(fam);
-            if (!me.familyId) {
-              const updatedUser = { ...me, familyId: fam.id };
-              setUser(updatedUser);
-              TokenService.setUser(updatedUser);
-            }
-          } else {
-            setFamily(null);
-          }
-        } catch (err) {
-          console.error('Error loading family in checkSession:', err);
-        }
+      const me = meResult.status === 'fulfilled' ? meResult.value : null;
+      const fam = familyResult.status === 'fulfilled' ? familyResult.value : null;
+
+      if (me) {
+        const userWithFamily = fam && !me.familyId ? { ...me, familyId: fam.id } : me;
+        setUser(userWithFamily);
+        setIsAuthenticated(true);
+        TokenService.setUser(userWithFamily);
+        setFamily(fam || null);
       } else {
         TokenService.clearSession();
         setUser(null);

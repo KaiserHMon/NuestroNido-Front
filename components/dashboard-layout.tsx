@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, Link } from '@/i18n/routing';
-import { Calendar, ShoppingCart, StickyNote, Bird, LogOut, Home } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { Calendar, ShoppingCart, StickyNote, Bird, LogOut } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
@@ -16,6 +17,8 @@ interface DashboardLayoutProps {
 
 export function DashboardLayout({ children, activeSection = 'overview' }: DashboardLayoutProps) {
   const router = useRouter();
+  const t = useTranslations('Dashboard.navigation');
+  const tCommon = useTranslations('Common');
   const { logout, user, isAuthenticated, isLoading: authLoading, refreshFamily } = useAuth();
   const { family, isLoading: familyLoading } = useFamily();
 
@@ -62,23 +65,23 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
         <div className="text-center">
           <Image
             src="/nuestro-nido-logo.png"
-            alt="Cargando..."
+            alt={tCommon('loading')}
             width={261}
             height={64}
             className="h-16 w-auto object-contain mx-auto mb-4 animate-pulse"
             priority
           />
-          <p className="text-foreground">Cargando...</p>
+          <p className="text-foreground">{tCommon('loading')}</p>
         </div>
       </div>
     );
   }
 
   const navItems = [
-    { id: 'members', href: '/dashboard/nido' as const, icon: Bird, label: 'Nido' },
-    { id: 'calendar', href: '/dashboard/tareas' as const, icon: Calendar, label: 'Tareas' },
-    { id: 'list', href: '/dashboard/lista' as const, icon: ShoppingCart, label: 'Lista' },
-    { id: 'notes', href: '/dashboard/notas' as const, icon: StickyNote, label: 'Notas' },
+    { id: 'members', href: '/dashboard/nido' as const, icon: Bird, label: t('members') },
+    { id: 'calendar', href: '/dashboard/tareas' as const, icon: Calendar, label: t('tasks') },
+    { id: 'list', href: '/dashboard/lista' as const, icon: ShoppingCart, label: t('list') },
+    { id: 'notes', href: '/dashboard/notas' as const, icon: StickyNote, label: t('notes') },
   ];
 
   return (
@@ -90,7 +93,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
         className={`hidden sm:flex flex-col bg-card border-r border-border transition-all duration-300 ease-in-out z-50 h-screen sticky top-0 overflow-x-hidden ${
           isSidebarExpanded ? 'w-64' : 'w-20'
         }`}
-        aria-label="Sidebar principal"
+        aria-label={t('sidebar_aria')}
       >
         <div className="p-4 flex items-center justify-center overflow-hidden border-b border-border/40 h-[80px] flex-shrink-0">
           <div
@@ -165,17 +168,17 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
           <button
             onClick={handleLogout}
             className={`flex items-center gap-4 h-12 px-3 rounded-xl text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all group relative w-full overflow-hidden`}
-            title="Cerrar sesión"
+            title={t('logout_tooltip')}
           >
             <LogOut className="w-6 h-6 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
             <span
               className={`font-semibold text-base whitespace-nowrap transition-all duration-300 ${isSidebarExpanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'}`}
             >
-              Salir
+              {t('logout')}
             </span>
             {!isSidebarExpanded && (
               <div className="absolute left-16 bg-popover text-popover-foreground text-sm px-3 py-1.5 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none z-[100] border border-border whitespace-nowrap font-medium">
-                Cerrar sesión
+                {t('logout_tooltip')}
               </div>
             )}
           </button>
@@ -202,6 +205,7 @@ export function DashboardLayout({ children, activeSection = 'overview' }: Dashbo
               size="icon"
               onClick={handleLogout}
               className="h-8 w-8 text-muted-foreground"
+              title={t('logout_tooltip')}
             >
               <LogOut className="w-4 h-4" />
             </Button>

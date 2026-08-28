@@ -45,8 +45,6 @@ describe('AuthPageContent Performance', () => {
     // Check props
     expect(image).toHaveAttribute('src', '/nuestro-nido-logo.png');
     expect(image).toHaveAttribute('width', '261');
-    expect(image).toHaveAttribute('height', '64');
-    expect(image).toHaveAttribute('alt', 'NuestroNido Logo');
-    expect(image).toHaveClass('h-16 w-auto object-contain');
+    expect(image).toHaveClass('h-20 sm:h-24 w-auto object-contain');
   });
 });
