@@ -96,39 +96,76 @@ Create a `.env.local` file in the root of the `/front` directory based on the fo
   pnpm start
   ```
 
+## Architecture & System Design
+
+```mermaid
+flowchart TD
+    subgraph ClientLayer["🌐 Client & Routing (Next.js 16 + React 19)"]
+        A["App Router: app/[locale]/..."] --> B["i18n Middleware (next-intl)"]
+        B --> C["Pages & Layouts (Dashboard, Landing, Auth)"]
+    end
+
+    subgraph StateAndHooks["🧠 Business Logic & State (Container Layer)"]
+        C --> D["AuthProvider (Session & Concurrent Bootstrapping)"]
+        C --> E["useCalendarManager / Custom Domain Hooks"]
+        C --> F["UI / Presentational Components (Radix UI + Tailwind v4)"]
+    end
+
+    subgraph ValidationAndServices["🔒 Data Integrity & API Layer"]
+        D & E --> G["Zod Schemas & TypeScript Domain Types"]
+        G --> H["Domain Services (TaskService, FamilyService, UserService)"]
+        H --> I["fetchClient (Token Rotation & Safe Refresh Queue)"]
+    end
+
+    subgraph BackendGateway["⚡ Backend API"]
+        I --> J["REST API / WebSocket Push Gateway"]
+    end
+```
+
+## Key Architectural Highlights
+
+- **Container / Presentational Decoupling**: Complex UI (such as the interactive task calendar) isolates state, date arithmetic, and CRUD operations into dedicated custom hooks (`useCalendarManager`), leaving the UI components pure, declarative, and easily testable.
+- **Race-Condition-Safe Auth Loop**: `api-client.ts` implements a centralized `refreshPromise` queue that handles concurrent token expirations without triggering duplicate refresh requests.
+- **Zero-Waterfall Bootstrapping**: Concurrent session validation using `Promise.allSettled` to optimize initial dashboard loading and Time-To-Interactive (TTI).
+- **Automated Accessibility (A11y)**: Test suites run with `jest-axe` to enforce WCAG compliance directly on rendered components.
+
 ## Project Structure
 
 ```text
 ├── app/                  # Next.js App Router (Internationalized)
-│   ├── [locale]/         # Routes wrapped in locale segments
+│   ├── [locale]/         # Routes wrapped in locale segments (/es, /en)
 │   └── layout.tsx        # Root layout
 ├── components/           # React components
-│   ├── auth/             # Authentication related components
-│   ├── dashboard/        # Dashboard specific sections
-│   ├── dialogs/          # Reusable modal dialogs
-│   ├── ui/               # Base UI components (Shadcn/UI)
-│   └── ...               # Feature-specific components
-├── hooks/                # Custom React hooks (auth, notification, etc.)
-├── i18n/                 # Internationalization configuration
-├── lib/                  # Utility functions, constants, and types
-├── messages/             # Translation files (en.json, es.json)
-├── public/               # Static assets (images, icons, etc.)
-├── services/             # API service layers (auth, task, family, etc.)
-├── styles/               # Global CSS and Tailwind configuration
-└── tests/                # Vitest and Playwright test suites
+│   ├── auth/             # Authentication forms & flows
+│   ├── dialogs/          # Reusable modal dialogs (Tasks, Notes, Settings)
+│   ├── family/           # Nest creation and invitation components
+│   ├── ui/               # Base UI primitives (Radix UI + Tailwind CSS v4)
+│   └── ...               # Domain views (CalendarSection, NotesSection, ListSection)
+├── hooks/                # Custom business logic hooks (useCalendarManager, useAuth, etc.)
+├── i18n/                 # Internationalization routing & middleware
+├── lib/                  # Validation schemas (Zod), types, and fetchClient
+├── messages/             # Translation dictionaries (en.json, es.json)
+├── public/               # Static assets & logos
+├── services/             # Typed API service layers (AuthService, TaskService, etc.)
+├── styles/               # Global CSS & Tailwind v4 OKLCH theme configuration
+└── tests/                # Vitest (unit & a11y) and Playwright (E2E) test suites
 ```
 
 ## Testing
 
-- **Run Unit Tests**:
+- **Run Unit & A11y Tests**:
   ```bash
   pnpm test
   ```
-- **Test UI (Vitest)**:
+- **Test UI (Vitest Dashboard)**:
   ```bash
   pnpm test:ui
   ```
-- **Linting**:
+- **Code Coverage**:
+  ```bash
+  pnpm test:coverage
+  ```
+- **Linting & Code Quality**:
   ```bash
   pnpm lint
   ```
@@ -140,3 +177,4 @@ This project is private and for internal use only.
 ---
 
 Made by the NuestroNido Team.
+
